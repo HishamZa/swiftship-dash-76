@@ -1,102 +1,99 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useI18n } from "@/lib/i18n";
-import { store, type Shipment, type ShipmentStatus } from "@/lib/store";
-import { CheckCircle2, Circle, MapPin, Search } from "lucide-react";
+import { fetchShipmentByTracking, fetchHistory, type Shipment, type StatusHistory } from "@/lib/db";
+import { StatusBadge } from "@/components/StatusBadge";
+import { StatusTimeline } from "@/components/StatusTimeline";
+import { Search, AlertCircle } from "lucide-react";
 
 export const Route = createFileRoute("/track")({
-  head: () => ({
-    meta: [
-      { title: "Track Shipment — SwiftCargo" },
-      { name: "description", content: "Enter your tracking number to see real-time shipment status." },
-    ],
-  }),
-  component: Track,
+  validateSearch: (s: Record<string, unknown>) => ({ q: typeof s.q === "string" ? s.q : "" }),
+  head: () => ({ meta: [{ title: "Track — Almwanaa" }] }),
+  component: TrackPage,
 });
 
-const order: ShipmentStatus[] = ["st_created", "st_picked", "st_transit", "st_outfd", "st_delivered"];
-
-function Track() {
+function TrackPage() {
   const { t } = useI18n();
-  const [q, setQ] = useState("");
-  const [result, setResult] = useState<Shipment | null | "miss">(null);
+  const { q } = Route.useSearch();
+  const [input, setInput] = useState(q);
+  const [loading, setLoading] = useState(false);
+  const [shipment, setShipment] = useState<Shipment | null>(null);
+  const [history, setHistory] = useState<StatusHistory[]>([]);
+  const [searched, setSearched] = useState(false);
 
-  const onSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    const s = store.getShipments().find((x) => x.id.toLowerCase() === q.trim().toLowerCase());
-    setResult(s ?? "miss");
+  const run = async (tracking: string) => {
+    if (!tracking.trim()) return;
+    setLoading(true);
+    setSearched(true);
+    try {
+      const s = await fetchShipmentByTracking(tracking.trim());
+      setShipment(s);
+      if (s) setHistory(await fetchHistory(s.id));
+      else setHistory([]);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => { if (q) run(q); }, [q]);
 
   return (
     <Layout>
-      <section className="container mx-auto px-4 py-12 max-w-3xl">
-        <h1 className="text-3xl md:text-4xl font-bold">{t("trackTitle")}</h1>
-        <form onSubmit={onSearch} className="mt-6 flex gap-2">
-          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("trackPlaceholder")} className="h-12 text-base" />
-          <Button type="submit" size="lg">
-            <Search className="w-4 h-4 me-2" />
-            {t("trackBtn")}
-          </Button>
+      <section className="px-5 pt-6 pb-8 bg-primary text-primary-foreground rounded-b-3xl">
+        <h1 className="text-xl font-bold mb-3">{t("trackTitle")}</h1>
+        <form onSubmit={(e) => { e.preventDefault(); run(input); }} className="flex gap-2 bg-card text-foreground p-2 rounded-2xl">
+          <div className="flex-1 flex items-center gap-2 px-2">
+            <Search className="w-4 h-4 text-muted-foreground" />
+            <Input value={input} onChange={(e) => setInput(e.target.value)} placeholder={t("trackPlaceholder")} className="border-0 shadow-none focus-visible:ring-0 px-0" />
+          </div>
+          <Button type="submit" size="sm" disabled={loading}>{t("trackBtn")}</Button>
         </form>
-        <p className="mt-2 text-xs text-muted-foreground">Try: SC1001, SC1002</p>
+      </section>
 
-        {result === "miss" && (
-          <div className="mt-8 rounded-xl border bg-destructive/10 text-destructive-foreground p-4">
-            <span className="text-destructive font-medium">{t("notFound")}</span>
+      <section className="px-5 py-5">
+        {loading && <p className="text-sm text-muted-foreground">{t("loading")}</p>}
+        {!loading && searched && !shipment && (
+          <div className="rounded-2xl border bg-card p-6 text-center">
+            <AlertCircle className="mx-auto w-8 h-8 text-muted-foreground mb-2" />
+            <p className="text-sm text-muted-foreground">{t("notFound")}</p>
           </div>
         )}
-
-        {result && result !== "miss" && (
-          <div className="mt-8 rounded-2xl border bg-card p-6">
-            <div className="flex items-center justify-between flex-wrap gap-2">
-              <div>
-                <div className="text-xs text-muted-foreground">{t("tracking")}</div>
-                <div className="text-xl font-bold">{result.id}</div>
+        {!loading && shipment && (
+          <div className="space-y-4">
+            <div className="rounded-2xl border bg-card p-5">
+              <div className="flex items-start justify-between gap-2 mb-3">
+                <div>
+                  <p className="text-xs text-muted-foreground">{t("trackingNo")}</p>
+                  <p className="font-bold text-lg">{shipment.tracking_number}</p>
+                </div>
+                <StatusBadge status={shipment.status} />
               </div>
-              <span className="px-3 py-1 rounded-full bg-accent/20 text-accent-foreground text-sm font-medium">
-                {t(result.status)}
-              </span>
+              <Grid label={t("customer")} value={shipment.customer_name} />
+              <Grid label={t("origin")} value={shipment.origin_country} />
+              <Grid label={t("destination")} value={shipment.destination_country} />
+              {shipment.shipment_type && <Grid label={t("shipmentType")} value={shipment.shipment_type} />}
+              {shipment.weight != null && <Grid label={t("weight")} value={String(shipment.weight)} />}
+              {shipment.estimated_delivery && <Grid label={t("eta")} value={shipment.estimated_delivery} />}
             </div>
-
-            <div className="mt-6 grid sm:grid-cols-3 gap-4 text-sm">
-              <div>
-                <div className="text-muted-foreground">{t("from")}</div>
-                <div className="font-medium flex items-center gap-1 mt-1"><MapPin className="w-4 h-4 text-accent" />{result.from}</div>
-              </div>
-              <div>
-                <div className="text-muted-foreground">{t("to")}</div>
-                <div className="font-medium flex items-center gap-1 mt-1"><MapPin className="w-4 h-4 text-accent" />{result.to}</div>
-              </div>
-              <div>
-                <div className="text-muted-foreground">{t("eta")}</div>
-                <div className="font-medium mt-1">{result.eta}</div>
-              </div>
-            </div>
-
-            <div className="mt-8">
-              <h3 className="font-semibold mb-3">{t("history")}</h3>
-              <ol className="relative ms-3 border-s">
-                {order.map((s) => {
-                  const entry = result.history.find((h) => h.status === s);
-                  const done = !!entry;
-                  return (
-                    <li key={s} className="ms-4 pb-4">
-                      <span className="absolute -start-[9px] mt-1">
-                        {done ? <CheckCircle2 className="w-4 h-4 text-success" /> : <Circle className="w-4 h-4 text-muted-foreground" />}
-                      </span>
-                      <div className={done ? "font-medium" : "text-muted-foreground"}>{t(s)}</div>
-                      {entry && <div className="text-xs text-muted-foreground">{entry.at}</div>}
-                    </li>
-                  );
-                })}
-              </ol>
+            <div className="rounded-2xl border bg-card p-5">
+              <h2 className="font-semibold mb-4">{t("timeline")}</h2>
+              <StatusTimeline history={history} />
             </div>
           </div>
         )}
       </section>
     </Layout>
+  );
+}
+
+function Grid({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between py-1.5 border-b last:border-0 text-sm">
+      <span className="text-muted-foreground">{label}</span>
+      <span className="font-medium">{value}</span>
+    </div>
   );
 }
