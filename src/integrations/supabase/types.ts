@@ -118,24 +118,30 @@ export type Database = {
       }
       profiles: {
         Row: {
+          area: string | null
           created_at: string
           full_name: string | null
+          governorate: string | null
           id: string
           language: string
           phone: string | null
           updated_at: string
         }
         Insert: {
+          area?: string | null
           created_at?: string
           full_name?: string | null
+          governorate?: string | null
           id: string
           language?: string
           phone?: string | null
           updated_at?: string
         }
         Update: {
+          area?: string | null
           created_at?: string
           full_name?: string | null
+          governorate?: string | null
           id?: string
           language?: string
           phone?: string | null
@@ -180,10 +186,13 @@ export type Database = {
       }
       shipments: {
         Row: {
+          cbm_volume: number | null
           created_at: string
           customer_id: string | null
           customer_name: string
+          customer_notes: string | null
           destination_country: string
+          estimated_cost: number | null
           estimated_delivery: string | null
           id: string
           notes: string | null
@@ -196,10 +205,13 @@ export type Database = {
           weight: number | null
         }
         Insert: {
+          cbm_volume?: number | null
           created_at?: string
           customer_id?: string | null
           customer_name: string
+          customer_notes?: string | null
           destination_country: string
+          estimated_cost?: number | null
           estimated_delivery?: string | null
           id?: string
           notes?: string | null
@@ -212,10 +224,13 @@ export type Database = {
           weight?: number | null
         }
         Update: {
+          cbm_volume?: number | null
           created_at?: string
           customer_id?: string | null
           customer_name?: string
+          customer_notes?: string | null
           destination_country?: string
+          estimated_cost?: number | null
           estimated_delivery?: string | null
           id?: string
           notes?: string | null
