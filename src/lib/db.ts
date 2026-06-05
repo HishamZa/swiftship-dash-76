@@ -144,7 +144,24 @@ export async function fetchHistory(shipmentId: string) {
   return (data ?? []) as StatusHistory[];
 }
 
-export async function createShipment(p: Partial<Shipment>) {
+export type NewShipment = {
+  tracking_number: string;
+  customer_name: string;
+  origin_country: string;
+  destination_country: string;
+  status: ShipmentStatus;
+  customer_id?: string | null;
+  phone?: string | null;
+  shipment_type?: string | null;
+  weight?: number | null;
+  notes?: string | null;
+  customer_notes?: string | null;
+  estimated_cost?: number | null;
+  cbm_volume?: number | null;
+  estimated_delivery?: string | null;
+};
+
+export async function createShipment(p: NewShipment) {
   const { data, error } = await supabase.from("shipments").insert(p).select().single();
   if (error) throw error;
   return data as Shipment;
