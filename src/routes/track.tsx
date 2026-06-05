@@ -7,6 +7,7 @@ import { useI18n } from "@/lib/i18n";
 import { fetchShipmentByTracking, fetchHistory, type Shipment, type StatusHistory } from "@/lib/db";
 import { StatusBadge } from "@/components/StatusBadge";
 import { StatusTimeline } from "@/components/StatusTimeline";
+import { StatusProgress } from "@/components/StatusProgress";
 import { Search, AlertCircle } from "lucide-react";
 
 export const Route = createFileRoute("/track")({
