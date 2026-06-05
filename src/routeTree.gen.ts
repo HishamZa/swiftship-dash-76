@@ -20,6 +20,7 @@ import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authen
 import { Route as AuthenticatedManageRouteImport } from './routes/_authenticated/manage'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAdminShipmentsRouteImport } from './routes/_authenticated/admin-shipments'
+import { Route as AuthenticatedAdminNotifyRouteImport } from './routes/_authenticated/admin-notify'
 import { Route as AuthenticatedAdminCustomersRouteImport } from './routes/_authenticated/admin-customers'
 import { Route as AuthenticatedAdminAddRouteImport } from './routes/_authenticated/admin-add'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
@@ -81,6 +82,12 @@ const AuthenticatedAdminShipmentsRoute =
     path: '/admin-shipments',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminNotifyRoute =
+  AuthenticatedAdminNotifyRouteImport.update({
+    id: '/admin-notify',
+    path: '/admin-notify',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminCustomersRoute =
   AuthenticatedAdminCustomersRouteImport.update({
     id: '/admin-customers',
@@ -113,6 +120,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRoute
   '/admin-add': typeof AuthenticatedAdminAddRoute
   '/admin-customers': typeof AuthenticatedAdminCustomersRoute
+  '/admin-notify': typeof AuthenticatedAdminNotifyRoute
   '/admin-shipments': typeof AuthenticatedAdminShipmentsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/manage': typeof AuthenticatedManageRoute
@@ -129,6 +137,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminRoute
   '/admin-add': typeof AuthenticatedAdminAddRoute
   '/admin-customers': typeof AuthenticatedAdminCustomersRoute
+  '/admin-notify': typeof AuthenticatedAdminNotifyRoute
   '/admin-shipments': typeof AuthenticatedAdminShipmentsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/manage': typeof AuthenticatedManageRoute
@@ -147,6 +156,7 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/admin-add': typeof AuthenticatedAdminAddRoute
   '/_authenticated/admin-customers': typeof AuthenticatedAdminCustomersRoute
+  '/_authenticated/admin-notify': typeof AuthenticatedAdminNotifyRoute
   '/_authenticated/admin-shipments': typeof AuthenticatedAdminShipmentsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/manage': typeof AuthenticatedManageRoute
@@ -165,6 +175,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin-add'
     | '/admin-customers'
+    | '/admin-notify'
     | '/admin-shipments'
     | '/dashboard'
     | '/manage'
@@ -181,6 +192,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin-add'
     | '/admin-customers'
+    | '/admin-notify'
     | '/admin-shipments'
     | '/dashboard'
     | '/manage'
@@ -198,6 +210,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/admin-add'
     | '/_authenticated/admin-customers'
+    | '/_authenticated/admin-notify'
     | '/_authenticated/admin-shipments'
     | '/_authenticated/dashboard'
     | '/_authenticated/manage'
@@ -293,6 +306,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminShipmentsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin-notify': {
+      id: '/_authenticated/admin-notify'
+      path: '/admin-notify'
+      fullPath: '/admin-notify'
+      preLoaderRoute: typeof AuthenticatedAdminNotifyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin-customers': {
       id: '/_authenticated/admin-customers'
       path: '/admin-customers'
@@ -329,6 +349,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedAdminAddRoute: typeof AuthenticatedAdminAddRoute
   AuthenticatedAdminCustomersRoute: typeof AuthenticatedAdminCustomersRoute
+  AuthenticatedAdminNotifyRoute: typeof AuthenticatedAdminNotifyRoute
   AuthenticatedAdminShipmentsRoute: typeof AuthenticatedAdminShipmentsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedManageRoute: typeof AuthenticatedManageRoute
@@ -341,6 +362,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedAdminAddRoute: AuthenticatedAdminAddRoute,
   AuthenticatedAdminCustomersRoute: AuthenticatedAdminCustomersRoute,
+  AuthenticatedAdminNotifyRoute: AuthenticatedAdminNotifyRoute,
   AuthenticatedAdminShipmentsRoute: AuthenticatedAdminShipmentsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedManageRoute: AuthenticatedManageRoute,
