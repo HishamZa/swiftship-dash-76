@@ -75,9 +75,19 @@ function TrackPage() {
               <Grid label={t("customer")} value={shipment.customer_name} />
               <Grid label={t("origin")} value={shipment.origin_country} />
               <Grid label={t("destination")} value={shipment.destination_country} />
-              {shipment.shipment_type && <Grid label={t("shipmentType")} value={shipment.shipment_type} />}
-              {shipment.weight != null && <Grid label={t("weight")} value={String(shipment.weight)} />}
+              {shipment.estimated_cost != null && <Grid label={t("estimatedCost")} value={String(shipment.estimated_cost)} />}
+              {shipment.cbm_volume != null && <Grid label={t("cbm")} value={String(shipment.cbm_volume)} />}
               {shipment.estimated_delivery && <Grid label={t("eta")} value={shipment.estimated_delivery} />}
+              {shipment.customer_notes && (
+                <div className="mt-3 rounded-xl bg-muted/40 p-3">
+                  <p className="text-[11px] text-muted-foreground mb-1">{t("customerNotes")}</p>
+                  <p className="text-sm whitespace-pre-wrap">{shipment.customer_notes}</p>
+                </div>
+              )}
+            </div>
+            <div className="rounded-2xl border bg-card p-5">
+              <h2 className="font-semibold mb-4">{t("status")}</h2>
+              <StatusProgress current={shipment.status} />
             </div>
             <div className="rounded-2xl border bg-card p-5">
               <h2 className="font-semibold mb-4">{t("timeline")}</h2>
