@@ -13,6 +13,10 @@ const colors: Record<ShipmentStatus, string> = {
   delivered: "bg-success/30 text-success-foreground",
   delayed: "bg-warning/40 text-warning-foreground",
   cancelled: "bg-destructive/20 text-destructive",
+  received_warehouse: "bg-secondary text-secondary-foreground",
+  in_sea_transit: "bg-primary/20 text-primary",
+  arrived_umm_qasr: "bg-accent/30 text-accent-foreground",
+  arrived_baghdad: "bg-accent/40 text-accent-foreground",
 };
 
 export function StatusBadge({ status }: { status: ShipmentStatus }) {
