@@ -19,6 +19,11 @@ import { Route as AuthenticatedShipmentsRouteImport } from './routes/_authentica
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedManageRouteImport } from './routes/_authenticated/manage'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedAdminShipmentsRouteImport } from './routes/_authenticated/admin-shipments'
+import { Route as AuthenticatedAdminNotifyRouteImport } from './routes/_authenticated/admin-notify'
+import { Route as AuthenticatedAdminCustomersRouteImport } from './routes/_authenticated/admin-customers'
+import { Route as AuthenticatedAdminAddRouteImport } from './routes/_authenticated/admin-add'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAddressesRouteImport } from './routes/_authenticated/addresses'
 
 const TrackRoute = TrackRouteImport.update({
@@ -71,6 +76,34 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminShipmentsRoute =
+  AuthenticatedAdminShipmentsRouteImport.update({
+    id: '/admin-shipments',
+    path: '/admin-shipments',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminNotifyRoute =
+  AuthenticatedAdminNotifyRouteImport.update({
+    id: '/admin-notify',
+    path: '/admin-notify',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminCustomersRoute =
+  AuthenticatedAdminCustomersRouteImport.update({
+    id: '/admin-customers',
+    path: '/admin-customers',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminAddRoute = AuthenticatedAdminAddRouteImport.update({
+  id: '/admin-add',
+  path: '/admin-add',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAddressesRoute = AuthenticatedAddressesRouteImport.update({
   id: '/addresses',
   path: '/addresses',
@@ -84,6 +117,11 @@ export interface FileRoutesByFullPath {
   '/offices': typeof OfficesRoute
   '/track': typeof TrackRoute
   '/addresses': typeof AuthenticatedAddressesRoute
+  '/admin': typeof AuthenticatedAdminRoute
+  '/admin-add': typeof AuthenticatedAdminAddRoute
+  '/admin-customers': typeof AuthenticatedAdminCustomersRoute
+  '/admin-notify': typeof AuthenticatedAdminNotifyRoute
+  '/admin-shipments': typeof AuthenticatedAdminShipmentsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/manage': typeof AuthenticatedManageRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
@@ -96,6 +134,11 @@ export interface FileRoutesByTo {
   '/offices': typeof OfficesRoute
   '/track': typeof TrackRoute
   '/addresses': typeof AuthenticatedAddressesRoute
+  '/admin': typeof AuthenticatedAdminRoute
+  '/admin-add': typeof AuthenticatedAdminAddRoute
+  '/admin-customers': typeof AuthenticatedAdminCustomersRoute
+  '/admin-notify': typeof AuthenticatedAdminNotifyRoute
+  '/admin-shipments': typeof AuthenticatedAdminShipmentsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/manage': typeof AuthenticatedManageRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
@@ -110,6 +153,11 @@ export interface FileRoutesById {
   '/offices': typeof OfficesRoute
   '/track': typeof TrackRoute
   '/_authenticated/addresses': typeof AuthenticatedAddressesRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/admin-add': typeof AuthenticatedAdminAddRoute
+  '/_authenticated/admin-customers': typeof AuthenticatedAdminCustomersRoute
+  '/_authenticated/admin-notify': typeof AuthenticatedAdminNotifyRoute
+  '/_authenticated/admin-shipments': typeof AuthenticatedAdminShipmentsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/manage': typeof AuthenticatedManageRoute
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
@@ -124,6 +172,11 @@ export interface FileRouteTypes {
     | '/offices'
     | '/track'
     | '/addresses'
+    | '/admin'
+    | '/admin-add'
+    | '/admin-customers'
+    | '/admin-notify'
+    | '/admin-shipments'
     | '/dashboard'
     | '/manage'
     | '/notifications'
@@ -136,6 +189,11 @@ export interface FileRouteTypes {
     | '/offices'
     | '/track'
     | '/addresses'
+    | '/admin'
+    | '/admin-add'
+    | '/admin-customers'
+    | '/admin-notify'
+    | '/admin-shipments'
     | '/dashboard'
     | '/manage'
     | '/notifications'
@@ -149,6 +207,11 @@ export interface FileRouteTypes {
     | '/offices'
     | '/track'
     | '/_authenticated/addresses'
+    | '/_authenticated/admin'
+    | '/_authenticated/admin-add'
+    | '/_authenticated/admin-customers'
+    | '/_authenticated/admin-notify'
+    | '/_authenticated/admin-shipments'
     | '/_authenticated/dashboard'
     | '/_authenticated/manage'
     | '/_authenticated/notifications'
@@ -236,6 +299,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin-shipments': {
+      id: '/_authenticated/admin-shipments'
+      path: '/admin-shipments'
+      fullPath: '/admin-shipments'
+      preLoaderRoute: typeof AuthenticatedAdminShipmentsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin-notify': {
+      id: '/_authenticated/admin-notify'
+      path: '/admin-notify'
+      fullPath: '/admin-notify'
+      preLoaderRoute: typeof AuthenticatedAdminNotifyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin-customers': {
+      id: '/_authenticated/admin-customers'
+      path: '/admin-customers'
+      fullPath: '/admin-customers'
+      preLoaderRoute: typeof AuthenticatedAdminCustomersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin-add': {
+      id: '/_authenticated/admin-add'
+      path: '/admin-add'
+      fullPath: '/admin-add'
+      preLoaderRoute: typeof AuthenticatedAdminAddRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/addresses': {
       id: '/_authenticated/addresses'
       path: '/addresses'
@@ -248,6 +346,11 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAddressesRoute: typeof AuthenticatedAddressesRoute
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedAdminAddRoute: typeof AuthenticatedAdminAddRoute
+  AuthenticatedAdminCustomersRoute: typeof AuthenticatedAdminCustomersRoute
+  AuthenticatedAdminNotifyRoute: typeof AuthenticatedAdminNotifyRoute
+  AuthenticatedAdminShipmentsRoute: typeof AuthenticatedAdminShipmentsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedManageRoute: typeof AuthenticatedManageRoute
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
@@ -256,6 +359,11 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAddressesRoute: AuthenticatedAddressesRoute,
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedAdminAddRoute: AuthenticatedAdminAddRoute,
+  AuthenticatedAdminCustomersRoute: AuthenticatedAdminCustomersRoute,
+  AuthenticatedAdminNotifyRoute: AuthenticatedAdminNotifyRoute,
+  AuthenticatedAdminShipmentsRoute: AuthenticatedAdminShipmentsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedManageRoute: AuthenticatedManageRoute,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
