@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Anchor, Languages, Sun, Moon, Home, Search, Newspaper, User, LayoutDashboard, Package, MapPin, Bell, LogOut } from "lucide-react";
+import { Anchor, Languages, Sun, Moon, Home, Search, Newspaper, User, LayoutDashboard, Package, Bell, LogOut, PlusCircle, Users, Send } from "lucide-react";
 import type { ReactNode } from "react";
 import { useI18n } from "@/lib/i18n";
 import { useTheme } from "@/lib/theme";
@@ -19,14 +19,23 @@ export function Layout({ children }: { children: ReactNode }) {
     { to: user ? "/dashboard" : "/auth", label: user ? t("nav_account") : t("signIn"), icon: User },
   ] as const;
 
-  const authedNav = [
+  const customerNav = [
     { to: "/dashboard", label: t("nav_dashboard"), icon: LayoutDashboard },
     { to: "/shipments", label: t("nav_shipments"), icon: Package },
-    { to: "/addresses", label: t("nav_addresses"), icon: MapPin },
     { to: "/notifications", label: t("nav_notifications"), icon: Bell },
+    { to: "/track", label: t("nav_track"), icon: Search },
   ] as const;
 
-  const bottomNav = user ? authedNav : publicNav;
+  const adminNav = [
+    { to: "/admin", label: t("nav_dashboard"), icon: LayoutDashboard },
+    { to: "/admin-add", label: t("nav_add"), icon: PlusCircle },
+    { to: "/admin-customers", label: t("nav_customers"), icon: Users },
+    { to: "/admin-shipments", label: t("nav_shipments"), icon: Package },
+    { to: "/admin-notify", label: t("nav_notify"), icon: Send },
+  ] as const;
+
+  const bottomNav = !user ? publicNav : isStaff ? adminNav : customerNav;
+  const gridCols = bottomNav.length === 5 ? "grid-cols-5" : "grid-cols-4";
 
   const handleSignOut = async () => {
     await signOut();
@@ -37,7 +46,7 @@ export function Layout({ children }: { children: ReactNode }) {
     <div className="min-h-screen flex flex-col bg-background text-foreground pb-20">
       <header className="sticky top-0 z-40 backdrop-blur bg-background/80 border-b">
         <div className="container mx-auto px-4 h-14 flex items-center justify-between gap-2">
-          <Link to="/" className="flex items-center gap-2 font-bold">
+          <Link to={user ? (isStaff ? "/admin" : "/dashboard") : "/"} className="flex items-center gap-2 font-bold">
             <span className="grid place-items-center w-9 h-9 rounded-xl bg-primary text-primary-foreground">
               <Anchor className="w-4.5 h-4.5" />
             </span>
@@ -63,7 +72,7 @@ export function Layout({ children }: { children: ReactNode }) {
       <main className="flex-1">{children}</main>
 
       <nav className="fixed bottom-0 inset-x-0 z-40 border-t bg-background/95 backdrop-blur">
-        <ul className="container mx-auto grid grid-cols-4 max-w-md">
+        <ul className={`container mx-auto grid ${gridCols} max-w-md`}>
           {bottomNav.map((l) => (
             <li key={l.to}>
               <Link
@@ -79,15 +88,6 @@ export function Layout({ children }: { children: ReactNode }) {
           ))}
         </ul>
       </nav>
-
-      {isStaff && (
-        <Link
-          to="/manage"
-          className="fixed bottom-20 end-4 z-30 rounded-full bg-accent text-accent-foreground shadow-lg px-4 py-2 text-xs font-semibold"
-        >
-          {t("nav_manage")}
-        </Link>
-      )}
     </div>
   );
 }
