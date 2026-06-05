@@ -15,24 +15,43 @@ export const Route = createFileRoute("/auth")({
   component: AuthPage,
 });
 
+// Convert a phone or username into a synthetic email Supabase will accept.
+function identityToEmail(identity: string) {
+  const id = identity.trim();
+  if (id.toLowerCase() === "admin") return "admin@almwanaa.app";
+  // Strip non-alphanumerics for stable email local-part.
+  const clean = id.replace(/[^a-zA-Z0-9]/g, "");
+  return `${clean || "user"}@almwanaa.local`;
+}
+
 function AuthPage() {
   const { t } = useI18n();
-  const { user } = useAuth();
+  const { user, isStaff } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+
+  // sign in
+  const [identity, setIdentity] = useState("");
+  const [passwordIn, setPasswordIn] = useState("");
+
+  // sign up
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  const [governorate, setGovernorate] = useState("");
+  const [area, setArea] = useState("");
+  const [passwordUp, setPasswordUp] = useState("");
 
   useEffect(() => {
-    if (user) navigate({ to: "/dashboard", replace: true });
-  }, [user, navigate]);
+    if (user) navigate({ to: isStaff ? "/admin" : "/dashboard", replace: true });
+  }, [user, isStaff, navigate]);
 
   const signIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithPassword({
+      email: identityToEmail(identity),
+      password: passwordIn,
+    });
     setLoading(false);
     if (error) toast.error(error.message);
     else toast.success("Welcome back!");
@@ -40,17 +59,21 @@ function AuthPage() {
 
   const signUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!phone.trim()) {
+      toast.error(t("phone"));
+      return;
+    }
     setLoading(true);
     const { error } = await supabase.auth.signUp({
-      email, password,
+      email: identityToEmail(phone),
+      password: passwordUp,
       options: {
-        emailRedirectTo: `${window.location.origin}/dashboard`,
-        data: { full_name: fullName, phone },
+        data: { full_name: fullName, phone, governorate, area },
       },
     });
     setLoading(false);
     if (error) toast.error(error.message);
-    else toast.success("Account created — check your email to verify.");
+    else toast.success("Account created. Signing you in…");
   };
 
   return (
@@ -72,18 +95,20 @@ function AuthPage() {
 
           <TabsContent value="in">
             <form onSubmit={signIn} className="space-y-3 mt-4">
-              <Input type="email" required placeholder={t("email")} value={email} onChange={(e) => setEmail(e.target.value)} />
-              <Input type="password" required minLength={6} placeholder={t("password")} value={password} onChange={(e) => setPassword(e.target.value)} />
+              <Input required placeholder={t("phone") + " / " + t("username")} value={identity} onChange={(e) => setIdentity(e.target.value)} />
+              <Input type="password" required minLength={6} placeholder={t("password")} value={passwordIn} onChange={(e) => setPasswordIn(e.target.value)} />
               <Button type="submit" className="w-full" disabled={loading}>{t("signIn")}</Button>
+              <p className="text-[11px] text-muted-foreground text-center">{t("loginWithPhone")}</p>
             </form>
           </TabsContent>
 
           <TabsContent value="up">
             <form onSubmit={signUp} className="space-y-3 mt-4">
               <Input required placeholder={t("fullName")} value={fullName} onChange={(e) => setFullName(e.target.value)} />
-              <Input placeholder={t("phone")} value={phone} onChange={(e) => setPhone(e.target.value)} />
-              <Input type="email" required placeholder={t("email")} value={email} onChange={(e) => setEmail(e.target.value)} />
-              <Input type="password" required minLength={6} placeholder={t("password")} value={password} onChange={(e) => setPassword(e.target.value)} />
+              <Input required placeholder={t("governorate")} value={governorate} onChange={(e) => setGovernorate(e.target.value)} />
+              <Input required placeholder={t("area")} value={area} onChange={(e) => setArea(e.target.value)} />
+              <Input required placeholder={t("phone")} value={phone} onChange={(e) => setPhone(e.target.value)} />
+              <Input type="password" required minLength={6} placeholder={t("password")} value={passwordUp} onChange={(e) => setPasswordUp(e.target.value)} />
               <Button type="submit" className="w-full" disabled={loading}>{t("signUp")}</Button>
             </form>
           </TabsContent>
