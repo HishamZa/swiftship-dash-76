@@ -16,6 +16,7 @@ import { Route as AnnouncementsRouteImport } from './routes/announcements'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedShipmentsRouteImport } from './routes/_authenticated/shipments'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedOfficesManageRouteImport } from './routes/_authenticated/offices-manage'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedNewsManageRouteImport } from './routes/_authenticated/news-manage'
@@ -62,6 +63,11 @@ const IndexRoute = IndexRouteImport.update({
 const AuthenticatedShipmentsRoute = AuthenticatedShipmentsRouteImport.update({
   id: '/shipments',
   path: '/shipments',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedOfficesManageRoute =
@@ -153,6 +159,7 @@ export interface FileRoutesByFullPath {
   '/news-manage': typeof AuthenticatedNewsManageRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/offices-manage': typeof AuthenticatedOfficesManageRoute
+  '/settings': typeof AuthenticatedSettingsRoute
   '/shipments': typeof AuthenticatedShipmentsRouteWithChildren
   '/accounts/$id': typeof AuthenticatedAccountsIdRoute
   '/shipments/$id': typeof AuthenticatedShipmentsIdRoute
@@ -174,6 +181,7 @@ export interface FileRoutesByTo {
   '/news-manage': typeof AuthenticatedNewsManageRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/offices-manage': typeof AuthenticatedOfficesManageRoute
+  '/settings': typeof AuthenticatedSettingsRoute
   '/shipments': typeof AuthenticatedShipmentsRouteWithChildren
   '/accounts/$id': typeof AuthenticatedAccountsIdRoute
   '/shipments/$id': typeof AuthenticatedShipmentsIdRoute
@@ -197,6 +205,7 @@ export interface FileRoutesById {
   '/_authenticated/news-manage': typeof AuthenticatedNewsManageRoute
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/offices-manage': typeof AuthenticatedOfficesManageRoute
+  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/shipments': typeof AuthenticatedShipmentsRouteWithChildren
   '/_authenticated/accounts/$id': typeof AuthenticatedAccountsIdRoute
   '/_authenticated/shipments/$id': typeof AuthenticatedShipmentsIdRoute
@@ -220,6 +229,7 @@ export interface FileRouteTypes {
     | '/news-manage'
     | '/notifications'
     | '/offices-manage'
+    | '/settings'
     | '/shipments'
     | '/accounts/$id'
     | '/shipments/$id'
@@ -241,6 +251,7 @@ export interface FileRouteTypes {
     | '/news-manage'
     | '/notifications'
     | '/offices-manage'
+    | '/settings'
     | '/shipments'
     | '/accounts/$id'
     | '/shipments/$id'
@@ -263,6 +274,7 @@ export interface FileRouteTypes {
     | '/_authenticated/news-manage'
     | '/_authenticated/notifications'
     | '/_authenticated/offices-manage'
+    | '/_authenticated/settings'
     | '/_authenticated/shipments'
     | '/_authenticated/accounts/$id'
     | '/_authenticated/shipments/$id'
@@ -326,6 +338,13 @@ declare module '@tanstack/react-router' {
       path: '/shipments'
       fullPath: '/shipments'
       preLoaderRoute: typeof AuthenticatedShipmentsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/offices-manage': {
@@ -461,6 +480,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedNewsManageRoute: typeof AuthenticatedNewsManageRoute
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedOfficesManageRoute: typeof AuthenticatedOfficesManageRoute
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedShipmentsRoute: typeof AuthenticatedShipmentsRouteWithChildren
 }
 
@@ -476,6 +496,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedNewsManageRoute: AuthenticatedNewsManageRoute,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedOfficesManageRoute: AuthenticatedOfficesManageRoute,
+  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedShipmentsRoute: AuthenticatedShipmentsRouteWithChildren,
 }
 
@@ -493,3 +514,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
