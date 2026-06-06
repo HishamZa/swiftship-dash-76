@@ -1,49 +1,75 @@
 import { useEffect, useState } from "react";
-import { fetchAnnouncements } from "./db";
+import { fetchAnnouncements, fetchShipments, fetchUnreadCount } from "./db";
 
-const KEY = (uid: string) => `news_last_seen:${uid}`;
-const EVT = "news-last-seen-changed";
+const EVT = "unread-counts-changed";
 
-export function getLastSeen(uid: string): number {
+function lsKey(kind: string, uid: string) { return `last_seen:${kind}:${uid}`; }
+function getLastSeen(kind: string, uid: string): number {
   if (typeof window === "undefined") return 0;
-  const v = localStorage.getItem(KEY(uid));
+  const v = localStorage.getItem(lsKey(kind, uid));
   return v ? Number(v) || 0 : 0;
 }
-
-export function markNewsSeen(uid: string) {
+function setLastSeen(kind: string, uid: string) {
   if (typeof window === "undefined") return;
-  localStorage.setItem(KEY(uid), String(Date.now()));
+  localStorage.setItem(lsKey(kind, uid), String(Date.now()));
   window.dispatchEvent(new Event(EVT));
 }
 
-export function useUnreadNewsCount(uid: string | undefined) {
-  const [count, setCount] = useState(0);
+export const markNewsSeen = (uid: string) => setLastSeen("news", uid);
+export const markShipmentsSeen = (uid: string) => setLastSeen("shipments", uid);
 
+function useUnreadCount(uid: string | undefined, compute: () => Promise<number>) {
+  const [count, setCount] = useState(0);
   useEffect(() => {
     if (!uid) { setCount(0); return; }
     let active = true;
-    const recompute = async () => {
+    const run = async () => {
       try {
-        const items = await fetchAnnouncements(true);
-        const lastSeen = getLastSeen(uid);
-        const n = items.filter((a) => new Date(a.created_at).getTime() > lastSeen).length;
+        const n = await compute();
         if (active) setCount(n);
-      } catch {
-        if (active) setCount(0);
-      }
+      } catch { if (active) setCount(0); }
     };
-    recompute();
-    const onEvt = () => recompute();
+    run();
+    const onEvt = () => run();
     window.addEventListener(EVT, onEvt);
     window.addEventListener("focus", onEvt);
-    const iv = window.setInterval(recompute, 60_000);
+    const iv = window.setInterval(run, 60_000);
     return () => {
       active = false;
       window.removeEventListener(EVT, onEvt);
       window.removeEventListener("focus", onEvt);
       window.clearInterval(iv);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uid]);
-
   return count;
+}
+
+export function useUnreadNewsCount(uid: string | undefined) {
+  return useUnreadCount(uid, async () => {
+    if (!uid) return 0;
+    const items = await fetchAnnouncements(true);
+    const seen = getLastSeen("news", uid);
+    return items.filter((a) => new Date(a.created_at).getTime() > seen).length;
+  });
+}
+
+export function useUnreadShipmentsCount(uid: string | undefined) {
+  return useUnreadCount(uid, async () => {
+    if (!uid) return 0;
+    const items = await fetchShipments({ customerId: uid });
+    const seen = getLastSeen("shipments", uid);
+    return items.filter((s) => new Date(s.created_at).getTime() > seen).length;
+  });
+}
+
+export function useUnreadNotificationsCount(uid: string | undefined) {
+  return useUnreadCount(uid, async () => {
+    if (!uid) return 0;
+    return await fetchUnreadCount(uid);
+  });
+}
+
+export function notifyUnreadChanged() {
+  if (typeof window !== "undefined") window.dispatchEvent(new Event(EVT));
 }
