@@ -88,8 +88,8 @@ export const deleteUserAccount = createServerFn({ method: "POST" })
     const callerRole = await getMaxRole(context.userId);
     const targetRole = await getMaxRole(data.userId);
     if (callerRole === "customer") throw new Error("Forbidden: staff only");
-    if (callerRole === "employee" && targetRole !== "customer") {
-      throw new Error("Forbidden: employees can only delete customer accounts");
+    if (callerRole === "employee") {
+      throw new Error("Forbidden: employees cannot delete accounts");
     }
     if (callerRole === "manager" && targetRole === "admin") {
       throw new Error("Forbidden: managers cannot delete admin accounts");
