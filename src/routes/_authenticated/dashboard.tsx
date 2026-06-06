@@ -7,6 +7,7 @@ import { fetchShipments, type Shipment, ACTIVE_STATUSES } from "@/lib/db";
 import { StatusBadge } from "@/components/StatusBadge";
 import { formatUSD, formatCBM, deliveryCountdown } from "@/lib/format";
 import { Package, CheckCircle, Truck, Bell, Search, Newspaper, MapPin } from "lucide-react";
+import { useUnreadNewsCount } from "@/lib/unreadNews";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — Almwanaa" }] }),
