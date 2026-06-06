@@ -20,6 +20,7 @@ function Dashboard() {
   const navigate = useNavigate();
   const [shipments, setShipments] = useState<Shipment[]>([]);
   const [loading, setLoading] = useState(true);
+  const unreadNews = useUnreadNewsCount(user?.id);
 
   useEffect(() => {
     if (isStaff) { navigate({ to: "/admin", replace: true }); return; }
