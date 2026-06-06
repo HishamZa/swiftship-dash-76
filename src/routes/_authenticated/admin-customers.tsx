@@ -115,19 +115,33 @@ function AdminCustomersPage() {
         </div>
         <div className="space-y-2">
           {customers.length === 0 && <p className="text-sm text-muted-foreground">{t("empty")}</p>}
-          {customers.map((c) => (
-            <button key={c.id} onClick={() => setSelected(c)} className="block w-full text-start rounded-2xl border bg-card p-4 hover:bg-muted/40 transition">
-              <div className="flex justify-between items-center gap-3">
-                <div className="min-w-0">
-                  <p className="font-semibold text-sm truncate">{c.full_name ?? "—"}</p>
-                  <p className="text-xs text-muted-foreground truncate">{c.phone ?? "—"}{c.governorate ? ` · ${c.governorate}` : ""}{c.area ? ` / ${c.area}` : ""}</p>
-                </div>
-                <span className="flex items-center gap-1 text-xs font-semibold bg-primary/10 text-primary rounded-full px-2 py-1 shrink-0">
-                  <Package className="w-3 h-3" /> {counts[c.id] ?? 0}
-                </span>
-              </div>
-            </button>
-          ))}
+          {(() => {
+            const counts = new Map<string, number>();
+            for (const c of customers) {
+              const k = `${c.full_name ?? ""}|${c.phone ?? ""}`;
+              counts.set(k, (counts.get(k) ?? 0) + 1);
+            }
+            return customers.map((c) => {
+              const k = `${c.full_name ?? ""}|${c.phone ?? ""}`;
+              const isDup = (counts.get(k) ?? 0) > 1;
+              return (
+                <button key={c.id} onClick={() => setSelected(c)} className="block w-full text-start rounded-2xl border bg-card p-4 hover:bg-muted/40 transition">
+                  <div className="flex justify-between items-center gap-3">
+                    <div className="min-w-0">
+                      <p className="font-semibold text-sm truncate">
+                        {c.full_name ?? "—"}
+                        {isDup ? <span className="ms-1 text-[10px] font-normal text-muted-foreground">#{c.id.slice(0, 4)}</span> : null}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">{c.phone ?? "—"}{c.governorate ? ` · ${c.governorate}` : ""}{c.area ? ` / ${c.area}` : ""}</p>
+                    </div>
+                    <span className="flex items-center gap-1 text-xs font-semibold bg-primary/10 text-primary rounded-full px-2 py-1 shrink-0">
+                      <Package className="w-3 h-3" /> {counts[c.id] ?? 0}
+                    </span>
+                  </div>
+                </button>
+              );
+            });
+          })()}
         </div>
       </section>
     </Layout>
