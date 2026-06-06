@@ -59,8 +59,10 @@ function AccountsPage() {
 
   const canDelete = (target: AppRole, targetId: string) => {
     if (targetId === user?.id) return false;
-    if (target === "admin") return false; // protect admin accounts
-    return roleRank(callerRole) >= roleRank(target) && roleRank(callerRole) >= roleRank("employee");
+    if (callerRole === "admin") return true;
+    if (callerRole === "manager") return target !== "admin";
+    if (callerRole === "employee") return target === "customer";
+    return false;
   };
 
   const onDelete = async (id: string) => {
