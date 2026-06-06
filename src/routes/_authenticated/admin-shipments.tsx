@@ -53,24 +53,28 @@ function AdminShipmentsPage() {
 
         {list.length === 0 && <p className="text-sm text-muted-foreground">{t("empty")}</p>}
         <div className="space-y-2">
-          {list.map((s) => (
-            <div key={s.id} className="block rounded-2xl border bg-card p-4">
-              <div className="flex justify-between items-start gap-2">
-                <div className="min-w-0 flex-1">
-                  <p className="font-semibold text-sm">{s.tracking_number}</p>
-                  <p className="text-xs text-muted-foreground truncate">{s.customer_name}</p>
-                  {s.description && <p className="text-[11px] text-muted-foreground truncate">{s.description}</p>}
-                  <div className="text-[11px] text-muted-foreground mt-1 flex flex-wrap gap-x-3">
-                    <span>{formatUSD(s.estimated_cost)}</span>
-                    <span>{formatCBM(s.cbm_volume)}</span>
-                    {s.estimated_delivery && <span>{t("eta")}: {s.estimated_delivery}</span>}
+          {list.map((s) => {
+            const cd = deliveryCountdown(s.estimated_delivery, lang);
+            return (
+              <div key={s.id} className="block rounded-2xl border bg-card p-4">
+                <div className="flex justify-between items-start gap-2">
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold text-sm">{s.tracking_number}</p>
+                    <p className="text-xs text-muted-foreground truncate">{s.customer_name}</p>
+                    {s.description && <p className="text-[11px] text-muted-foreground truncate">{s.description}</p>}
+                    <div className="text-[11px] text-muted-foreground mt-1 flex flex-wrap gap-x-3">
+                      <span>{formatUSD(s.estimated_cost)}</span>
+                      <span>{formatCBM(s.cbm_volume)}</span>
+                      {s.estimated_delivery && <span>{t("eta")}: {s.estimated_delivery}</span>}
+                      {cd && <span className="font-semibold text-primary">{cd}</span>}
+                    </div>
+                    <p className="text-[10px] text-muted-foreground mt-1">{new Date(s.created_at).toLocaleDateString()}</p>
                   </div>
-                  <p className="text-[10px] text-muted-foreground mt-1">{new Date(s.created_at).toLocaleDateString()}</p>
+                  <StatusBadge status={s.status} />
                 </div>
-                <StatusBadge status={s.status} />
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
     </Layout>
