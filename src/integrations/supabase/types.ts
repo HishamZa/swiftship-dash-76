@@ -95,6 +95,7 @@ export type Database = {
           created_at: string
           id: string
           read: boolean
+          shipment_id: string | null
           title: string
           user_id: string
         }
@@ -103,6 +104,7 @@ export type Database = {
           created_at?: string
           id?: string
           read?: boolean
+          shipment_id?: string | null
           title: string
           user_id: string
         }
@@ -111,10 +113,19 @@ export type Database = {
           created_at?: string
           id?: string
           read?: boolean
+          shipment_id?: string | null
           title?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "notifications_shipment_id_fkey"
+            columns: ["shipment_id"]
+            isOneToOne: false
+            referencedRelation: "shipments"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -191,6 +202,7 @@ export type Database = {
           customer_id: string | null
           customer_name: string
           customer_notes: string | null
+          description: string | null
           destination_country: string
           estimated_cost: number | null
           estimated_delivery: string | null
@@ -210,6 +222,7 @@ export type Database = {
           customer_id?: string | null
           customer_name: string
           customer_notes?: string | null
+          description?: string | null
           destination_country: string
           estimated_cost?: number | null
           estimated_delivery?: string | null
@@ -229,6 +242,7 @@ export type Database = {
           customer_id?: string | null
           customer_name?: string
           customer_notes?: string | null
+          description?: string | null
           destination_country?: string
           estimated_cost?: number | null
           estimated_delivery?: string | null
@@ -270,12 +284,27 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      has_min_role: {
+        Args: {
+          _min: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      max_role: {
+        Args: { _user_id: string }
+        Returns: Database["public"]["Enums"]["app_role"]
+      }
+      role_rank: {
+        Args: { _r: Database["public"]["Enums"]["app_role"] }
+        Returns: number
       }
     }
     Enums: {
