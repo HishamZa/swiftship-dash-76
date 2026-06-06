@@ -10,17 +10,18 @@ import { Bell } from "lucide-react";
 
 function renderShipmentNotification(
   n: Notification,
-  t: (k: Parameters<ReturnType<typeof useI18n>["t"]>[0]) => string,
+  t: (k: never) => string,
 ): { title: string; body: string } {
-  const isShipment = n.title?.startsWith("shipment_update:");
+  const tt = t as unknown as (k: string) => string;
+  const isShipment = !!n.title?.startsWith("shipment_update:");
   if (!isShipment) return { title: n.title ?? "", body: n.body ?? "" };
-  const tracking = n.title.slice("shipment_update:".length);
+  const tracking = n.title!.slice("shipment_update:".length);
   const [firstLine, ...rest] = (n.body ?? "").split("\n");
   const isStatus = (ALL_STATUSES as readonly string[]).includes(firstLine);
-  const statusText = isStatus ? t(statusKey(firstLine as ShipmentStatus)) : firstLine;
+  const statusText = isStatus ? tt(statusKey(firstLine as ShipmentStatus)) : firstLine;
   const note = rest.join("\n").trim();
-  const title = `${t("shipmentUpdateTitle")} — ${tracking}`;
-  const body = `${t("shipmentStatusUpdatedTo")}: ${statusText}${note ? `\n${note}` : ""}`;
+  const title = `${tt("shipmentUpdateTitle")} — ${tracking}`;
+  const body = `${tt("shipmentStatusUpdatedTo")}: ${statusText}${note ? `\n${note}` : ""}`;
   return { title, body };
 }
 
