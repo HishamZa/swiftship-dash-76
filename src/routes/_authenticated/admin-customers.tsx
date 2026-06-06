@@ -142,8 +142,12 @@ function EditShipment({ shipment, onClose }: { shipment: Shipment; onClose: () =
   const [cbm, setCbm] = useState(shipment.cbm_volume?.toString() ?? "");
   const [eta, setEta] = useState(shipment.estimated_delivery ?? "");
   const [customerNotes, setCustomerNotes] = useState(shipment.customer_notes ?? "");
+  const [history, setHistory] = useState<StatusHistory[]>([]);
   const [busy, setBusy] = useState(false);
   const cd = deliveryCountdown(eta, lang);
+
+  const loadHistory = () => fetchHistory(shipment.id).then(setHistory).catch(() => setHistory([]));
+  useEffect(() => { loadHistory(); /* eslint-disable-next-line */ }, [shipment.id]);
 
   const onDelete = async () => {
     setBusy(true);
@@ -168,7 +172,7 @@ function EditShipment({ shipment, onClose }: { shipment: Shipment; onClose: () =
         customer_notes: customerNotes || null,
       });
       toast.success(t("save"));
-      onClose();
+      await loadHistory();
     } catch (e: unknown) {
       toast.error(e instanceof Error ? e.message : "Error");
     } finally { setBusy(false); }
