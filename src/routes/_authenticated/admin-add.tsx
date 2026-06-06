@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { fetchCustomers, createShipment, generateTrackingNumber, type Profile } from "@/lib/db";
+import { fetchCustomers, fetchAllUserRoles, createShipment, generateTrackingNumber, type Profile } from "@/lib/db";
 import { toast } from "sonner";
 import { RefreshCw } from "lucide-react";
 
@@ -33,7 +33,17 @@ function AdminAddPage() {
   useEffect(() => {
     if (loading) return;
     if (!isStaff) { navigate({ to: "/dashboard", replace: true }); return; }
-    fetchCustomers().then(setCustomers).catch(() => setCustomers([]));
+    (async () => {
+      const [profiles, rolesMap] = await Promise.all([
+        fetchCustomers().catch(() => [] as Profile[]),
+        fetchAllUserRoles().catch(() => ({} as Record<string, string[]>)),
+      ]);
+      // Customers only — exclude admin/manager/employee.
+      setCustomers(profiles.filter((p) => {
+        const rs = rolesMap[p.id] ?? [];
+        return !rs.some((r) => r === "admin" || r === "manager" || r === "employee");
+      }));
+    })();
   }, [isStaff, loading, navigate]);
 
   const selected = useMemo(() => customers.find((c) => c.id === customerId), [customers, customerId]);

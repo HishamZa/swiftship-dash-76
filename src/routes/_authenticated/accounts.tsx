@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Layout } from "@/components/Layout";
 import { useI18n } from "@/lib/i18n";
@@ -7,11 +7,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { fetchCustomers, fetchAllUserRoles, type Profile, type AppRole } from "@/lib/db";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { fetchCustomers, fetchAllUserRoles, roleRank, type Profile, type AppRole } from "@/lib/db";
 import { useServerFn } from "@tanstack/react-start";
-import { createStaffAccount } from "@/lib/staff.functions";
+import { createStaffAccount, deleteUserAccount } from "@/lib/staff.functions";
 import { toast } from "sonner";
-import { Plus, Search, UserCircle2, ShieldCheck } from "lucide-react";
+import { Plus, Search, UserCircle2, ShieldCheck, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/accounts")({
   head: () => ({ meta: [{ title: "Accounts — Almwanaa" }] }),
@@ -20,12 +24,13 @@ export const Route = createFileRoute("/_authenticated/accounts")({
 
 function AccountsPage() {
   const { t } = useI18n();
-  const { isStaff, isManager, loading } = useAuth();
+  const { user, role: callerRole, isStaff, isManager, loading } = useAuth();
   const navigate = useNavigate();
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [rolesMap, setRolesMap] = useState<Record<string, AppRole[]>>({});
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
+  const removeFn = useServerFn(deleteUserAccount);
 
   const load = async () => {
     const [p, r] = await Promise.all([fetchCustomers(search), fetchAllUserRoles()]);
@@ -41,16 +46,46 @@ function AccountsPage() {
 
   const enriched = useMemo(() => profiles.map((p) => {
     const rs = rolesMap[p.id] ?? [];
-    const role: AppRole = rs.includes("admin") ? "admin"
+    const r: AppRole = rs.includes("admin") ? "admin"
       : rs.includes("manager") ? "manager"
       : rs.includes("employee") ? "employee" : "customer";
-    return { ...p, role };
+    return { ...p, role: r };
   }), [profiles, rolesMap]);
 
-  const staff = enriched.filter((p) => p.role !== "customer");
+  const admins = enriched.filter((p) => p.role === "admin");
+  const managers = enriched.filter((p) => p.role === "manager");
+  const employees = enriched.filter((p) => p.role === "employee");
   const customers = enriched.filter((p) => p.role === "customer");
 
+  const canDelete = (target: AppRole, targetId: string) => {
+    if (targetId === user?.id) return false;
+    if (target === "admin") return false; // protect admin accounts
+    return roleRank(callerRole) >= roleRank(target) && roleRank(callerRole) >= roleRank("employee");
+  };
+
+  const onDelete = async (id: string) => {
+    try {
+      await removeFn({ data: { userId: id } });
+      toast.success(t("delete"));
+      load();
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Error");
+    }
+  };
+
   if (!isStaff) return null;
+
+  const Section = ({ title, icon: Icon, list }: { title: string; icon: typeof ShieldCheck; list: (Profile & { role: AppRole })[] }) => (
+    <>
+      <h2 className="font-semibold text-sm mb-2 mt-4 flex items-center gap-2"><Icon className="w-4 h-4" /> {title}</h2>
+      <div className="space-y-2">
+        {list.length === 0 && <p className="text-xs text-muted-foreground">{t("empty")}</p>}
+        {list.map((p) => (
+          <AccountRow key={p.id} p={p} canDelete={canDelete(p.role, p.id)} onDelete={() => onDelete(p.id)} />
+        ))}
+      </div>
+    </>
+  );
 
   return (
     <Layout>
@@ -75,23 +110,26 @@ function AccountsPage() {
           <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t("search")} className="border-0 shadow-none focus-visible:ring-0 px-0 h-9" />
         </div>
 
-        <h2 className="font-semibold text-sm mb-2 mt-4 flex items-center gap-2"><ShieldCheck className="w-4 h-4" /> {t("staff")}</h2>
-        <div className="space-y-2 mb-6">
-          {staff.length === 0 && <p className="text-xs text-muted-foreground">{t("empty")}</p>}
-          {staff.map((p) => <AccountRow key={p.id} p={p} />)}
+        <div className="rounded-2xl border bg-muted/30 p-3 mb-2">
+          <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">{t("staff")}</p>
+          <Section title={t("admin")} icon={ShieldCheck} list={admins} />
+          <Section title={t("manager")} icon={ShieldCheck} list={managers} />
+          <Section title={t("employee")} icon={ShieldCheck} list={employees} />
         </div>
 
-        <h2 className="font-semibold text-sm mb-2 flex items-center gap-2"><UserCircle2 className="w-4 h-4" /> {t("customers")}</h2>
+        <h2 className="font-semibold text-sm mb-2 mt-4 flex items-center gap-2"><UserCircle2 className="w-4 h-4" /> {t("customers")}</h2>
         <div className="space-y-2">
           {customers.length === 0 && <p className="text-xs text-muted-foreground">{t("empty")}</p>}
-          {customers.map((p) => <AccountRow key={p.id} p={p} />)}
+          {customers.map((p) => (
+            <AccountRow key={p.id} p={p} canDelete={canDelete(p.role, p.id)} onDelete={() => onDelete(p.id)} />
+          ))}
         </div>
       </section>
     </Layout>
   );
 }
 
-function AccountRow({ p }: { p: Profile & { role: AppRole } }) {
+function AccountRow({ p, canDelete, onDelete }: { p: Profile & { role: AppRole }; canDelete: boolean; onDelete: () => void }) {
   const { t } = useI18n();
   const tint =
     p.role === "admin" ? "bg-destructive/10 text-destructive"
@@ -99,15 +137,34 @@ function AccountRow({ p }: { p: Profile & { role: AppRole } }) {
     : p.role === "employee" ? "bg-primary/10 text-primary"
     : "bg-muted text-muted-foreground";
   return (
-    <Link to="/accounts/$id" params={{ id: p.id }} className="block rounded-2xl border bg-card p-4">
+    <div className="block rounded-2xl border bg-card p-4">
       <div className="flex justify-between items-start gap-2">
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <p className="font-semibold text-sm truncate">{p.full_name ?? "—"}</p>
           <p className="text-xs text-muted-foreground truncate">{p.phone ?? "—"}{p.governorate ? ` · ${p.governorate}` : ""}{p.area ? ` / ${p.area}` : ""}</p>
         </div>
-        <span className={`text-[10px] font-semibold rounded-full px-2 py-0.5 ${tint}`}>{t(p.role)}</span>
+        <div className="flex items-center gap-2 shrink-0">
+          <span className={`text-[10px] font-semibold rounded-full px-2 py-0.5 ${tint}`}>{t(p.role)}</span>
+          {canDelete && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8"><Trash2 className="w-4 h-4 text-destructive" /></Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>{t("deleteAccount")}</AlertDialogTitle>
+                  <AlertDialogDescription>{t("confirmDelete")}</AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+                  <AlertDialogAction onClick={onDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{t("confirm")}</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+        </div>
       </div>
-    </Link>
+    </div>
   );
 }
 

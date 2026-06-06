@@ -83,8 +83,14 @@ export const deleteUserAccount = createServerFn({ method: "POST" })
     if (data.userId === context.userId) throw new Error("Cannot delete your own account");
     const callerRole = await getMaxRole(context.userId);
     const targetRole = await getMaxRole(data.userId);
-    if (ROLE_RANK[callerRole] <= ROLE_RANK[targetRole]) {
-      throw new Error("Forbidden: cannot delete a user with equal or higher rank");
+    if (targetRole === "admin") {
+      throw new Error("Forbidden: the admin account cannot be deleted");
+    }
+    if (ROLE_RANK[callerRole] < ROLE_RANK[targetRole]) {
+      throw new Error("Forbidden: cannot delete a user with higher rank");
+    }
+    if (ROLE_RANK[callerRole] < ROLE_RANK.employee) {
+      throw new Error("Forbidden: staff only");
     }
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.auth.admin.deleteUser(data.userId);
