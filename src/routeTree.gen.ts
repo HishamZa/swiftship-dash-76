@@ -15,7 +15,6 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AnnouncementsRouteImport } from './routes/announcements'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedShipmentsRouteImport } from './routes/_authenticated/shipments'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedOfficesManageRouteImport } from './routes/_authenticated/offices-manage'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
@@ -28,6 +27,7 @@ import { Route as AuthenticatedAdminAddRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAddressesRouteImport } from './routes/_authenticated/addresses'
 import { Route as AuthenticatedAccountsRouteImport } from './routes/_authenticated/accounts'
+import { Route as AuthenticatedShipmentsIndexRouteImport } from './routes/_authenticated/shipments.index'
 import { Route as AuthenticatedShipmentsIdRouteImport } from './routes/_authenticated/shipments.$id'
 import { Route as AuthenticatedAccountsIdRouteImport } from './routes/_authenticated/accounts.$id'
 
@@ -59,11 +59,6 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedShipmentsRoute = AuthenticatedShipmentsRouteImport.update({
-  id: '/shipments',
-  path: '/shipments',
-  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   id: '/settings',
@@ -130,11 +125,17 @@ const AuthenticatedAccountsRoute = AuthenticatedAccountsRouteImport.update({
   path: '/accounts',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedShipmentsIndexRoute =
+  AuthenticatedShipmentsIndexRouteImport.update({
+    id: '/shipments/',
+    path: '/shipments/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedShipmentsIdRoute =
   AuthenticatedShipmentsIdRouteImport.update({
-    id: '/$id',
-    path: '/$id',
-    getParentRoute: () => AuthenticatedShipmentsRoute,
+    id: '/shipments/$id',
+    path: '/shipments/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAccountsIdRoute = AuthenticatedAccountsIdRouteImport.update({
   id: '/$id',
@@ -160,9 +161,9 @@ export interface FileRoutesByFullPath {
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/offices-manage': typeof AuthenticatedOfficesManageRoute
   '/settings': typeof AuthenticatedSettingsRoute
-  '/shipments': typeof AuthenticatedShipmentsRouteWithChildren
   '/accounts/$id': typeof AuthenticatedAccountsIdRoute
   '/shipments/$id': typeof AuthenticatedShipmentsIdRoute
+  '/shipments/': typeof AuthenticatedShipmentsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -182,9 +183,9 @@ export interface FileRoutesByTo {
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/offices-manage': typeof AuthenticatedOfficesManageRoute
   '/settings': typeof AuthenticatedSettingsRoute
-  '/shipments': typeof AuthenticatedShipmentsRouteWithChildren
   '/accounts/$id': typeof AuthenticatedAccountsIdRoute
   '/shipments/$id': typeof AuthenticatedShipmentsIdRoute
+  '/shipments': typeof AuthenticatedShipmentsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -206,9 +207,9 @@ export interface FileRoutesById {
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/offices-manage': typeof AuthenticatedOfficesManageRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
-  '/_authenticated/shipments': typeof AuthenticatedShipmentsRouteWithChildren
   '/_authenticated/accounts/$id': typeof AuthenticatedAccountsIdRoute
   '/_authenticated/shipments/$id': typeof AuthenticatedShipmentsIdRoute
+  '/_authenticated/shipments/': typeof AuthenticatedShipmentsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -230,9 +231,9 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/offices-manage'
     | '/settings'
-    | '/shipments'
     | '/accounts/$id'
     | '/shipments/$id'
+    | '/shipments/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -252,9 +253,9 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/offices-manage'
     | '/settings'
-    | '/shipments'
     | '/accounts/$id'
     | '/shipments/$id'
+    | '/shipments'
   id:
     | '__root__'
     | '/'
@@ -275,9 +276,9 @@ export interface FileRouteTypes {
     | '/_authenticated/notifications'
     | '/_authenticated/offices-manage'
     | '/_authenticated/settings'
-    | '/_authenticated/shipments'
     | '/_authenticated/accounts/$id'
     | '/_authenticated/shipments/$id'
+    | '/_authenticated/shipments/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -332,13 +333,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/shipments': {
-      id: '/_authenticated/shipments'
-      path: '/shipments'
-      fullPath: '/shipments'
-      preLoaderRoute: typeof AuthenticatedShipmentsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/settings': {
       id: '/_authenticated/settings'
@@ -424,12 +418,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAccountsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/shipments/': {
+      id: '/_authenticated/shipments/'
+      path: '/shipments'
+      fullPath: '/shipments/'
+      preLoaderRoute: typeof AuthenticatedShipmentsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/shipments/$id': {
       id: '/_authenticated/shipments/$id'
-      path: '/$id'
+      path: '/shipments/$id'
       fullPath: '/shipments/$id'
       preLoaderRoute: typeof AuthenticatedShipmentsIdRouteImport
-      parentRoute: typeof AuthenticatedShipmentsRoute
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/accounts/$id': {
       id: '/_authenticated/accounts/$id'
@@ -454,20 +455,6 @@ const AuthenticatedAccountsRouteWithChildren =
     AuthenticatedAccountsRouteChildren,
   )
 
-interface AuthenticatedShipmentsRouteChildren {
-  AuthenticatedShipmentsIdRoute: typeof AuthenticatedShipmentsIdRoute
-}
-
-const AuthenticatedShipmentsRouteChildren: AuthenticatedShipmentsRouteChildren =
-  {
-    AuthenticatedShipmentsIdRoute: AuthenticatedShipmentsIdRoute,
-  }
-
-const AuthenticatedShipmentsRouteWithChildren =
-  AuthenticatedShipmentsRoute._addFileChildren(
-    AuthenticatedShipmentsRouteChildren,
-  )
-
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAccountsRoute: typeof AuthenticatedAccountsRouteWithChildren
   AuthenticatedAddressesRoute: typeof AuthenticatedAddressesRoute
@@ -481,7 +468,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedOfficesManageRoute: typeof AuthenticatedOfficesManageRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
-  AuthenticatedShipmentsRoute: typeof AuthenticatedShipmentsRouteWithChildren
+  AuthenticatedShipmentsIdRoute: typeof AuthenticatedShipmentsIdRoute
+  AuthenticatedShipmentsIndexRoute: typeof AuthenticatedShipmentsIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -497,7 +485,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedOfficesManageRoute: AuthenticatedOfficesManageRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
-  AuthenticatedShipmentsRoute: AuthenticatedShipmentsRouteWithChildren,
+  AuthenticatedShipmentsIdRoute: AuthenticatedShipmentsIdRoute,
+  AuthenticatedShipmentsIndexRoute: AuthenticatedShipmentsIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -514,3 +503,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
