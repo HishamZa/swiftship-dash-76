@@ -30,7 +30,7 @@ function NotificationsPage() {
   // Mark as read on view.
   useEffect(() => {
     if (user && items.some((n) => !n.read)) {
-      markAllRead(user.id).catch(() => {});
+      markAllRead(user.id).then(() => notifyUnreadChanged()).catch(() => {});
     }
     // eslint-disable-next-line
   }, [items.length, user]);
