@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { fetchAllAddresses, createAddress, deleteAddress, type AddressEntry } from "@/lib/db";
 import { Plus, Trash2, MapPin } from "lucide-react";
 import { toast } from "sonner";
@@ -57,7 +58,6 @@ function OfficesManagePage() {
   };
 
   const remove = async (id: string) => {
-    if (!confirm(t("confirmDelete"))) return;
     await deleteAddress(id); load();
   };
 
@@ -102,7 +102,21 @@ function OfficesManagePage() {
                 {a.notes && <p className="text-xs mt-1">{a.notes}</p>}
               </div>
               {isManager && (
-                <Button variant="ghost" size="icon" onClick={() => remove(a.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="ghost" size="icon"><Trash2 className="w-4 h-4 text-destructive" /></Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>{t("deleteOffice")}</AlertDialogTitle>
+                      <AlertDialogDescription>{t("confirmDeleteItem")}</AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => remove(a.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{t("confirm")}</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               )}
             </div>
           </div>
