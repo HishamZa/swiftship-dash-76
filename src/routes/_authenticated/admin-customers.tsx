@@ -226,6 +226,10 @@ function EditShipment({ shipment, onClose }: { shipment: Shipment; onClose: () =
         </div>
 
         <div className="rounded-2xl border bg-card p-4">
+          <h2 className="font-semibold text-sm mb-3">{t("timeline")}</h2>
+          <StatusTimeline history={history} />
+
+        <div className="rounded-2xl border bg-card p-4">
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button variant="destructive" className="w-full" disabled={busy}>
