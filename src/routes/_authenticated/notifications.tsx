@@ -4,9 +4,26 @@ import { Layout } from "@/components/Layout";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { fetchNotifications, markAllRead, type Notification } from "@/lib/db";
+import { fetchNotifications, markAllRead, statusKey, ALL_STATUSES, type Notification, type ShipmentStatus } from "@/lib/db";
 import { notifyUnreadChanged } from "@/lib/unreadNews";
 import { Bell } from "lucide-react";
+
+function renderShipmentNotification(
+  n: Notification,
+  t: (k: never) => string,
+): { title: string; body: string } {
+  const tt = t as unknown as (k: string) => string;
+  const isShipment = !!n.title?.startsWith("shipment_update:");
+  if (!isShipment) return { title: n.title ?? "", body: n.body ?? "" };
+  const tracking = n.title!.slice("shipment_update:".length);
+  const [firstLine, ...rest] = (n.body ?? "").split("\n");
+  const isStatus = (ALL_STATUSES as readonly string[]).includes(firstLine);
+  const statusText = isStatus ? tt(statusKey(firstLine as ShipmentStatus)) : firstLine;
+  const note = rest.join("\n").trim();
+  const title = `${tt("shipmentUpdateTitle")} — ${tracking}`;
+  const body = `${tt("shipmentStatusUpdatedTo")}: ${statusText}${note ? `\n${note}` : ""}`;
+  return { title, body };
+}
 
 export const Route = createFileRoute("/_authenticated/notifications")({
   head: () => ({ meta: [{ title: "Notifications — Almwanaa" }] }),
@@ -53,15 +70,18 @@ function NotificationsPage() {
       <section className="px-5 space-y-2">
         {loading && <p className="text-sm text-muted-foreground">{t("loading")}</p>}
         {!loading && items.length === 0 && <p className="text-sm text-muted-foreground">{t("noNotifications")}</p>}
-        {items.map((n) => (
-          <div key={n.id} className={`rounded-2xl border p-4 ${n.read ? "bg-card" : "bg-primary/5 border-primary/20"}`}>
-            <div className="flex justify-between items-start gap-2">
-              <p className="font-semibold text-sm">{n.title}</p>
-              <span className="text-[10px] text-muted-foreground">{new Date(n.created_at).toLocaleString()}</span>
+        {items.map((n) => {
+          const { title, body } = renderShipmentNotification(n, t);
+          return (
+            <div key={n.id} className={`rounded-2xl border p-4 ${n.read ? "bg-card" : "bg-primary/5 border-primary/20"}`}>
+              <div className="flex justify-between items-start gap-2">
+                <p className="font-semibold text-sm">{title}</p>
+                <span className="text-[10px] text-muted-foreground">{new Date(n.created_at).toLocaleString()}</span>
+              </div>
+              {body && <p className="text-sm text-muted-foreground mt-1 whitespace-pre-wrap">{body}</p>}
             </div>
-            {n.body && <p className="text-sm text-muted-foreground mt-1 whitespace-pre-wrap">{n.body}</p>}
-          </div>
-        ))}
+          );
+        })}
       </section>
     </Layout>
   );

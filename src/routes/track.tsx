@@ -9,7 +9,8 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { StatusTimeline } from "@/components/StatusTimeline";
 import { StatusProgress } from "@/components/StatusProgress";
 import { formatUSD, formatCBM, deliveryCountdown } from "@/lib/format";
-import { Search, AlertCircle } from "lucide-react";
+import { Search, AlertCircle, Copy } from "lucide-react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/track")({
   validateSearch: (s: Record<string, unknown>) => ({ q: typeof s.q === "string" ? s.q : "" }),
@@ -69,9 +70,24 @@ function TrackPage() {
           <div className="space-y-4">
             <div className="rounded-2xl border bg-card p-5">
               <div className="flex items-start justify-between gap-2 mb-3">
-                <div>
+                <div className="min-w-0">
                   <p className="text-xs text-muted-foreground">{t("trackingNo")}</p>
-                  <p className="font-bold text-lg">{shipment.tracking_number}</p>
+                  <div className="flex items-center gap-1">
+                    <p className="font-bold text-lg break-all">{shipment.tracking_number}</p>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 shrink-0"
+                      aria-label={t("copyTracking")}
+                      onClick={() => {
+                        navigator.clipboard.writeText(shipment.tracking_number);
+                        toast.success(t("trackingCopied"));
+                      }}
+                    >
+                      <Copy className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
                 </div>
                 <StatusBadge status={shipment.status} />
               </div>

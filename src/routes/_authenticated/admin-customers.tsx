@@ -8,11 +8,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
-  fetchCustomers, fetchShipments, fetchAllUserRoles, updateShipment, deleteShipment,
-  ALL_STATUSES, statusKey, type Profile, type Shipment, type ShipmentStatus,
+  fetchCustomers, fetchShipments, fetchAllUserRoles, fetchHistory, updateShipment, deleteShipment,
+  ALL_STATUSES, statusKey, type Profile, type Shipment, type ShipmentStatus, type StatusHistory,
 } from "@/lib/db";
 import { StatusProgress } from "@/components/StatusProgress";
 import { StatusBadge } from "@/components/StatusBadge";
+import { StatusTimeline } from "@/components/StatusTimeline";
 import { formatUSD, formatCBM, deliveryCountdown } from "@/lib/format";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { ArrowLeft, Search, Package, Trash2 } from "lucide-react";
@@ -141,8 +142,12 @@ function EditShipment({ shipment, onClose }: { shipment: Shipment; onClose: () =
   const [cbm, setCbm] = useState(shipment.cbm_volume?.toString() ?? "");
   const [eta, setEta] = useState(shipment.estimated_delivery ?? "");
   const [customerNotes, setCustomerNotes] = useState(shipment.customer_notes ?? "");
+  const [history, setHistory] = useState<StatusHistory[]>([]);
   const [busy, setBusy] = useState(false);
   const cd = deliveryCountdown(eta, lang);
+
+  const loadHistory = () => fetchHistory(shipment.id).then(setHistory).catch(() => setHistory([]));
+  useEffect(() => { loadHistory(); /* eslint-disable-next-line */ }, [shipment.id]);
 
   const onDelete = async () => {
     setBusy(true);
@@ -167,7 +172,7 @@ function EditShipment({ shipment, onClose }: { shipment: Shipment; onClose: () =
         customer_notes: customerNotes || null,
       });
       toast.success(t("save"));
-      onClose();
+      await loadHistory();
     } catch (e: unknown) {
       toast.error(e instanceof Error ? e.message : "Error");
     } finally { setBusy(false); }
@@ -218,6 +223,11 @@ function EditShipment({ shipment, onClose }: { shipment: Shipment; onClose: () =
             <Textarea rows={3} value={customerNotes} onChange={(e) => setCustomerNotes(e.target.value)} />
           </div>
           <Button className="w-full" onClick={save} disabled={busy}>{t("save")}</Button>
+        </div>
+
+        <div className="rounded-2xl border bg-card p-4">
+          <h2 className="font-semibold text-sm mb-3">{t("timeline")}</h2>
+          <StatusTimeline history={history} />
         </div>
 
         <div className="rounded-2xl border bg-card p-4">
