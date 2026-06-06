@@ -27,6 +27,7 @@ function ShipmentsPage() {
     setLoading(true);
     const opts = isStaff ? { search } : { customerId: user.id, search };
     fetchShipments(opts).then(setList).catch(() => setList([])).finally(() => setLoading(false));
+    if (!isStaff && user) markShipmentsSeen(user.id);
   }, [user, isStaff, search]);
 
   return (
