@@ -144,8 +144,6 @@ function AccountsPage() {
 
 function AccountRow({ p, canDelete, canReset, onDelete }: { p: Profile & { role: AppRole }; canDelete: boolean; canReset: boolean; onDelete: () => void }) {
   const { t } = useI18n();
-  const { isStaff } = useAuth();
-  void isStaff;
   const tint =
     p.role === "admin" ? "bg-destructive/10 text-destructive"
     : p.role === "manager" ? "bg-warning/20 text-warning-foreground"
@@ -160,7 +158,7 @@ function AccountRow({ p, canDelete, canReset, onDelete }: { p: Profile & { role:
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <span className={`text-[10px] font-semibold rounded-full px-2 py-0.5 ${tint}`}>{t(p.role)}</span>
-          {isStaff && <ResetPasswordButton userId={p.id} />}
+          {canReset && <ResetPasswordButton userId={p.id} />}
           {canDelete && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
