@@ -5,6 +5,7 @@ import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { fetchNotifications, markAllRead, type Notification } from "@/lib/db";
+import { notifyUnreadChanged } from "@/lib/unreadNews";
 import { Bell } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/notifications")({
@@ -29,7 +30,7 @@ function NotificationsPage() {
   // Mark as read on view.
   useEffect(() => {
     if (user && items.some((n) => !n.read)) {
-      markAllRead(user.id).catch(() => {});
+      markAllRead(user.id).then(() => notifyUnreadChanged()).catch(() => {});
     }
     // eslint-disable-next-line
   }, [items.length, user]);

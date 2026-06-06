@@ -7,7 +7,7 @@ import { fetchShipments, type Shipment, ACTIVE_STATUSES } from "@/lib/db";
 import { StatusBadge } from "@/components/StatusBadge";
 import { formatUSD, formatCBM, deliveryCountdown } from "@/lib/format";
 import { Package, CheckCircle, Truck, Bell, Search, Newspaper, MapPin } from "lucide-react";
-import { useUnreadNewsCount } from "@/lib/unreadNews";
+import { useUnreadNewsCount, useUnreadShipmentsCount, useUnreadNotificationsCount } from "@/lib/unreadNews";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — Almwanaa" }] }),
@@ -21,6 +21,8 @@ function Dashboard() {
   const [shipments, setShipments] = useState<Shipment[]>([]);
   const [loading, setLoading] = useState(true);
   const unreadNews = useUnreadNewsCount(user?.id);
+  const unreadShipments = useUnreadShipmentsCount(user?.id);
+  const unreadNotifications = useUnreadNotificationsCount(user?.id);
 
   useEffect(() => {
     if (isStaff) { navigate({ to: "/admin", replace: true }); return; }
@@ -50,9 +52,9 @@ function Dashboard() {
       </section>
 
       <section className="px-5 mt-6 grid grid-cols-2 gap-3">
-        <NavTile to="/shipments" icon={Package} label={t("myShipments")} />
+        <NavTile to="/shipments" icon={Package} label={t("myShipments")} badge={unreadShipments} />
         <NavTile to="/track" icon={Search} label={t("trackBtn")} />
-        <NavTile to="/notifications" icon={Bell} label={t("notifications")} />
+        <NavTile to="/notifications" icon={Bell} label={t("notifications")} badge={unreadNotifications} />
         <NavTile to="/announcements" icon={Newspaper} label={t("news")} badge={unreadNews} />
         <NavTile to="/offices" icon={MapPin} label={t("offices")} />
         <NavTile to="/addresses" icon={MapPin} label={t("addressBook")} />

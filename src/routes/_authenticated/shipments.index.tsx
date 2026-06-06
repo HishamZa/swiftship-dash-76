@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { fetchShipments, type Shipment } from "@/lib/db";
 import { StatusBadge } from "@/components/StatusBadge";
 import { formatUSD, formatCBM, deliveryCountdown } from "@/lib/format";
+import { markShipmentsSeen } from "@/lib/unreadNews";
 import { Search } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/shipments/")({
@@ -26,6 +27,7 @@ function ShipmentsPage() {
     setLoading(true);
     const opts = isStaff ? { search } : { customerId: user.id, search };
     fetchShipments(opts).then(setList).catch(() => setList([])).finally(() => setLoading(false));
+    if (!isStaff && user) markShipmentsSeen(user.id);
   }, [user, isStaff, search]);
 
   return (
