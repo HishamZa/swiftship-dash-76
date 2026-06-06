@@ -83,17 +83,76 @@ export const deleteUserAccount = createServerFn({ method: "POST" })
     if (data.userId === context.userId) throw new Error("Cannot delete your own account");
     const callerRole = await getMaxRole(context.userId);
     const targetRole = await getMaxRole(data.userId);
-    if (targetRole === "admin") {
-      throw new Error("Forbidden: the admin account cannot be deleted");
+    if (callerRole === "customer") throw new Error("Forbidden: staff only");
+    if (callerRole === "employee" && targetRole !== "customer") {
+      throw new Error("Forbidden: employees can only delete customer accounts");
     }
-    if (ROLE_RANK[callerRole] < ROLE_RANK[targetRole]) {
-      throw new Error("Forbidden: cannot delete a user with higher rank");
-    }
-    if (ROLE_RANK[callerRole] < ROLE_RANK.employee) {
-      throw new Error("Forbidden: staff only");
+    if (callerRole === "manager" && targetRole === "admin") {
+      throw new Error("Forbidden: managers cannot delete admin accounts");
     }
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.auth.admin.deleteUser(data.userId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+// Update the calling user's own profile and (optionally) login identity.
+export const updateMyAccount = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(z.object({
+    full_name: z.string().min(1).max(120).optional(),
+    phone: z.string().max(40).optional(),
+    governorate: z.string().max(80).optional(),
+    area: z.string().max(120).optional(),
+    username: z.string().min(2).max(60).optional(),
+  }))
+  .handler(async ({ data, context }) => {
+    const callerRole = await getMaxRole(context.userId);
+    const isStaff = callerRole === "admin" || callerRole === "manager" || callerRole === "employee";
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const profilePatch: { full_name?: string; phone?: string; governorate?: string; area?: string } = {};
+    if (data.full_name !== undefined) profilePatch.full_name = data.full_name;
+    if (data.phone !== undefined) profilePatch.phone = data.phone;
+    if (!isStaff) {
+      if (data.governorate !== undefined) profilePatch.governorate = data.governorate;
+      if (data.area !== undefined) profilePatch.area = data.area;
+    }
+    if (Object.keys(profilePatch).length > 0) {
+      const { error } = await supabaseAdmin.from("profiles").update(profilePatch).eq("id", context.userId);
+      if (error) throw new Error(error.message);
+    }
+
+    let newEmail: string | null = null;
+    const metaPatch: Record<string, unknown> = {};
+    if (data.full_name !== undefined) metaPatch.full_name = data.full_name;
+    if (isStaff && data.username && data.username.trim()) {
+      const u = data.username.trim();
+      newEmail = u.toLowerCase() === "admin" ? "admin@almwanaa.app"
+        : `${u.replace(/[^a-zA-Z0-9]/g, "") || "user"}@almwanaa.local`;
+      metaPatch.username = u;
+    } else if (!isStaff && data.phone && data.phone.trim()) {
+      const p = data.phone.trim();
+      newEmail = `${p.replace(/[^a-zA-Z0-9]/g, "") || "user"}@almwanaa.local`;
+      metaPatch.phone = p;
+    }
+
+    const updates: Record<string, unknown> = {};
+    if (newEmail) updates.email = newEmail;
+    if (Object.keys(metaPatch).length > 0) updates.user_metadata = metaPatch;
+    if (Object.keys(updates).length > 0) {
+      const { error } = await supabaseAdmin.auth.admin.updateUserById(context.userId, updates);
+      if (error) throw new Error(error.message);
+    }
+    return { ok: true };
+  });
+
+export const changeMyPassword = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(z.object({ newPassword: z.string().min(6).max(128) }))
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.auth.admin.updateUserById(context.userId, { password: data.newPassword });
     if (error) throw new Error(error.message);
     return { ok: true };
   });

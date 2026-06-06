@@ -146,6 +146,13 @@ const dict = {
   employee: { en: "Employee", ar: "موظف" },
   
   sent: { en: "Sent", ar: "تم الإرسال" },
+  // settings
+  settings: { en: "Settings", ar: "الإعدادات" },
+  accountSettings: { en: "Account Settings", ar: "إعدادات الحساب" },
+  changePassword: { en: "Change Password", ar: "تغيير كلمة المرور" },
+  updatePassword: { en: "Update Password", ar: "تحديث كلمة المرور" },
+  passwordUpdated: { en: "Password updated successfully", ar: "تم تحديث كلمة المرور بنجاح" },
+  saved: { en: "Saved", ar: "تم الحفظ" },
   footer: { en: "© 2026 Almwanaa Company. All rights reserved.", ar: "© 2026 شركة الموانئ. جميع الحقوق محفوظة." },
 } as const;
 

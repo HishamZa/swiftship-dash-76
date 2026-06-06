@@ -1,5 +1,5 @@
 import { Link, useNavigate, useRouter } from "@tanstack/react-router";
-import { Languages, Sun, Moon, LogOut, Bell, ArrowLeft, ArrowRight } from "lucide-react";
+import { Languages, Sun, Moon, LogOut, Bell, ArrowLeft, ArrowRight, Settings } from "lucide-react";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n";
@@ -74,6 +74,11 @@ export function Layout({ children, showBack = true }: { children: ReactNode; sho
               <Languages className="w-4 h-4" />
               <span className="ms-1 text-xs">{lang === "en" ? "AR" : "EN"}</span>
             </Button>
+            {user && (
+              <Link to="/settings" className="inline-flex items-center justify-center w-9 h-9 rounded-md hover:bg-accent" aria-label={t("settings")}>
+                <Settings className="w-4 h-4" />
+              </Link>
+            )}
             {user && (
               <Button variant="ghost" size="icon" onClick={handleSignOut} aria-label={t("signOut")}>
                 <LogOut className="w-4 h-4" />
