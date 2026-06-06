@@ -54,7 +54,7 @@ function AdminShipmentsPage() {
         {list.length === 0 && <p className="text-sm text-muted-foreground">{t("empty")}</p>}
         <div className="space-y-2">
           {list.map((s) => (
-            <Link key={s.id} to="/shipments/$id" params={{ id: s.id }} className="block rounded-2xl border bg-card p-4">
+            <div key={s.id} className="block rounded-2xl border bg-card p-4">
               <div className="flex justify-between items-start gap-2">
                 <div className="min-w-0 flex-1">
                   <p className="font-semibold text-sm">{s.tracking_number}</p>
@@ -69,7 +69,7 @@ function AdminShipmentsPage() {
                 </div>
                 <StatusBadge status={s.status} />
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       </section>
