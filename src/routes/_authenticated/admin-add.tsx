@@ -33,7 +33,17 @@ function AdminAddPage() {
   useEffect(() => {
     if (loading) return;
     if (!isStaff) { navigate({ to: "/dashboard", replace: true }); return; }
-    fetchCustomers().then(setCustomers).catch(() => setCustomers([]));
+    (async () => {
+      const [profiles, rolesMap] = await Promise.all([
+        fetchCustomers().catch(() => [] as Profile[]),
+        fetchAllUserRoles().catch(() => ({} as Record<string, string[]>)),
+      ]);
+      // Customers only — exclude admin/manager/employee.
+      setCustomers(profiles.filter((p) => {
+        const rs = rolesMap[p.id] ?? [];
+        return !rs.some((r) => r === "admin" || r === "manager" || r === "employee");
+      }));
+    })();
   }, [isStaff, loading, navigate]);
 
   const selected = useMemo(() => customers.find((c) => c.id === customerId), [customers, customerId]);
