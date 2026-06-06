@@ -4,6 +4,8 @@ import { Layout } from "@/components/Layout";
 import { useI18n } from "@/lib/i18n";
 import { fetchAnnouncements, type Announcement } from "@/lib/db";
 import { Megaphone } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { markNewsSeen } from "@/lib/unreadNews";
 
 export const Route = createFileRoute("/announcements")({
   head: () => ({ meta: [{ title: "News — Almwanaa" }] }),
@@ -12,12 +14,19 @@ export const Route = createFileRoute("/announcements")({
 
 function NewsPage() {
   const { t, lang } = useI18n();
+  const { user } = useAuth();
   const [items, setItems] = useState<Announcement[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchAnnouncements(true).then(setItems).catch(() => setItems([])).finally(() => setLoading(false));
-  }, []);
+    fetchAnnouncements(true)
+      .then((list) => {
+        setItems(list);
+        if (user) markNewsSeen(user.id);
+      })
+      .catch(() => setItems([]))
+      .finally(() => setLoading(false));
+  }, [user]);
 
   return (
     <Layout>
