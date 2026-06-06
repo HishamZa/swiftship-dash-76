@@ -7,6 +7,7 @@ import { fetchShipments, type Shipment, ACTIVE_STATUSES } from "@/lib/db";
 import { StatusBadge } from "@/components/StatusBadge";
 import { formatUSD, formatCBM, deliveryCountdown } from "@/lib/format";
 import { Package, CheckCircle, Truck, Bell, Search, Newspaper, MapPin } from "lucide-react";
+import { useUnreadNewsCount } from "@/lib/unreadNews";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — Almwanaa" }] }),
@@ -19,6 +20,7 @@ function Dashboard() {
   const navigate = useNavigate();
   const [shipments, setShipments] = useState<Shipment[]>([]);
   const [loading, setLoading] = useState(true);
+  const unreadNews = useUnreadNewsCount(user?.id);
 
   useEffect(() => {
     if (isStaff) { navigate({ to: "/admin", replace: true }); return; }
@@ -51,7 +53,7 @@ function Dashboard() {
         <NavTile to="/shipments" icon={Package} label={t("myShipments")} />
         <NavTile to="/track" icon={Search} label={t("trackBtn")} />
         <NavTile to="/notifications" icon={Bell} label={t("notifications")} />
-        <NavTile to="/announcements" icon={Newspaper} label={t("news")} />
+        <NavTile to="/announcements" icon={Newspaper} label={t("news")} badge={unreadNews} />
         <NavTile to="/offices" icon={MapPin} label={t("offices")} />
         <NavTile to="/addresses" icon={MapPin} label={t("addressBook")} />
       </section>
@@ -86,11 +88,16 @@ function Dashboard() {
   );
 }
 
-function NavTile({ to, icon: Icon, label }: { to: string; icon: typeof Package; label: string }) {
+function NavTile({ to, icon: Icon, label, badge }: { to: string; icon: typeof Package; label: string; badge?: number }) {
   return (
-    <Link to={to} className="rounded-2xl border bg-card p-4 flex flex-col items-start gap-2">
+    <Link to={to} className="relative rounded-2xl border bg-card p-4 flex flex-col items-start gap-2">
       <span className="grid place-items-center w-9 h-9 rounded-xl bg-primary/10 text-primary"><Icon className="w-4 h-4" /></span>
       <span className="text-sm font-semibold">{label}</span>
+      {badge && badge > 0 ? (
+        <span className="absolute top-2 end-2 min-w-[20px] h-5 px-1.5 grid place-items-center rounded-full bg-destructive text-destructive-foreground text-[11px] font-bold">
+          {badge > 99 ? "99+" : badge}
+        </span>
+      ) : null}
     </Link>
   );
 }
