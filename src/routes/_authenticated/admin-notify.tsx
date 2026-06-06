@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { fetchCustomers, broadcastNotification, sendNotificationToUser, type Profile } from "@/lib/db";
+import { fetchCustomers, fetchAllUserRoles, broadcastNotification, sendNotificationToUser, type Profile } from "@/lib/db";
 import { toast } from "sonner";
 import { Send, Lock } from "lucide-react";
 
@@ -33,7 +33,16 @@ function AdminNotifyPage() {
     if (loading) return;
     if (!isStaff) { navigate({ to: "/dashboard", replace: true }); return; }
     if (!isManager) return;
-    fetchCustomers().then(setCustomers).catch(() => setCustomers([]));
+    Promise.all([fetchCustomers(), fetchAllUserRoles()])
+      .then(([allProfiles, rolesMap]) => {
+        const staffRoles = new Set(["admin", "manager", "employee"]);
+        const actualCustomers = allProfiles.filter((p) => {
+          const roles = rolesMap[p.id] ?? [];
+          return !roles.some((r) => staffRoles.has(r));
+        });
+        setCustomers(actualCustomers);
+      })
+      .catch(() => setCustomers([]));
   }, [isStaff, isManager, loading, navigate]);
 
   if (!isStaff) return null;
