@@ -141,9 +141,12 @@ const dict = {
   empty: { en: "Nothing to show yet.", ar: "لا يوجد شيء حاليًا." },
   welcome: { en: "Welcome", ar: "مرحبًا" },
   role: { en: "Role", ar: "الدور" },
-  admin: { en: "Admin", ar: "مدير" },
-  manager: { en: "Manager", ar: "مدير قسم" },
+  admin: { en: "Server Admin", ar: "إدارة السيرفر" },
+  manager: { en: "Company Manager", ar: "مدير الشركة" },
   employee: { en: "Employee", ar: "موظف" },
+  deleteOffice: { en: "Delete Office", ar: "حذف المكتب" },
+  deleteNews: { en: "Delete News", ar: "حذف الخبر" },
+  confirmDeleteItem: { en: "Are you sure? This item will be permanently removed from the system.", ar: "هل أنت متأكد؟ سيتم حذف هذا العنصر نهائياً من النظام." },
   
   sent: { en: "Sent", ar: "تم الإرسال" },
   // settings

@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { fetchAnnouncements, createAnnouncement, updateAnnouncement, deleteAnnouncement, type Announcement } from "@/lib/db";
 import { Plus, Trash2, Lock } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/news-manage")({
@@ -73,7 +74,6 @@ function NewsManagePage() {
   };
 
   const remove = async (id: string) => {
-    if (!confirm(t("confirmDelete"))) return;
     await deleteAnnouncement(id);
     load();
   };
@@ -110,7 +110,21 @@ function NewsManagePage() {
               </div>
               <div className="flex items-center gap-1">
                 <Switch checked={a.published} onCheckedChange={() => togglePublished(a)} />
-                <Button variant="ghost" size="icon" onClick={() => remove(a.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="ghost" size="icon"><Trash2 className="w-4 h-4 text-destructive" /></Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>{t("deleteNews")}</AlertDialogTitle>
+                      <AlertDialogDescription>{t("confirmDeleteItem")}</AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => remove(a.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{t("confirm")}</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             </div>
           ))}
