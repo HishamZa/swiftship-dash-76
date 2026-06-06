@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { fetchShipments, type Shipment } from "@/lib/db";
 import { StatusBadge } from "@/components/StatusBadge";
 import { formatUSD, formatCBM, deliveryCountdown } from "@/lib/format";
+import { markShipmentsSeen } from "@/lib/unreadNews";
 import { Search } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/shipments/")({
