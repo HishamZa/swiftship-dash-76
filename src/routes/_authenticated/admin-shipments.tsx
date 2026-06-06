@@ -16,7 +16,7 @@ export const Route = createFileRoute("/_authenticated/admin-shipments")({
 });
 
 function AdminShipmentsPage() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { isStaff, loading } = useAuth();
   const navigate = useNavigate();
   const [list, setList] = useState<Shipment[]>([]);
