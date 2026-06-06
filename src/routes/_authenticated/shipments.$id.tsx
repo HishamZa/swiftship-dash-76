@@ -10,7 +10,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { StatusProgress } from "@/components/StatusProgress";
 import { StatusTimeline } from "@/components/StatusTimeline";
 import { formatUSD, formatCBM, deliveryCountdown } from "@/lib/format";
-import { Trash2 } from "lucide-react";
+import { Trash2, Copy } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/shipments/$id")({
