@@ -125,7 +125,7 @@ function AuthPage() {
               <Input required placeholder={t("fullName")} value={fullName} onChange={(e) => setFullName(e.target.value)} />
               <Input required placeholder={t("governorate")} value={governorate} onChange={(e) => setGovernorate(e.target.value)} />
               <Input required placeholder={t("area")} value={area} onChange={(e) => setArea(e.target.value)} />
-              <Input required placeholder={t("phone")} value={phone} onChange={(e) => setPhone(e.target.value)} />
+              <Input required inputMode="numeric" pattern="\d{11}" maxLength={11} minLength={11} title={lang === "ar" ? "11 رقماً" : "Exactly 11 digits"} placeholder={t("phone")} value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 11))} />
               <Input type="password" required minLength={6} placeholder={t("password")} value={passwordUp} onChange={(e) => setPasswordUp(e.target.value)} />
               <Button type="submit" className="w-full" disabled={loading}>{t("signUp")}</Button>
             </form>
