@@ -134,12 +134,26 @@ function AdminCustomersPage() {
 }
 
 function EditShipment({ shipment, onClose }: { shipment: Shipment; onClose: () => void }) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const [status, setStatus] = useState<ShipmentStatus>(shipment.status);
   const [description, setDescription] = useState(shipment.description ?? "");
   const [cost, setCost] = useState(shipment.estimated_cost?.toString() ?? "");
   const [cbm, setCbm] = useState(shipment.cbm_volume?.toString() ?? "");
   const [eta, setEta] = useState(shipment.estimated_delivery ?? "");
+  const [customerNotes, setCustomerNotes] = useState(shipment.customer_notes ?? "");
+  const [busy, setBusy] = useState(false);
+  const cd = deliveryCountdown(eta, lang);
+
+  const onDelete = async () => {
+    setBusy(true);
+    try {
+      await deleteShipment(shipment.id);
+      toast.success(t("delete"));
+      onClose();
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "Error");
+    } finally { setBusy(false); }
+  };
   const [customerNotes, setCustomerNotes] = useState(shipment.customer_notes ?? "");
   const [busy, setBusy] = useState(false);
 
