@@ -243,6 +243,3 @@ function EditShipment({ shipment, onClose }: { shipment: Shipment; onClose: () =
     </Layout>
   );
 }
-    </Layout>
-  );
-}
