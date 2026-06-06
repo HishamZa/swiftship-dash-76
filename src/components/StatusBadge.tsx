@@ -10,7 +10,7 @@ const colors: Record<ShipmentStatus, string> = {
   in_transit: "bg-primary/20 text-primary",
   arrived_destination: "bg-accent/30 text-accent-foreground",
   out_for_delivery: "bg-warning/30 text-warning-foreground",
-  delivered: "bg-success/30 text-success-foreground",
+  delivered: "bg-green-700 text-white dark:bg-green-600",
   delayed: "bg-warning/40 text-warning-foreground",
   cancelled: "bg-destructive/20 text-destructive",
   received_warehouse: "bg-secondary text-secondary-foreground",

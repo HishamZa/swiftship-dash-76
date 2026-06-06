@@ -52,7 +52,7 @@ function AccountsPage() {
     return { ...p, role: r };
   }), [profiles, rolesMap]);
 
-  const admins = enriched.filter((p) => p.role === "admin");
+  const admins = enriched.filter((p) => p.role === "admin" && callerRole === "admin");
   const managers = enriched.filter((p) => p.role === "manager");
   const employees = enriched.filter((p) => p.role === "employee");
   const customers = enriched.filter((p) => p.role === "customer");
@@ -114,7 +114,7 @@ function AccountsPage() {
 
         <div className="rounded-2xl border bg-muted/30 p-3 mb-2">
           <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">{t("staff")}</p>
-          <Section title={t("admin")} icon={ShieldCheck} list={admins} />
+          {callerRole === "admin" && <Section title={t("admin")} icon={ShieldCheck} list={admins} />}
           <Section title={t("manager")} icon={ShieldCheck} list={managers} />
           <Section title={t("employee")} icon={ShieldCheck} list={employees} />
         </div>
