@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD CONSTRAINT profiles_phone_11_digits CHECK (phone IS NULL OR phone ~ '^[0-9]{11}$') NOT VALID;
