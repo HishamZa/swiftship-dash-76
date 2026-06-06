@@ -33,7 +33,16 @@ function AdminNotifyPage() {
     if (loading) return;
     if (!isStaff) { navigate({ to: "/dashboard", replace: true }); return; }
     if (!isManager) return;
-    fetchCustomers().then(setCustomers).catch(() => setCustomers([]));
+    Promise.all([fetchCustomers(), fetchAllUserRoles()])
+      .then(([allProfiles, rolesMap]) => {
+        const staffRoles = new Set(["admin", "manager", "employee"]);
+        const actualCustomers = allProfiles.filter((p) => {
+          const roles = rolesMap[p.id] ?? [];
+          return !roles.some((r) => staffRoles.has(r));
+        });
+        setCustomers(actualCustomers);
+      })
+      .catch(() => setCustomers([]));
   }, [isStaff, isManager, loading, navigate]);
 
   if (!isStaff) return null;
