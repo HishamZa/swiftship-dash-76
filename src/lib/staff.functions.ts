@@ -62,11 +62,15 @@ export const resetUserPassword = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const callerRole = await getMaxRole(context.userId);
     const targetRole = await getMaxRole(data.userId);
-    if (ROLE_RANK[callerRole] <= ROLE_RANK[targetRole] && callerRole !== "admin") {
-      throw new Error("Forbidden: insufficient rank to reset this user's password");
+    if (callerRole === "customer") throw new Error("Forbidden");
+    if (callerRole === "employee" && targetRole !== "customer") {
+      throw new Error("Forbidden: employees can only reset customer passwords");
     }
     if (targetRole === "admin" && callerRole !== "admin") {
       throw new Error("Forbidden: admin password can only be reset by admin");
+    }
+    if (callerRole === "manager" && targetRole === "admin") {
+      throw new Error("Forbidden");
     }
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.auth.admin.updateUserById(data.userId, {
@@ -84,8 +88,8 @@ export const deleteUserAccount = createServerFn({ method: "POST" })
     const callerRole = await getMaxRole(context.userId);
     const targetRole = await getMaxRole(data.userId);
     if (callerRole === "customer") throw new Error("Forbidden: staff only");
-    if (callerRole === "employee" && targetRole !== "customer") {
-      throw new Error("Forbidden: employees can only delete customer accounts");
+    if (callerRole === "employee") {
+      throw new Error("Forbidden: employees cannot delete accounts");
     }
     if (callerRole === "manager" && targetRole === "admin") {
       throw new Error("Forbidden: managers cannot delete admin accounts");

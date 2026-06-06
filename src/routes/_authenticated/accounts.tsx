@@ -60,6 +60,17 @@ function AccountsPage() {
   const canDelete = (target: AppRole, targetId: string) => {
     if (targetId === user?.id) return false;
     if (callerRole === "admin") return true;
+    if (callerRole === "manager") {
+      // Managers can delete customers, employees, and other managers (not self, not admin)
+      return target === "customer" || target === "employee" || target === "manager";
+    }
+    // Employees cannot delete any account
+    return false;
+  };
+
+  const canReset = (target: AppRole, targetId: string) => {
+    if (targetId === user?.id) return false;
+    if (callerRole === "admin") return true;
     if (callerRole === "manager") return target !== "admin";
     if (callerRole === "employee") return target === "customer";
     return false;
@@ -83,7 +94,7 @@ function AccountsPage() {
       <div className="space-y-2">
         {list.length === 0 && <p className="text-xs text-muted-foreground">{t("empty")}</p>}
         {list.map((p) => (
-          <AccountRow key={p.id} p={p} canDelete={canDelete(p.role, p.id)} onDelete={() => onDelete(p.id)} />
+          <AccountRow key={p.id} p={p} canDelete={canDelete(p.role, p.id)} canReset={canReset(p.role, p.id)} onDelete={() => onDelete(p.id)} />
         ))}
       </div>
     </>
@@ -123,7 +134,7 @@ function AccountsPage() {
         <div className="space-y-2">
           {customers.length === 0 && <p className="text-xs text-muted-foreground">{t("empty")}</p>}
           {customers.map((p) => (
-            <AccountRow key={p.id} p={p} canDelete={canDelete(p.role, p.id)} onDelete={() => onDelete(p.id)} />
+            <AccountRow key={p.id} p={p} canDelete={canDelete(p.role, p.id)} canReset={canReset(p.role, p.id)} onDelete={() => onDelete(p.id)} />
           ))}
         </div>
       </section>
@@ -131,9 +142,8 @@ function AccountsPage() {
   );
 }
 
-function AccountRow({ p, canDelete, onDelete }: { p: Profile & { role: AppRole }; canDelete: boolean; onDelete: () => void }) {
+function AccountRow({ p, canDelete, canReset, onDelete }: { p: Profile & { role: AppRole }; canDelete: boolean; canReset: boolean; onDelete: () => void }) {
   const { t } = useI18n();
-  const { isStaff } = useAuth();
   const tint =
     p.role === "admin" ? "bg-destructive/10 text-destructive"
     : p.role === "manager" ? "bg-warning/20 text-warning-foreground"
@@ -148,7 +158,7 @@ function AccountRow({ p, canDelete, onDelete }: { p: Profile & { role: AppRole }
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <span className={`text-[10px] font-semibold rounded-full px-2 py-0.5 ${tint}`}>{t(p.role)}</span>
-          {isStaff && <ResetPasswordButton userId={p.id} />}
+          {canReset && <ResetPasswordButton userId={p.id} />}
           {canDelete && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
