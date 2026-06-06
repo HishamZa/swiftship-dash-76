@@ -1,5 +1,5 @@
 import { Link, useNavigate, useRouter } from "@tanstack/react-router";
-import { Languages, Sun, Moon, LogOut, Bell, ArrowLeft, ArrowRight } from "lucide-react";
+import { Languages, Sun, Moon, LogOut, Bell, ArrowLeft, ArrowRight, Settings } from "lucide-react";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n";
