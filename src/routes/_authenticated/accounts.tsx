@@ -114,9 +114,9 @@ function AccountsPage() {
 
         <div className="rounded-2xl border bg-muted/30 p-3 mb-2">
           <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">{t("staff")}</p>
-          <Section title={t("admin")} icon={ShieldCheck} list={admins} />
+          {callerRole === "admin" && <Section title={t("admin")} icon={ShieldCheck} list={admins} />}
           <Section title={t("manager")} icon={ShieldCheck} list={managers} />
-          <Section title={t("employee")} icon={ShieldCheck} list={employees} />
+          <Section title={t("employee")} icon={ShieldCheck} list={employees} />)
         </div>
 
         <h2 className="font-semibold text-sm mb-2 mt-4 flex items-center gap-2"><UserCircle2 className="w-4 h-4" /> {t("customers")}</h2>
