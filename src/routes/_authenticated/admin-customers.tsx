@@ -154,8 +154,6 @@ function EditShipment({ shipment, onClose }: { shipment: Shipment; onClose: () =
       toast.error(e instanceof Error ? e.message : "Error");
     } finally { setBusy(false); }
   };
-  const [customerNotes, setCustomerNotes] = useState(shipment.customer_notes ?? "");
-  const [busy, setBusy] = useState(false);
 
   const save = async () => {
     setBusy(true);
