@@ -1,0 +1,1 @@
+DELETE FROM public.shipments WHERE tracking_number = 'TEST-DBG-1';
