@@ -53,7 +53,7 @@ function Dashboard() {
         <NavTile to="/shipments" icon={Package} label={t("myShipments")} />
         <NavTile to="/track" icon={Search} label={t("trackBtn")} />
         <NavTile to="/notifications" icon={Bell} label={t("notifications")} />
-        <NavTile to="/announcements" icon={Newspaper} label={t("news")} />
+        <NavTile to="/announcements" icon={Newspaper} label={t("news")} badge={unreadNews} />
         <NavTile to="/offices" icon={MapPin} label={t("offices")} />
         <NavTile to="/addresses" icon={MapPin} label={t("addressBook")} />
       </section>
