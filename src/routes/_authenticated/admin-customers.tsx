@@ -116,14 +116,14 @@ function AdminCustomersPage() {
         <div className="space-y-2">
           {customers.length === 0 && <p className="text-sm text-muted-foreground">{t("empty")}</p>}
           {(() => {
-            const counts = new Map<string, number>();
+            const dupCounts = new Map<string, number>();
             for (const c of customers) {
               const k = `${c.full_name ?? ""}|${c.phone ?? ""}`;
-              counts.set(k, (counts.get(k) ?? 0) + 1);
+              dupCounts.set(k, (dupCounts.get(k) ?? 0) + 1);
             }
             return customers.map((c) => {
               const k = `${c.full_name ?? ""}|${c.phone ?? ""}`;
-              const isDup = (counts.get(k) ?? 0) > 1;
+              const isDup = (dupCounts.get(k) ?? 0) > 1;
               return (
                 <button key={c.id} onClick={() => setSelected(c)} className="block w-full text-start rounded-2xl border bg-card p-4 hover:bg-muted/40 transition">
                   <div className="flex justify-between items-center gap-3">
