@@ -134,7 +134,7 @@ function AccountsPage() {
         <div className="space-y-2">
           {customers.length === 0 && <p className="text-xs text-muted-foreground">{t("empty")}</p>}
           {customers.map((p) => (
-            <AccountRow key={p.id} p={p} canDelete={canDelete(p.role, p.id)} onDelete={() => onDelete(p.id)} />
+            <AccountRow key={p.id} p={p} canDelete={canDelete(p.role, p.id)} canReset={canReset(p.role, p.id)} onDelete={() => onDelete(p.id)} />
           ))}
         </div>
       </section>
@@ -142,7 +142,7 @@ function AccountsPage() {
   );
 }
 
-function AccountRow({ p, canDelete, onDelete }: { p: Profile & { role: AppRole }; canDelete: boolean; onDelete: () => void }) {
+function AccountRow({ p, canDelete, canReset, onDelete }: { p: Profile & { role: AppRole }; canDelete: boolean; canReset: boolean; onDelete: () => void }) {
   const { t } = useI18n();
   const { isStaff } = useAuth();
   const tint =
