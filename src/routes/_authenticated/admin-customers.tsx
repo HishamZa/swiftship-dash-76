@@ -8,11 +8,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
-  fetchCustomers, fetchShipments, fetchAllUserRoles, updateShipment, deleteShipment,
-  ALL_STATUSES, statusKey, type Profile, type Shipment, type ShipmentStatus,
+  fetchCustomers, fetchShipments, fetchAllUserRoles, fetchHistory, updateShipment, deleteShipment,
+  ALL_STATUSES, statusKey, type Profile, type Shipment, type ShipmentStatus, type StatusHistory,
 } from "@/lib/db";
 import { StatusProgress } from "@/components/StatusProgress";
 import { StatusBadge } from "@/components/StatusBadge";
+import { StatusTimeline } from "@/components/StatusTimeline";
 import { formatUSD, formatCBM, deliveryCountdown } from "@/lib/format";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { ArrowLeft, Search, Package, Trash2 } from "lucide-react";
