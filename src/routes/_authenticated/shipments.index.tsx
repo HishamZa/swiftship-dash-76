@@ -9,7 +9,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { formatUSD, formatCBM, deliveryCountdown } from "@/lib/format";
 import { Search } from "lucide-react";
 
-export const Route = createFileRoute("/_authenticated/shipments")({
+export const Route = createFileRoute("/_authenticated/shipments/")({
   head: () => ({ meta: [{ title: "My Shipments — Almwanaa" }] }),
   component: ShipmentsPage,
 });
