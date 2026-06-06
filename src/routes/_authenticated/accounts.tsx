@@ -52,7 +52,7 @@ function AccountsPage() {
     return { ...p, role: r };
   }), [profiles, rolesMap]);
 
-  const admins = enriched.filter((p) => p.role === "admin");
+  const admins = enriched.filter((p) => p.role === "admin" && callerRole === "admin");
   const managers = enriched.filter((p) => p.role === "manager");
   const employees = enriched.filter((p) => p.role === "employee");
   const customers = enriched.filter((p) => p.role === "customer");
