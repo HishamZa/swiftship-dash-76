@@ -19,7 +19,6 @@ import { Route as AuthenticatedShipmentsRouteImport } from './routes/_authentica
 import { Route as AuthenticatedOfficesManageRouteImport } from './routes/_authenticated/offices-manage'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedNewsManageRouteImport } from './routes/_authenticated/news-manage'
-import { Route as AuthenticatedManageRouteImport } from './routes/_authenticated/manage'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAdminShipmentsRouteImport } from './routes/_authenticated/admin-shipments'
 import { Route as AuthenticatedAdminNotifyRouteImport } from './routes/_authenticated/admin-notify'
@@ -80,11 +79,6 @@ const AuthenticatedNotificationsRoute =
 const AuthenticatedNewsManageRoute = AuthenticatedNewsManageRouteImport.update({
   id: '/news-manage',
   path: '/news-manage',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedManageRoute = AuthenticatedManageRouteImport.update({
-  id: '/manage',
-  path: '/manage',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
@@ -156,7 +150,6 @@ export interface FileRoutesByFullPath {
   '/admin-notify': typeof AuthenticatedAdminNotifyRoute
   '/admin-shipments': typeof AuthenticatedAdminShipmentsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/manage': typeof AuthenticatedManageRoute
   '/news-manage': typeof AuthenticatedNewsManageRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/offices-manage': typeof AuthenticatedOfficesManageRoute
@@ -178,7 +171,6 @@ export interface FileRoutesByTo {
   '/admin-notify': typeof AuthenticatedAdminNotifyRoute
   '/admin-shipments': typeof AuthenticatedAdminShipmentsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/manage': typeof AuthenticatedManageRoute
   '/news-manage': typeof AuthenticatedNewsManageRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/offices-manage': typeof AuthenticatedOfficesManageRoute
@@ -202,7 +194,6 @@ export interface FileRoutesById {
   '/_authenticated/admin-notify': typeof AuthenticatedAdminNotifyRoute
   '/_authenticated/admin-shipments': typeof AuthenticatedAdminShipmentsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
-  '/_authenticated/manage': typeof AuthenticatedManageRoute
   '/_authenticated/news-manage': typeof AuthenticatedNewsManageRoute
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/offices-manage': typeof AuthenticatedOfficesManageRoute
@@ -226,7 +217,6 @@ export interface FileRouteTypes {
     | '/admin-notify'
     | '/admin-shipments'
     | '/dashboard'
-    | '/manage'
     | '/news-manage'
     | '/notifications'
     | '/offices-manage'
@@ -248,7 +238,6 @@ export interface FileRouteTypes {
     | '/admin-notify'
     | '/admin-shipments'
     | '/dashboard'
-    | '/manage'
     | '/news-manage'
     | '/notifications'
     | '/offices-manage'
@@ -271,7 +260,6 @@ export interface FileRouteTypes {
     | '/_authenticated/admin-notify'
     | '/_authenticated/admin-shipments'
     | '/_authenticated/dashboard'
-    | '/_authenticated/manage'
     | '/_authenticated/news-manage'
     | '/_authenticated/notifications'
     | '/_authenticated/offices-manage'
@@ -359,13 +347,6 @@ declare module '@tanstack/react-router' {
       path: '/news-manage'
       fullPath: '/news-manage'
       preLoaderRoute: typeof AuthenticatedNewsManageRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/manage': {
-      id: '/_authenticated/manage'
-      path: '/manage'
-      fullPath: '/manage'
-      preLoaderRoute: typeof AuthenticatedManageRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/dashboard': {
@@ -477,7 +458,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminNotifyRoute: typeof AuthenticatedAdminNotifyRoute
   AuthenticatedAdminShipmentsRoute: typeof AuthenticatedAdminShipmentsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
-  AuthenticatedManageRoute: typeof AuthenticatedManageRoute
   AuthenticatedNewsManageRoute: typeof AuthenticatedNewsManageRoute
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedOfficesManageRoute: typeof AuthenticatedOfficesManageRoute
@@ -493,7 +473,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminNotifyRoute: AuthenticatedAdminNotifyRoute,
   AuthenticatedAdminShipmentsRoute: AuthenticatedAdminShipmentsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
-  AuthenticatedManageRoute: AuthenticatedManageRoute,
   AuthenticatedNewsManageRoute: AuthenticatedNewsManageRoute,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedOfficesManageRoute: AuthenticatedOfficesManageRoute,
@@ -514,3 +493,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

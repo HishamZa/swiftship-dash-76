@@ -144,7 +144,7 @@ const dict = {
   admin: { en: "Admin", ar: "مدير" },
   manager: { en: "Manager", ar: "مدير قسم" },
   employee: { en: "Employee", ar: "موظف" },
-  customer: { en: "Customer", ar: "عميل" },
+  
   sent: { en: "Sent", ar: "تم الإرسال" },
   footer: { en: "© 2026 Almwanaa Company. All rights reserved.", ar: "© 2026 شركة الموانئ. جميع الحقوق محفوظة." },
 } as const;
