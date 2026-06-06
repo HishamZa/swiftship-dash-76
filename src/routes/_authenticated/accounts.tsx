@@ -13,9 +13,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { fetchCustomers, fetchAllUserRoles, type Profile, type AppRole } from "@/lib/db";
 import { useServerFn } from "@tanstack/react-start";
-import { createStaffAccount, deleteUserAccount } from "@/lib/staff.functions";
+import { createStaffAccount, deleteUserAccount, resetUserPassword } from "@/lib/staff.functions";
 import { toast } from "sonner";
-import { Plus, Search, UserCircle2, ShieldCheck, Trash2 } from "lucide-react";
+import { Plus, Search, UserCircle2, ShieldCheck, Trash2, Settings } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/accounts")({
   head: () => ({ meta: [{ title: "Accounts — Almwanaa" }] }),
