@@ -11,7 +11,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { fetchCustomers, fetchAllUserRoles, roleRank, type Profile, type AppRole } from "@/lib/db";
+import { fetchCustomers, fetchAllUserRoles, type Profile, type AppRole } from "@/lib/db";
 import { useServerFn } from "@tanstack/react-start";
 import { createStaffAccount, deleteUserAccount } from "@/lib/staff.functions";
 import { toast } from "sonner";
