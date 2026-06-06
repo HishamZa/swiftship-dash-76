@@ -60,6 +60,17 @@ function AccountsPage() {
   const canDelete = (target: AppRole, targetId: string) => {
     if (targetId === user?.id) return false;
     if (callerRole === "admin") return true;
+    if (callerRole === "manager") {
+      // Managers can delete customers, employees, and other managers (not self, not admin)
+      return target === "customer" || target === "employee" || target === "manager";
+    }
+    // Employees cannot delete any account
+    return false;
+  };
+
+  const canReset = (target: AppRole, targetId: string) => {
+    if (targetId === user?.id) return false;
+    if (callerRole === "admin") return true;
     if (callerRole === "manager") return target !== "admin";
     if (callerRole === "employee") return target === "customer";
     return false;
@@ -83,7 +94,7 @@ function AccountsPage() {
       <div className="space-y-2">
         {list.length === 0 && <p className="text-xs text-muted-foreground">{t("empty")}</p>}
         {list.map((p) => (
-          <AccountRow key={p.id} p={p} canDelete={canDelete(p.role, p.id)} onDelete={() => onDelete(p.id)} />
+          <AccountRow key={p.id} p={p} canDelete={canDelete(p.role, p.id)} canReset={canReset(p.role, p.id)} onDelete={() => onDelete(p.id)} />
         ))}
       </div>
     </>
