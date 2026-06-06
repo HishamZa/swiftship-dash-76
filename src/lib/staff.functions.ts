@@ -111,7 +111,7 @@ export const updateMyAccount = createServerFn({ method: "POST" })
     const isStaff = callerRole === "admin" || callerRole === "manager" || callerRole === "employee";
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    const profilePatch: Record<string, unknown> = {};
+    const profilePatch: { full_name?: string; phone?: string; governorate?: string; area?: string } = {};
     if (data.full_name !== undefined) profilePatch.full_name = data.full_name;
     if (data.phone !== undefined) profilePatch.phone = data.phone;
     if (!isStaff) {
