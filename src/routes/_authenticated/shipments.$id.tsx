@@ -59,9 +59,23 @@ function ShipmentDetailPage() {
       <section className="px-5 space-y-4">
         <div className="rounded-2xl border bg-card p-5">
           <div className="flex items-start justify-between gap-2 mb-3">
-            <div>
+            <div className="min-w-0">
               <p className="text-xs text-muted-foreground">{t("trackingNo")}</p>
-              <p className="font-bold text-lg">{shipment.tracking_number}</p>
+              <div className="flex items-center gap-1">
+                <p className="font-bold text-lg break-all">{shipment.tracking_number}</p>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 shrink-0"
+                  aria-label={t("copyTracking")}
+                  onClick={() => {
+                    navigator.clipboard.writeText(shipment.tracking_number);
+                    toast.success(t("trackingCopied"));
+                  }}
+                >
+                  <Copy className="h-3.5 w-3.5" />
+                </Button>
+              </div>
             </div>
             <StatusBadge status={shipment.status} />
           </div>
