@@ -8,13 +8,14 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
-  fetchCustomers, fetchShipments, fetchAllUserRoles, updateShipment,
+  fetchCustomers, fetchShipments, fetchAllUserRoles, updateShipment, deleteShipment,
   ALL_STATUSES, statusKey, type Profile, type Shipment, type ShipmentStatus,
 } from "@/lib/db";
 import { StatusProgress } from "@/components/StatusProgress";
 import { StatusBadge } from "@/components/StatusBadge";
-import { formatUSD, formatCBM } from "@/lib/format";
-import { ArrowLeft, Search, Package } from "lucide-react";
+import { formatUSD, formatCBM, deliveryCountdown } from "@/lib/format";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { ArrowLeft, Search, Package, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/admin-customers")({
