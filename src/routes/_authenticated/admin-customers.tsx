@@ -1,5 +1,5 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
 import { Layout } from "@/components/Layout";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/hooks/useAuth";
@@ -8,13 +8,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
-  fetchCustomers, fetchShipments, updateShipment,
+  fetchCustomers, fetchShipments, fetchAllUserRoles, updateShipment,
   ALL_STATUSES, statusKey, type Profile, type Shipment, type ShipmentStatus,
 } from "@/lib/db";
 import { StatusProgress } from "@/components/StatusProgress";
 import { StatusBadge } from "@/components/StatusBadge";
 import { formatUSD, formatCBM } from "@/lib/format";
-import { ArrowLeft, Search } from "lucide-react";
+import { ArrowLeft, Search, Package } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/admin-customers")({
@@ -27,6 +27,7 @@ function AdminCustomersPage() {
   const { isStaff, loading } = useAuth();
   const navigate = useNavigate();
   const [customers, setCustomers] = useState<Profile[]>([]);
+  const [counts, setCounts] = useState<Record<string, number>>({});
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Profile | null>(null);
   const [shipments, setShipments] = useState<Shipment[]>([]);
@@ -35,7 +36,22 @@ function AdminCustomersPage() {
   useEffect(() => {
     if (loading) return;
     if (!isStaff) { navigate({ to: "/dashboard", replace: true }); return; }
-    fetchCustomers(search).then(setCustomers).catch(() => setCustomers([]));
+    (async () => {
+      const [profiles, rolesMap, allShipments] = await Promise.all([
+        fetchCustomers(search).catch(() => [] as Profile[]),
+        fetchAllUserRoles().catch(() => ({} as Record<string, string[]>)),
+        fetchShipments().catch(() => [] as Shipment[]),
+      ]);
+      // Customers only: no admin/manager/employee
+      const onlyCustomers = profiles.filter((p) => {
+        const roles = rolesMap[p.id] ?? [];
+        return !roles.some((r) => r === "admin" || r === "manager" || r === "employee");
+      });
+      const cnt: Record<string, number> = {};
+      for (const s of allShipments) if (s.customer_id) cnt[s.customer_id] = (cnt[s.customer_id] ?? 0) + 1;
+      setCustomers(onlyCustomers);
+      setCounts(cnt);
+    })();
   }, [isStaff, loading, navigate, search]);
 
   useEffect(() => {
@@ -59,27 +75,22 @@ function AdminCustomersPage() {
           <Button variant="ghost" size="icon" onClick={() => setSelected(null)}><ArrowLeft className="w-4 h-4" /></Button>
           <div>
             <h1 className="text-lg font-bold">{selected.full_name ?? "—"}</h1>
-            <p className="text-xs text-muted-foreground">{selected.phone} · {selected.governorate} / {selected.area}</p>
+            <p className="text-xs text-muted-foreground">{selected.phone}{selected.governorate ? ` · ${selected.governorate}` : ""}{selected.area ? ` / ${selected.area}` : ""}</p>
           </div>
         </section>
         <section className="px-5 mt-2 space-y-2">
           {shipments.length === 0 && <p className="text-sm text-muted-foreground">{t("empty")}</p>}
           {shipments.map((s) => (
-            <div key={s.id} className="rounded-2xl border bg-card p-4">
+            <button key={s.id} onClick={() => setEditing(s)} className="block w-full text-start rounded-2xl border bg-card p-4 hover:bg-muted/40 transition">
               <div className="flex justify-between items-start gap-2">
                 <div className="min-w-0">
                   <p className="font-semibold text-sm">{s.tracking_number}</p>
-                  <p className="text-xs text-muted-foreground">{formatUSD(s.estimated_cost)} · {formatCBM(s.cbm_volume)}</p>
+                  {s.description && <p className="text-xs text-muted-foreground truncate">{s.description}</p>}
+                  <p className="text-xs text-muted-foreground mt-1">{formatUSD(s.estimated_cost)} · {formatCBM(s.cbm_volume)}</p>
                 </div>
                 <StatusBadge status={s.status} />
               </div>
-              <div className="flex gap-2 mt-3">
-                <Button size="sm" variant="outline" className="flex-1" onClick={() => setEditing(s)}>{t("edit")}</Button>
-                <Link to="/shipments/$id" params={{ id: s.id }} className="flex-1">
-                  <Button size="sm" className="w-full">{t("open")}</Button>
-                </Link>
-              </div>
-            </div>
+            </button>
           ))}
         </section>
       </Layout>
@@ -99,9 +110,16 @@ function AdminCustomersPage() {
         <div className="space-y-2">
           {customers.length === 0 && <p className="text-sm text-muted-foreground">{t("empty")}</p>}
           {customers.map((c) => (
-            <button key={c.id} onClick={() => setSelected(c)} className="block w-full text-start rounded-2xl border bg-card p-4">
-              <p className="font-semibold text-sm">{c.full_name ?? "—"}</p>
-              <p className="text-xs text-muted-foreground">{c.phone ?? "—"}{c.governorate ? ` · ${c.governorate}` : ""}{c.area ? ` / ${c.area}` : ""}</p>
+            <button key={c.id} onClick={() => setSelected(c)} className="block w-full text-start rounded-2xl border bg-card p-4 hover:bg-muted/40 transition">
+              <div className="flex justify-between items-center gap-3">
+                <div className="min-w-0">
+                  <p className="font-semibold text-sm truncate">{c.full_name ?? "—"}</p>
+                  <p className="text-xs text-muted-foreground truncate">{c.phone ?? "—"}{c.governorate ? ` · ${c.governorate}` : ""}{c.area ? ` / ${c.area}` : ""}</p>
+                </div>
+                <span className="flex items-center gap-1 text-xs font-semibold bg-primary/10 text-primary rounded-full px-2 py-1 shrink-0">
+                  <Package className="w-3 h-3" /> {counts[c.id] ?? 0}
+                </span>
+              </div>
             </button>
           ))}
         </div>
