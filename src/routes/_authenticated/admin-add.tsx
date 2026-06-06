@@ -46,6 +46,17 @@ function AdminAddPage() {
     })();
   }, [isStaff, loading, navigate]);
 
+  // Tag duplicates (same name+phone, different IDs) with a short ID suffix so
+  // managers can distinguish them in the dropdown.
+  const dupKeys = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const c of customers) {
+      const k = `${c.full_name ?? ""}|${c.phone ?? ""}`;
+      counts.set(k, (counts.get(k) ?? 0) + 1);
+    }
+    return new Set(Array.from(counts.entries()).filter(([, n]) => n > 1).map(([k]) => k));
+  }, [customers]);
+
   const selected = useMemo(() => customers.find((c) => c.id === customerId), [customers, customerId]);
 
   if (!isStaff) return null;
@@ -92,11 +103,15 @@ function AdminAddPage() {
             <Select value={customerId} onValueChange={setCustomerId}>
               <SelectTrigger><SelectValue placeholder={t("selectCustomer")} /></SelectTrigger>
               <SelectContent>
-                {customers.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>
-                    {(c.full_name ?? "—")}{c.phone ? ` · ${c.phone}` : ""}
-                  </SelectItem>
-                ))}
+                {customers.map((c) => {
+                  const isDup = dupKeys.has(`${c.full_name ?? ""}|${c.phone ?? ""}`);
+                  return (
+                    <SelectItem key={c.id} value={c.id}>
+                      {(c.full_name ?? "—")}{c.phone ? ` · ${c.phone}` : ""}
+                      {isDup ? ` · #${c.id.slice(0, 4)}` : ""}
+                    </SelectItem>
+                  );
+                })}
               </SelectContent>
             </Select>
           </div>
