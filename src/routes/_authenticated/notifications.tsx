@@ -4,9 +4,25 @@ import { Layout } from "@/components/Layout";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { fetchNotifications, markAllRead, type Notification } from "@/lib/db";
+import { fetchNotifications, markAllRead, statusKey, ALL_STATUSES, type Notification, type ShipmentStatus } from "@/lib/db";
 import { notifyUnreadChanged } from "@/lib/unreadNews";
 import { Bell } from "lucide-react";
+
+function renderShipmentNotification(
+  n: Notification,
+  t: (k: Parameters<ReturnType<typeof useI18n>["t"]>[0]) => string,
+): { title: string; body: string } {
+  const isShipment = n.title?.startsWith("shipment_update:");
+  if (!isShipment) return { title: n.title ?? "", body: n.body ?? "" };
+  const tracking = n.title.slice("shipment_update:".length);
+  const [firstLine, ...rest] = (n.body ?? "").split("\n");
+  const isStatus = (ALL_STATUSES as readonly string[]).includes(firstLine);
+  const statusText = isStatus ? t(statusKey(firstLine as ShipmentStatus)) : firstLine;
+  const note = rest.join("\n").trim();
+  const title = `${t("shipmentUpdateTitle")} — ${tracking}`;
+  const body = `${t("shipmentStatusUpdatedTo")}: ${statusText}${note ? `\n${note}` : ""}`;
+  return { title, body };
+}
 
 export const Route = createFileRoute("/_authenticated/notifications")({
   head: () => ({ meta: [{ title: "Notifications — Almwanaa" }] }),
