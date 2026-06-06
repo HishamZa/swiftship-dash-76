@@ -103,11 +103,15 @@ function AdminAddPage() {
             <Select value={customerId} onValueChange={setCustomerId}>
               <SelectTrigger><SelectValue placeholder={t("selectCustomer")} /></SelectTrigger>
               <SelectContent>
-                {customers.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>
-                    {(c.full_name ?? "—")}{c.phone ? ` · ${c.phone}` : ""}
-                  </SelectItem>
-                ))}
+                {customers.map((c) => {
+                  const isDup = dupKeys.has(`${c.full_name ?? ""}|${c.phone ?? ""}`);
+                  return (
+                    <SelectItem key={c.id} value={c.id}>
+                      {(c.full_name ?? "—")}{c.phone ? ` · ${c.phone}` : ""}
+                      {isDup ? ` · #${c.id.slice(0, 4)}` : ""}
+                    </SelectItem>
+                  );
+                })}
               </SelectContent>
             </Select>
           </div>
