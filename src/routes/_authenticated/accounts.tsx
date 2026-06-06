@@ -145,6 +145,7 @@ function AccountsPage() {
 function AccountRow({ p, canDelete, canReset, onDelete }: { p: Profile & { role: AppRole }; canDelete: boolean; canReset: boolean; onDelete: () => void }) {
   const { t } = useI18n();
   const { isStaff } = useAuth();
+  void isStaff;
   const tint =
     p.role === "admin" ? "bg-destructive/10 text-destructive"
     : p.role === "manager" ? "bg-warning/20 text-warning-foreground"
