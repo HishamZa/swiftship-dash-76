@@ -1,6 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -8,24 +7,26 @@ import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Anchor } from "lucide-react";
+import { Logo } from "@/components/Logo";
+import { Languages, Sun, Moon } from "lucide-react";
+import { useTheme } from "@/lib/theme";
 
 export const Route = createFileRoute("/auth")({
-  head: () => ({ meta: [{ title: "Sign in — Almwanaa" }] }),
+  head: () => ({ meta: [{ title: "Sign in — Almwanaa Company" }] }),
   component: AuthPage,
 });
 
 // Convert a phone or username into a synthetic email Supabase will accept.
-function identityToEmail(identity: string) {
+export function identityToEmail(identity: string) {
   const id = identity.trim();
   if (id.toLowerCase() === "admin") return "admin@almwanaa.app";
-  // Strip non-alphanumerics for stable email local-part.
   const clean = id.replace(/[^a-zA-Z0-9]/g, "");
   return `${clean || "user"}@almwanaa.local`;
 }
 
 function AuthPage() {
-  const { t } = useI18n();
+  const { t, lang, setLang } = useI18n();
+  const { mode, toggle } = useTheme();
   const { user, isStaff } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -54,37 +55,40 @@ function AuthPage() {
     });
     setLoading(false);
     if (error) toast.error(error.message);
-    else toast.success("Welcome back!");
+    else toast.success(t("welcome"));
   };
 
   const signUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!phone.trim()) {
-      toast.error(t("phone"));
-      return;
-    }
+    if (!phone.trim()) { toast.error(t("phone")); return; }
     setLoading(true);
     const { error } = await supabase.auth.signUp({
       email: identityToEmail(phone),
       password: passwordUp,
-      options: {
-        data: { full_name: fullName, phone, governorate, area },
-      },
+      options: { data: { full_name: fullName, phone, governorate, area } },
     });
     setLoading(false);
     if (error) toast.error(error.message);
-    else toast.success("Account created. Signing you in…");
+    else toast.success(t("welcome"));
   };
 
   return (
-    <Layout>
-      <section className="px-5 py-8 max-w-md mx-auto">
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
+      <div className="absolute top-3 end-3 flex items-center gap-1">
+        <Button variant="ghost" size="icon" onClick={toggle}>
+          {mode === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+        </Button>
+        <Button variant="ghost" size="sm" onClick={() => setLang(lang === "en" ? "ar" : "en")}>
+          <Languages className="w-4 h-4" />
+          <span className="ms-1 text-xs">{lang === "en" ? "AR" : "EN"}</span>
+        </Button>
+      </div>
+
+      <section className="flex-1 px-5 py-10 max-w-md w-full mx-auto flex flex-col justify-center">
         <div className="flex flex-col items-center mb-6">
-          <span className="grid place-items-center w-14 h-14 rounded-2xl bg-primary text-primary-foreground mb-3">
-            <Anchor className="w-7 h-7" />
-          </span>
-          <h1 className="text-xl font-bold">{t("brand")}</h1>
-          <p className="text-sm text-muted-foreground">{t("tagline")}</p>
+          <Logo className="w-24 h-24 mb-3" />
+          <h1 className="text-xl font-bold text-center">{t("brand")}</h1>
+          <p className="text-sm text-muted-foreground text-center mt-1">{t("tagline")}</p>
         </div>
 
         <Tabs defaultValue="in">
@@ -95,10 +99,21 @@ function AuthPage() {
 
           <TabsContent value="in">
             <form onSubmit={signIn} className="space-y-3 mt-4">
-              <Input required placeholder={t("phone") + " / " + t("username")} value={identity} onChange={(e) => setIdentity(e.target.value)} />
-              <Input type="password" required minLength={6} placeholder={t("password")} value={passwordIn} onChange={(e) => setPasswordIn(e.target.value)} />
+              <Input
+                required
+                placeholder={t("phone")}
+                value={identity}
+                onChange={(e) => setIdentity(e.target.value)}
+              />
+              <Input
+                type="password"
+                required
+                minLength={6}
+                placeholder={t("password")}
+                value={passwordIn}
+                onChange={(e) => setPasswordIn(e.target.value)}
+              />
               <Button type="submit" className="w-full" disabled={loading}>{t("signIn")}</Button>
-              <p className="text-[11px] text-muted-foreground text-center">{t("loginWithPhone")}</p>
             </form>
           </TabsContent>
 
@@ -114,6 +129,6 @@ function AuthPage() {
           </TabsContent>
         </Tabs>
       </section>
-    </Layout>
+    </div>
   );
 }

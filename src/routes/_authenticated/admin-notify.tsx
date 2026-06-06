@@ -11,7 +11,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { fetchCustomers, broadcastNotification, sendNotificationToUser, type Profile } from "@/lib/db";
 import { toast } from "sonner";
-import { Send } from "lucide-react";
+import { Send, Lock } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin-notify")({
   head: () => ({ meta: [{ title: "Send Notification — Almwanaa" }] }),
@@ -20,7 +20,7 @@ export const Route = createFileRoute("/_authenticated/admin-notify")({
 
 function AdminNotifyPage() {
   const { t } = useI18n();
-  const { isStaff, loading } = useAuth();
+  const { isStaff, isManager, loading } = useAuth();
   const navigate = useNavigate();
   const [customers, setCustomers] = useState<Profile[]>([]);
   const [mode, setMode] = useState<"all" | "one">("all");
@@ -32,10 +32,24 @@ function AdminNotifyPage() {
   useEffect(() => {
     if (loading) return;
     if (!isStaff) { navigate({ to: "/dashboard", replace: true }); return; }
+    if (!isManager) return;
     fetchCustomers().then(setCustomers).catch(() => setCustomers([]));
-  }, [isStaff, loading, navigate]);
+  }, [isStaff, isManager, loading, navigate]);
 
   if (!isStaff) return null;
+
+  if (!isManager) {
+    return (
+      <Layout>
+        <section className="px-5 py-16 text-center">
+          <div className="mx-auto w-14 h-14 grid place-items-center rounded-full bg-muted mb-3">
+            <Lock className="w-6 h-6 text-muted-foreground" />
+          </div>
+          <h1 className="text-base font-semibold">{t("adminsOnly")}</h1>
+        </section>
+      </Layout>
+    );
+  }
 
   const send = async (e: React.FormEvent) => {
     e.preventDefault();

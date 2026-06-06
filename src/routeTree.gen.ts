@@ -16,8 +16,9 @@ import { Route as AnnouncementsRouteImport } from './routes/announcements'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedShipmentsRouteImport } from './routes/_authenticated/shipments'
+import { Route as AuthenticatedOfficesManageRouteImport } from './routes/_authenticated/offices-manage'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
-import { Route as AuthenticatedManageRouteImport } from './routes/_authenticated/manage'
+import { Route as AuthenticatedNewsManageRouteImport } from './routes/_authenticated/news-manage'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAdminShipmentsRouteImport } from './routes/_authenticated/admin-shipments'
 import { Route as AuthenticatedAdminNotifyRouteImport } from './routes/_authenticated/admin-notify'
@@ -25,6 +26,9 @@ import { Route as AuthenticatedAdminCustomersRouteImport } from './routes/_authe
 import { Route as AuthenticatedAdminAddRouteImport } from './routes/_authenticated/admin-add'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAddressesRouteImport } from './routes/_authenticated/addresses'
+import { Route as AuthenticatedAccountsRouteImport } from './routes/_authenticated/accounts'
+import { Route as AuthenticatedShipmentsIdRouteImport } from './routes/_authenticated/shipments.$id'
+import { Route as AuthenticatedAccountsIdRouteImport } from './routes/_authenticated/accounts.$id'
 
 const TrackRoute = TrackRouteImport.update({
   id: '/track',
@@ -60,15 +64,21 @@ const AuthenticatedShipmentsRoute = AuthenticatedShipmentsRouteImport.update({
   path: '/shipments',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedOfficesManageRoute =
+  AuthenticatedOfficesManageRouteImport.update({
+    id: '/offices-manage',
+    path: '/offices-manage',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedNotificationsRoute =
   AuthenticatedNotificationsRouteImport.update({
     id: '/notifications',
     path: '/notifications',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedManageRoute = AuthenticatedManageRouteImport.update({
-  id: '/manage',
-  path: '/manage',
+const AuthenticatedNewsManageRoute = AuthenticatedNewsManageRouteImport.update({
+  id: '/news-manage',
+  path: '/news-manage',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
@@ -109,6 +119,22 @@ const AuthenticatedAddressesRoute = AuthenticatedAddressesRouteImport.update({
   path: '/addresses',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAccountsRoute = AuthenticatedAccountsRouteImport.update({
+  id: '/accounts',
+  path: '/accounts',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedShipmentsIdRoute =
+  AuthenticatedShipmentsIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedShipmentsRoute,
+  } as any)
+const AuthenticatedAccountsIdRoute = AuthenticatedAccountsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AuthenticatedAccountsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -116,6 +142,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/offices': typeof OfficesRoute
   '/track': typeof TrackRoute
+  '/accounts': typeof AuthenticatedAccountsRouteWithChildren
   '/addresses': typeof AuthenticatedAddressesRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/admin-add': typeof AuthenticatedAdminAddRoute
@@ -123,9 +150,12 @@ export interface FileRoutesByFullPath {
   '/admin-notify': typeof AuthenticatedAdminNotifyRoute
   '/admin-shipments': typeof AuthenticatedAdminShipmentsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/manage': typeof AuthenticatedManageRoute
+  '/news-manage': typeof AuthenticatedNewsManageRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
-  '/shipments': typeof AuthenticatedShipmentsRoute
+  '/offices-manage': typeof AuthenticatedOfficesManageRoute
+  '/shipments': typeof AuthenticatedShipmentsRouteWithChildren
+  '/accounts/$id': typeof AuthenticatedAccountsIdRoute
+  '/shipments/$id': typeof AuthenticatedShipmentsIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -133,6 +163,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/offices': typeof OfficesRoute
   '/track': typeof TrackRoute
+  '/accounts': typeof AuthenticatedAccountsRouteWithChildren
   '/addresses': typeof AuthenticatedAddressesRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/admin-add': typeof AuthenticatedAdminAddRoute
@@ -140,9 +171,12 @@ export interface FileRoutesByTo {
   '/admin-notify': typeof AuthenticatedAdminNotifyRoute
   '/admin-shipments': typeof AuthenticatedAdminShipmentsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/manage': typeof AuthenticatedManageRoute
+  '/news-manage': typeof AuthenticatedNewsManageRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
-  '/shipments': typeof AuthenticatedShipmentsRoute
+  '/offices-manage': typeof AuthenticatedOfficesManageRoute
+  '/shipments': typeof AuthenticatedShipmentsRouteWithChildren
+  '/accounts/$id': typeof AuthenticatedAccountsIdRoute
+  '/shipments/$id': typeof AuthenticatedShipmentsIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -152,6 +186,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/offices': typeof OfficesRoute
   '/track': typeof TrackRoute
+  '/_authenticated/accounts': typeof AuthenticatedAccountsRouteWithChildren
   '/_authenticated/addresses': typeof AuthenticatedAddressesRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/admin-add': typeof AuthenticatedAdminAddRoute
@@ -159,9 +194,12 @@ export interface FileRoutesById {
   '/_authenticated/admin-notify': typeof AuthenticatedAdminNotifyRoute
   '/_authenticated/admin-shipments': typeof AuthenticatedAdminShipmentsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
-  '/_authenticated/manage': typeof AuthenticatedManageRoute
+  '/_authenticated/news-manage': typeof AuthenticatedNewsManageRoute
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
-  '/_authenticated/shipments': typeof AuthenticatedShipmentsRoute
+  '/_authenticated/offices-manage': typeof AuthenticatedOfficesManageRoute
+  '/_authenticated/shipments': typeof AuthenticatedShipmentsRouteWithChildren
+  '/_authenticated/accounts/$id': typeof AuthenticatedAccountsIdRoute
+  '/_authenticated/shipments/$id': typeof AuthenticatedShipmentsIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -171,6 +209,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/offices'
     | '/track'
+    | '/accounts'
     | '/addresses'
     | '/admin'
     | '/admin-add'
@@ -178,9 +217,12 @@ export interface FileRouteTypes {
     | '/admin-notify'
     | '/admin-shipments'
     | '/dashboard'
-    | '/manage'
+    | '/news-manage'
     | '/notifications'
+    | '/offices-manage'
     | '/shipments'
+    | '/accounts/$id'
+    | '/shipments/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -188,6 +230,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/offices'
     | '/track'
+    | '/accounts'
     | '/addresses'
     | '/admin'
     | '/admin-add'
@@ -195,9 +238,12 @@ export interface FileRouteTypes {
     | '/admin-notify'
     | '/admin-shipments'
     | '/dashboard'
-    | '/manage'
+    | '/news-manage'
     | '/notifications'
+    | '/offices-manage'
     | '/shipments'
+    | '/accounts/$id'
+    | '/shipments/$id'
   id:
     | '__root__'
     | '/'
@@ -206,6 +252,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/offices'
     | '/track'
+    | '/_authenticated/accounts'
     | '/_authenticated/addresses'
     | '/_authenticated/admin'
     | '/_authenticated/admin-add'
@@ -213,9 +260,12 @@ export interface FileRouteTypes {
     | '/_authenticated/admin-notify'
     | '/_authenticated/admin-shipments'
     | '/_authenticated/dashboard'
-    | '/_authenticated/manage'
+    | '/_authenticated/news-manage'
     | '/_authenticated/notifications'
+    | '/_authenticated/offices-manage'
     | '/_authenticated/shipments'
+    | '/_authenticated/accounts/$id'
+    | '/_authenticated/shipments/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -278,6 +328,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedShipmentsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/offices-manage': {
+      id: '/_authenticated/offices-manage'
+      path: '/offices-manage'
+      fullPath: '/offices-manage'
+      preLoaderRoute: typeof AuthenticatedOfficesManageRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/notifications': {
       id: '/_authenticated/notifications'
       path: '/notifications'
@@ -285,11 +342,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedNotificationsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/manage': {
-      id: '/_authenticated/manage'
-      path: '/manage'
-      fullPath: '/manage'
-      preLoaderRoute: typeof AuthenticatedManageRouteImport
+    '/_authenticated/news-manage': {
+      id: '/_authenticated/news-manage'
+      path: '/news-manage'
+      fullPath: '/news-manage'
+      preLoaderRoute: typeof AuthenticatedNewsManageRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/dashboard': {
@@ -341,10 +398,59 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAddressesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/accounts': {
+      id: '/_authenticated/accounts'
+      path: '/accounts'
+      fullPath: '/accounts'
+      preLoaderRoute: typeof AuthenticatedAccountsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/shipments/$id': {
+      id: '/_authenticated/shipments/$id'
+      path: '/$id'
+      fullPath: '/shipments/$id'
+      preLoaderRoute: typeof AuthenticatedShipmentsIdRouteImport
+      parentRoute: typeof AuthenticatedShipmentsRoute
+    }
+    '/_authenticated/accounts/$id': {
+      id: '/_authenticated/accounts/$id'
+      path: '/$id'
+      fullPath: '/accounts/$id'
+      preLoaderRoute: typeof AuthenticatedAccountsIdRouteImport
+      parentRoute: typeof AuthenticatedAccountsRoute
+    }
   }
 }
 
+interface AuthenticatedAccountsRouteChildren {
+  AuthenticatedAccountsIdRoute: typeof AuthenticatedAccountsIdRoute
+}
+
+const AuthenticatedAccountsRouteChildren: AuthenticatedAccountsRouteChildren = {
+  AuthenticatedAccountsIdRoute: AuthenticatedAccountsIdRoute,
+}
+
+const AuthenticatedAccountsRouteWithChildren =
+  AuthenticatedAccountsRoute._addFileChildren(
+    AuthenticatedAccountsRouteChildren,
+  )
+
+interface AuthenticatedShipmentsRouteChildren {
+  AuthenticatedShipmentsIdRoute: typeof AuthenticatedShipmentsIdRoute
+}
+
+const AuthenticatedShipmentsRouteChildren: AuthenticatedShipmentsRouteChildren =
+  {
+    AuthenticatedShipmentsIdRoute: AuthenticatedShipmentsIdRoute,
+  }
+
+const AuthenticatedShipmentsRouteWithChildren =
+  AuthenticatedShipmentsRoute._addFileChildren(
+    AuthenticatedShipmentsRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAccountsRoute: typeof AuthenticatedAccountsRouteWithChildren
   AuthenticatedAddressesRoute: typeof AuthenticatedAddressesRoute
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedAdminAddRoute: typeof AuthenticatedAdminAddRoute
@@ -352,12 +458,14 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminNotifyRoute: typeof AuthenticatedAdminNotifyRoute
   AuthenticatedAdminShipmentsRoute: typeof AuthenticatedAdminShipmentsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
-  AuthenticatedManageRoute: typeof AuthenticatedManageRoute
+  AuthenticatedNewsManageRoute: typeof AuthenticatedNewsManageRoute
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
-  AuthenticatedShipmentsRoute: typeof AuthenticatedShipmentsRoute
+  AuthenticatedOfficesManageRoute: typeof AuthenticatedOfficesManageRoute
+  AuthenticatedShipmentsRoute: typeof AuthenticatedShipmentsRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAccountsRoute: AuthenticatedAccountsRouteWithChildren,
   AuthenticatedAddressesRoute: AuthenticatedAddressesRoute,
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedAdminAddRoute: AuthenticatedAdminAddRoute,
@@ -365,9 +473,10 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminNotifyRoute: AuthenticatedAdminNotifyRoute,
   AuthenticatedAdminShipmentsRoute: AuthenticatedAdminShipmentsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
-  AuthenticatedManageRoute: AuthenticatedManageRoute,
+  AuthenticatedNewsManageRoute: AuthenticatedNewsManageRoute,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
-  AuthenticatedShipmentsRoute: AuthenticatedShipmentsRoute,
+  AuthenticatedOfficesManageRoute: AuthenticatedOfficesManageRoute,
+  AuthenticatedShipmentsRoute: AuthenticatedShipmentsRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =

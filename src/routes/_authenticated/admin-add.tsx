@@ -23,6 +23,7 @@ function AdminAddPage() {
   const [customers, setCustomers] = useState<Profile[]>([]);
   const [customerId, setCustomerId] = useState<string>("");
   const [tracking, setTracking] = useState(generateTrackingNumber());
+  const [description, setDescription] = useState("");
   const [cost, setCost] = useState("");
   const [cbm, setCbm] = useState("");
   const [eta, setEta] = useState("");
@@ -52,6 +53,7 @@ function AdminAddPage() {
         origin_country: "China",
         destination_country: "Iraq",
         status: "received_warehouse",
+        description: description || null,
         estimated_cost: cost ? Number(cost) : null,
         cbm_volume: cbm ? Number(cbm) : null,
         estimated_delivery: eta || null,
@@ -59,7 +61,7 @@ function AdminAddPage() {
       });
       toast.success(t("sent"));
       setTracking(generateTrackingNumber());
-      setCost(""); setCbm(""); setEta(""); setCustomerNotes("");
+      setDescription(""); setCost(""); setCbm(""); setEta(""); setCustomerNotes("");
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Error");
     } finally {
@@ -99,13 +101,18 @@ function AdminAddPage() {
             </div>
           </div>
 
+          <div>
+            <label className="text-xs text-muted-foreground">{t("description")}</label>
+            <Input placeholder={t("descriptionPlaceholder")} value={description} onChange={(e) => setDescription(e.target.value)} />
+          </div>
+
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="text-xs text-muted-foreground">{t("estimatedCost")}</label>
+              <label className="text-xs text-muted-foreground">{t("estimatedCost")} ($)</label>
               <Input type="number" step="0.01" value={cost} onChange={(e) => setCost(e.target.value)} />
             </div>
             <div>
-              <label className="text-xs text-muted-foreground">{t("cbm")}</label>
+              <label className="text-xs text-muted-foreground">{t("cbm")} (CBM)</label>
               <Input type="number" step="0.001" value={cbm} onChange={(e) => setCbm(e.target.value)} />
             </div>
           </div>

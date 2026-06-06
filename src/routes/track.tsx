@@ -8,6 +8,7 @@ import { fetchShipmentByTracking, fetchHistory, type Shipment, type StatusHistor
 import { StatusBadge } from "@/components/StatusBadge";
 import { StatusTimeline } from "@/components/StatusTimeline";
 import { StatusProgress } from "@/components/StatusProgress";
+import { formatUSD, formatCBM, deliveryCountdown } from "@/lib/format";
 import { Search, AlertCircle } from "lucide-react";
 
 export const Route = createFileRoute("/track")({
@@ -17,7 +18,7 @@ export const Route = createFileRoute("/track")({
 });
 
 function TrackPage() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { q } = Route.useSearch();
   const [input, setInput] = useState(q);
   const [loading, setLoading] = useState(false);
@@ -40,6 +41,8 @@ function TrackPage() {
   };
 
   useEffect(() => { if (q) run(q); }, [q]);
+
+  const cd = shipment ? deliveryCountdown(shipment.estimated_delivery, lang) : null;
 
   return (
     <Layout>
@@ -75,9 +78,11 @@ function TrackPage() {
               <Grid label={t("customer")} value={shipment.customer_name} />
               <Grid label={t("origin")} value={shipment.origin_country} />
               <Grid label={t("destination")} value={shipment.destination_country} />
-              {shipment.estimated_cost != null && <Grid label={t("estimatedCost")} value={String(shipment.estimated_cost)} />}
-              {shipment.cbm_volume != null && <Grid label={t("cbm")} value={String(shipment.cbm_volume)} />}
+              {shipment.description && <Grid label={t("description")} value={shipment.description} />}
+              <Grid label={t("estimatedCost")} value={formatUSD(shipment.estimated_cost)} />
+              <Grid label={t("cbm")} value={formatCBM(shipment.cbm_volume)} />
               {shipment.estimated_delivery && <Grid label={t("eta")} value={shipment.estimated_delivery} />}
+              {cd && <Grid label={t("remaining")} value={cd} highlight />}
               {shipment.customer_notes && (
                 <div className="mt-3 rounded-xl bg-muted/40 p-3">
                   <p className="text-[11px] text-muted-foreground mb-1">{t("customerNotes")}</p>
@@ -100,11 +105,11 @@ function TrackPage() {
   );
 }
 
-function Grid({ label, value }: { label: string; value: string }) {
+function Grid({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
   return (
     <div className="flex justify-between py-1.5 border-b last:border-0 text-sm">
       <span className="text-muted-foreground">{label}</span>
-      <span className="font-medium">{value}</span>
+      <span className={highlight ? "font-semibold text-primary" : "font-medium"}>{value}</span>
     </div>
   );
 }

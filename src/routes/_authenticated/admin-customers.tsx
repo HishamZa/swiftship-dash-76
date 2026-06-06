@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Layout } from "@/components/Layout";
 import { useI18n } from "@/lib/i18n";
@@ -13,6 +13,7 @@ import {
 } from "@/lib/db";
 import { StatusProgress } from "@/components/StatusProgress";
 import { StatusBadge } from "@/components/StatusBadge";
+import { formatUSD, formatCBM } from "@/lib/format";
 import { ArrowLeft, Search } from "lucide-react";
 import { toast } from "sonner";
 
@@ -64,15 +65,21 @@ function AdminCustomersPage() {
         <section className="px-5 mt-2 space-y-2">
           {shipments.length === 0 && <p className="text-sm text-muted-foreground">{t("empty")}</p>}
           {shipments.map((s) => (
-            <button key={s.id} onClick={() => setEditing(s)} className="block w-full text-start rounded-2xl border bg-card p-4">
+            <div key={s.id} className="rounded-2xl border bg-card p-4">
               <div className="flex justify-between items-start gap-2">
-                <div>
+                <div className="min-w-0">
                   <p className="font-semibold text-sm">{s.tracking_number}</p>
-                  <p className="text-xs text-muted-foreground">{s.estimated_cost ?? "—"} · {s.cbm_volume ?? "—"} CBM</p>
+                  <p className="text-xs text-muted-foreground">{formatUSD(s.estimated_cost)} · {formatCBM(s.cbm_volume)}</p>
                 </div>
                 <StatusBadge status={s.status} />
               </div>
-            </button>
+              <div className="flex gap-2 mt-3">
+                <Button size="sm" variant="outline" className="flex-1" onClick={() => setEditing(s)}>{t("edit")}</Button>
+                <Link to="/shipments/$id" params={{ id: s.id }} className="flex-1">
+                  <Button size="sm" className="w-full">{t("open")}</Button>
+                </Link>
+              </div>
+            </div>
           ))}
         </section>
       </Layout>
@@ -98,7 +105,6 @@ function AdminCustomersPage() {
             </button>
           ))}
         </div>
-        {!selected && <p className="text-xs text-muted-foreground mt-4">{t("noCustomerSelected")}</p>}
       </section>
     </Layout>
   );
@@ -107,7 +113,9 @@ function AdminCustomersPage() {
 function EditShipment({ shipment, onClose }: { shipment: Shipment; onClose: () => void }) {
   const { t } = useI18n();
   const [status, setStatus] = useState<ShipmentStatus>(shipment.status);
+  const [description, setDescription] = useState(shipment.description ?? "");
   const [cost, setCost] = useState(shipment.estimated_cost?.toString() ?? "");
+  const [cbm, setCbm] = useState(shipment.cbm_volume?.toString() ?? "");
   const [eta, setEta] = useState(shipment.estimated_delivery ?? "");
   const [customerNotes, setCustomerNotes] = useState(shipment.customer_notes ?? "");
   const [busy, setBusy] = useState(false);
@@ -117,7 +125,9 @@ function EditShipment({ shipment, onClose }: { shipment: Shipment; onClose: () =
     try {
       await updateShipment(shipment.id, {
         status,
+        description: description || null,
         estimated_cost: cost ? Number(cost) : null,
+        cbm_volume: cbm ? Number(cbm) : null,
         estimated_delivery: eta || null,
         customer_notes: customerNotes || null,
       });
@@ -150,8 +160,18 @@ function EditShipment({ shipment, onClose }: { shipment: Shipment; onClose: () =
 
         <div className="rounded-2xl border bg-card p-4 space-y-3">
           <div>
-            <label className="text-xs text-muted-foreground">{t("estimatedCost")}</label>
-            <Input type="number" step="0.01" value={cost} onChange={(e) => setCost(e.target.value)} />
+            <label className="text-xs text-muted-foreground">{t("description")}</label>
+            <Input placeholder={t("descriptionPlaceholder")} value={description} onChange={(e) => setDescription(e.target.value)} />
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label className="text-xs text-muted-foreground">{t("estimatedCost")} ($)</label>
+              <Input type="number" step="0.01" value={cost} onChange={(e) => setCost(e.target.value)} />
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground">{t("cbm")} (CBM)</label>
+              <Input type="number" step="0.001" value={cbm} onChange={(e) => setCbm(e.target.value)} />
+            </div>
           </div>
           <div>
             <label className="text-xs text-muted-foreground">{t("eta")}</label>

@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Input } from "@/components/ui/input";
 import { fetchShipments, type Shipment } from "@/lib/db";
 import { StatusBadge } from "@/components/StatusBadge";
+import { formatUSD, formatCBM, deliveryCountdown } from "@/lib/format";
 import { Search } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/shipments")({
@@ -14,7 +15,7 @@ export const Route = createFileRoute("/_authenticated/shipments")({
 });
 
 function ShipmentsPage() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { user, isStaff } = useAuth();
   const [list, setList] = useState<Shipment[]>([]);
   const [search, setSearch] = useState("");
@@ -43,22 +44,27 @@ function ShipmentsPage() {
         {!loading && list.length === 0 && <p className="text-sm text-muted-foreground">{t("empty")}</p>}
 
         <div className="space-y-2">
-          {list.map((s) => (
-            <Link key={s.id} to="/track" search={{ q: s.tracking_number }} className="block rounded-2xl border bg-card p-4">
-              <div className="flex justify-between items-start gap-2">
-                <div className="min-w-0">
-                  <p className="font-semibold text-sm">{s.tracking_number}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">{s.origin_country} → {s.destination_country}</p>
-                  <div className="text-[11px] text-muted-foreground mt-1 flex flex-wrap gap-x-3">
-                    {s.estimated_cost != null && <span>{t("estimatedCost")}: {s.estimated_cost}</span>}
-                    {s.cbm_volume != null && <span>{t("cbm")}: {s.cbm_volume}</span>}
-                    {s.estimated_delivery && <span>{t("eta")}: {s.estimated_delivery}</span>}
+          {list.map((s) => {
+            const cd = deliveryCountdown(s.estimated_delivery, lang);
+            return (
+              <Link key={s.id} to="/shipments/$id" params={{ id: s.id }} className="block rounded-2xl border bg-card p-4">
+                <div className="flex justify-between items-start gap-2">
+                  <div className="min-w-0">
+                    <p className="font-semibold text-sm">{s.tracking_number}</p>
+                    {s.description && <p className="text-xs text-muted-foreground truncate">{s.description}</p>}
+                    <p className="text-xs text-muted-foreground mt-0.5">{s.origin_country} → {s.destination_country}</p>
+                    <div className="text-[11px] text-muted-foreground mt-1 flex flex-wrap gap-x-3">
+                      <span>{formatUSD(s.estimated_cost)}</span>
+                      <span>{formatCBM(s.cbm_volume)}</span>
+                      {s.estimated_delivery && <span>{t("eta")}: {s.estimated_delivery}</span>}
+                      {cd && <span className="font-semibold text-primary">{cd}</span>}
+                    </div>
                   </div>
+                  <StatusBadge status={s.status} />
                 </div>
-                <StatusBadge status={s.status} />
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
       </section>
     </Layout>

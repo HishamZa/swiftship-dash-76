@@ -5,7 +5,8 @@ import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/hooks/useAuth";
 import { fetchShipments, type Shipment, ACTIVE_STATUSES } from "@/lib/db";
 import { StatusBadge } from "@/components/StatusBadge";
-import { Package, CheckCircle, Truck, Bell } from "lucide-react";
+import { formatUSD, formatCBM, deliveryCountdown } from "@/lib/format";
+import { Package, CheckCircle, Truck, Bell, Search, Newspaper, MapPin } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — Almwanaa" }] }),
@@ -13,17 +14,14 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 });
 
 function Dashboard() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { user, isStaff } = useAuth();
   const navigate = useNavigate();
   const [shipments, setShipments] = useState<Shipment[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (isStaff) {
-      navigate({ to: "/admin", replace: true });
-      return;
-    }
+    if (isStaff) { navigate({ to: "/admin", replace: true }); return; }
     if (!user) return;
     fetchShipments({ customerId: user.id })
       .then(setShipments).catch(() => setShipments([]))
@@ -37,7 +35,7 @@ function Dashboard() {
   const delivered = shipments.filter((s) => s.status === "delivered").length;
 
   return (
-    <Layout>
+    <Layout showBack={false}>
       <section className="px-5 pt-6 pb-4">
         <h1 className="text-xl font-bold">{t("welcome")}</h1>
         <p className="text-xs text-muted-foreground mt-1">{user?.user_metadata?.full_name ?? user?.email}</p>
@@ -50,35 +48,50 @@ function Dashboard() {
       </section>
 
       <section className="px-5 mt-6 grid grid-cols-2 gap-3">
-        <Link to="/shipments" className="rounded-2xl border bg-card p-4 flex flex-col items-start gap-2">
-          <Package className="w-5 h-5 text-primary" />
-          <span className="text-sm font-semibold">{t("myShipments")}</span>
-        </Link>
-        <Link to="/notifications" className="rounded-2xl border bg-card p-4 flex flex-col items-start gap-2">
-          <Bell className="w-5 h-5 text-primary" />
-          <span className="text-sm font-semibold">{t("notifications")}</span>
-        </Link>
+        <NavTile to="/shipments" icon={Package} label={t("myShipments")} />
+        <NavTile to="/track" icon={Search} label={t("trackBtn")} />
+        <NavTile to="/notifications" icon={Bell} label={t("notifications")} />
+        <NavTile to="/announcements" icon={Newspaper} label={t("news")} />
+        <NavTile to="/offices" icon={MapPin} label={t("offices")} />
+        <NavTile to="/addresses" icon={MapPin} label={t("addressBook")} />
       </section>
 
       <section className="px-5 mt-6">
-        <h2 className="font-semibold mb-3 text-sm">{t("myShipments")}</h2>
+        <h2 className="font-semibold mb-3 text-sm">{t("recent")}</h2>
         {loading && <p className="text-sm text-muted-foreground">{t("loading")}</p>}
         {!loading && shipments.length === 0 && <p className="text-sm text-muted-foreground">{t("empty")}</p>}
         <div className="space-y-2">
-          {shipments.slice(0, 8).map((s) => (
-            <Link key={s.id} to="/track" search={{ q: s.tracking_number }} className="block rounded-2xl border bg-card p-4">
-              <div className="flex justify-between items-start gap-2">
-                <div>
-                  <p className="font-semibold text-sm">{s.tracking_number}</p>
-                  <p className="text-xs text-muted-foreground">{s.origin_country} → {s.destination_country}</p>
+          {shipments.slice(0, 8).map((s) => {
+            const cd = deliveryCountdown(s.estimated_delivery, lang);
+            return (
+              <Link key={s.id} to="/shipments/$id" params={{ id: s.id }} className="block rounded-2xl border bg-card p-4">
+                <div className="flex justify-between items-start gap-2">
+                  <div className="min-w-0">
+                    <p className="font-semibold text-sm">{s.tracking_number}</p>
+                    {s.description && <p className="text-xs text-muted-foreground truncate">{s.description}</p>}
+                    <div className="text-[11px] text-muted-foreground mt-1 flex flex-wrap gap-x-3">
+                      <span>{formatUSD(s.estimated_cost)}</span>
+                      <span>{formatCBM(s.cbm_volume)}</span>
+                      {cd && <span className="font-medium text-primary">{cd}</span>}
+                    </div>
+                  </div>
+                  <StatusBadge status={s.status} />
                 </div>
-                <StatusBadge status={s.status} />
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
       </section>
     </Layout>
+  );
+}
+
+function NavTile({ to, icon: Icon, label }: { to: string; icon: typeof Package; label: string }) {
+  return (
+    <Link to={to} className="rounded-2xl border bg-card p-4 flex flex-col items-start gap-2">
+      <span className="grid place-items-center w-9 h-9 rounded-xl bg-primary/10 text-primary"><Icon className="w-4 h-4" /></span>
+      <span className="text-sm font-semibold">{label}</span>
+    </Link>
   );
 }
 

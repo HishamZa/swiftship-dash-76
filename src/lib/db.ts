@@ -16,7 +16,6 @@ export type ShipmentStatus =
   | "arrived_umm_qasr"
   | "arrived_baghdad";
 
-// Statuses used for the admin/customer Iraq route timeline (in order).
 export const TIMELINE_STATUSES: ShipmentStatus[] = [
   "received_warehouse",
   "in_sea_transit",
@@ -50,6 +49,7 @@ export type Shipment = {
   status: ShipmentStatus;
   notes: string | null;
   customer_notes: string | null;
+  description: string | null;
   estimated_cost: number | null;
   cbm_volume: number | null;
   estimated_delivery: string | null;
@@ -94,6 +94,7 @@ export type Notification = {
   body: string | null;
   read: boolean;
   created_at: string;
+  shipment_id?: string | null;
 };
 
 export type Profile = {
@@ -106,7 +107,10 @@ export type Profile = {
   created_at: string;
 };
 
-export type AppRole = "admin" | "employee" | "customer";
+export type AppRole = "admin" | "manager" | "employee" | "customer";
+
+const RANK: Record<AppRole, number> = { admin: 4, manager: 3, employee: 2, customer: 1 };
+export const roleRank = (r: AppRole) => RANK[r] ?? 0;
 
 // ---- Helpers
 export function generateTrackingNumber() {
@@ -127,6 +131,12 @@ export async function fetchShipments(opts?: { customerId?: string; search?: stri
   const { data, error } = await q;
   if (error) throw error;
   return (data ?? []) as Shipment[];
+}
+
+export async function fetchShipment(id: string) {
+  const { data, error } = await supabase.from("shipments").select("*").eq("id", id).maybeSingle();
+  if (error) throw error;
+  return (data ?? null) as Shipment | null;
 }
 
 export async function fetchShipmentByTracking(tracking: string) {
@@ -156,6 +166,7 @@ export type NewShipment = {
   weight?: number | null;
   notes?: string | null;
   customer_notes?: string | null;
+  description?: string | null;
   estimated_cost?: number | null;
   cbm_volume?: number | null;
   estimated_delivery?: string | null;
@@ -189,19 +200,32 @@ export async function createAnnouncement(p: Omit<Announcement, "id" | "created_a
   const { error } = await supabase.from("announcements").insert(p);
   if (error) throw error;
 }
+export async function updateAnnouncement(id: string, p: Partial<Announcement>) {
+  const { error } = await supabase.from("announcements").update(p).eq("id", id);
+  if (error) throw error;
+}
 export async function deleteAnnouncement(id: string) {
   const { error } = await supabase.from("announcements").delete().eq("id", id);
   if (error) throw error;
 }
 
-// ---- Addresses
+// ---- Addresses (also used as offices)
 export async function fetchAddresses(userId: string) {
   const { data, error } = await supabase.from("addresses").select("*").eq("user_id", userId).order("created_at", { ascending: false });
   if (error) throw error;
   return (data ?? []) as AddressEntry[];
 }
+export async function fetchAllAddresses() {
+  const { data, error } = await supabase.from("addresses").select("*").order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data ?? []) as AddressEntry[];
+}
 export async function createAddress(p: Omit<AddressEntry, "id" | "created_at">) {
   const { error } = await supabase.from("addresses").insert(p);
+  if (error) throw error;
+}
+export async function updateAddress(id: string, p: Partial<AddressEntry>) {
+  const { error } = await supabase.from("addresses").update(p).eq("id", id);
   if (error) throw error;
 }
 export async function deleteAddress(id: string) {
@@ -215,16 +239,21 @@ export async function fetchNotifications(userId: string) {
   if (error) throw error;
   return (data ?? []) as Notification[];
 }
+export async function fetchUnreadCount(userId: string) {
+  const { count, error } = await supabase
+    .from("notifications").select("*", { count: "exact", head: true })
+    .eq("user_id", userId).eq("read", false);
+  if (error) return 0;
+  return count ?? 0;
+}
 export async function markAllRead(userId: string) {
   const { error } = await supabase.from("notifications").update({ read: true }).eq("user_id", userId).eq("read", false);
   if (error) throw error;
 }
-
 export async function sendNotificationToUser(userId: string, title: string, body: string) {
   const { error } = await supabase.from("notifications").insert({ user_id: userId, title, body });
   if (error) throw error;
 }
-
 export async function broadcastNotification(title: string, body: string) {
   const customers = await fetchCustomers();
   if (customers.length === 0) return 0;
@@ -236,7 +265,6 @@ export async function broadcastNotification(title: string, body: string) {
 
 // ---- Profiles / Customers
 export async function fetchCustomers(search?: string) {
-  // Admins/employees can SELECT all profiles (per RLS).
   let q = supabase.from("profiles").select("*").order("created_at", { ascending: false });
   if (search) {
     const s = `%${search}%`;
@@ -253,9 +281,30 @@ export async function fetchProfile(userId: string) {
   return (data ?? null) as Profile | null;
 }
 
+export async function updateProfile(userId: string, p: Partial<Profile>) {
+  const { error } = await supabase.from("profiles").update(p).eq("id", userId);
+  if (error) throw error;
+}
+
 // ---- Roles
 export async function fetchMyRoles(userId: string): Promise<AppRole[]> {
   const { data, error } = await supabase.from("user_roles").select("role").eq("user_id", userId);
   if (error) return [];
   return (data ?? []).map((r) => r.role as AppRole);
+}
+
+export async function fetchUserRoles(userId: string): Promise<AppRole[]> {
+  return fetchMyRoles(userId);
+}
+
+export async function fetchAllUserRoles(): Promise<Record<string, AppRole[]>> {
+  const { data, error } = await supabase.from("user_roles").select("user_id, role");
+  if (error) return {};
+  const map: Record<string, AppRole[]> = {};
+  for (const r of data ?? []) {
+    const uid = (r as { user_id: string }).user_id;
+    const role = (r as { role: AppRole }).role;
+    (map[uid] ||= []).push(role);
+  }
+  return map;
 }
