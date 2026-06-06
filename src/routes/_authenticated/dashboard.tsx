@@ -52,9 +52,9 @@ function Dashboard() {
       </section>
 
       <section className="px-5 mt-6 grid grid-cols-2 gap-3">
-        <NavTile to="/shipments" icon={Package} label={t("myShipments")} />
+        <NavTile to="/shipments" icon={Package} label={t("myShipments")} badge={unreadShipments} />
         <NavTile to="/track" icon={Search} label={t("trackBtn")} />
-        <NavTile to="/notifications" icon={Bell} label={t("notifications")} />
+        <NavTile to="/notifications" icon={Bell} label={t("notifications")} badge={unreadNotifications} />
         <NavTile to="/announcements" icon={Newspaper} label={t("news")} badge={unreadNews} />
         <NavTile to="/offices" icon={MapPin} label={t("offices")} />
         <NavTile to="/addresses" icon={MapPin} label={t("addressBook")} />
