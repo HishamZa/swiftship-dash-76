@@ -117,6 +117,10 @@ const dict = {
   notifications: { en: "Notifications", ar: "التنبيهات" },
   markAllRead: { en: "Mark all read", ar: "تعليم الكل كمقروء" },
   noNotifications: { en: "No notifications yet.", ar: "لا توجد تنبيهات بعد." },
+  shipmentUpdateTitle: { en: "Shipment update", ar: "تحديث الشحنة" },
+  shipmentStatusUpdatedTo: { en: "Shipment status updated to", ar: "تم تحديث حالة الشحنة إلى" },
+  copyTracking: { en: "Copy tracking number", ar: "نسخ رقم التتبع" },
+  trackingCopied: { en: "Tracking number copied", ar: "تم نسخ رقم التتبع" },
   // accounts
   accounts: { en: "Accounts Management", ar: "إدارة الحسابات" },
   registeredMembers: { en: "Registered Members", ar: "الأعضاء المسجلون" },
