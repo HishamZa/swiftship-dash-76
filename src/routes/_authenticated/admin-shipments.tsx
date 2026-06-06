@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Layout } from "@/components/Layout";
 import { useI18n } from "@/lib/i18n";
@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { fetchShipments, ALL_STATUSES, statusKey, type Shipment, type ShipmentStatus } from "@/lib/db";
 import { StatusBadge } from "@/components/StatusBadge";
+import { formatUSD, formatCBM } from "@/lib/format";
 import { Search } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin-shipments")({
@@ -53,22 +54,22 @@ function AdminShipmentsPage() {
         {list.length === 0 && <p className="text-sm text-muted-foreground">{t("empty")}</p>}
         <div className="space-y-2">
           {list.map((s) => (
-            <div key={s.id} className="rounded-2xl border bg-card p-4">
+            <Link key={s.id} to="/shipments/$id" params={{ id: s.id }} className="block rounded-2xl border bg-card p-4">
               <div className="flex justify-between items-start gap-2">
                 <div className="min-w-0 flex-1">
                   <p className="font-semibold text-sm">{s.tracking_number}</p>
                   <p className="text-xs text-muted-foreground truncate">{s.customer_name}</p>
+                  {s.description && <p className="text-[11px] text-muted-foreground truncate">{s.description}</p>}
                   <div className="text-[11px] text-muted-foreground mt-1 flex flex-wrap gap-x-3">
-                    {s.estimated_cost != null && <span>{t("estimatedCost")}: {s.estimated_cost}</span>}
-                    {s.cbm_volume != null && <span>{t("cbm")}: {s.cbm_volume}</span>}
+                    <span>{formatUSD(s.estimated_cost)}</span>
+                    <span>{formatCBM(s.cbm_volume)}</span>
                     {s.estimated_delivery && <span>{t("eta")}: {s.estimated_delivery}</span>}
                   </div>
-                  {s.customer_notes && <p className="text-[11px] mt-1 line-clamp-2">{s.customer_notes}</p>}
                   <p className="text-[10px] text-muted-foreground mt-1">{new Date(s.created_at).toLocaleDateString()}</p>
                 </div>
                 <StatusBadge status={s.status} />
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>

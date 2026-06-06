@@ -4,7 +4,7 @@ import { Layout } from "@/components/Layout";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/hooks/useAuth";
 import { fetchShipments, fetchCustomers, type Shipment, ACTIVE_STATUSES } from "@/lib/db";
-import { Package, Users, Truck, CheckCircle, PlusCircle, Send } from "lucide-react";
+import { Package, Users, Truck, CheckCircle, PlusCircle, Send, UserCog, Newspaper, MapPin, Boxes } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({ meta: [{ title: "Admin — Almwanaa" }] }),
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
 
 function AdminHome() {
   const { t } = useI18n();
-  const { isStaff, loading } = useAuth();
+  const { isStaff, isManager, loading } = useAuth();
   const navigate = useNavigate();
   const [shipments, setShipments] = useState<Shipment[]>([]);
   const [customerCount, setCustomerCount] = useState(0);
@@ -32,7 +32,7 @@ function AdminHome() {
   const delivered = shipments.filter((s) => s.status === "delivered").length;
 
   return (
-    <Layout>
+    <Layout showBack={false}>
       <section className="px-5 pt-6 pb-4">
         <h1 className="text-xl font-bold">{t("adminDashboard")}</h1>
         <p className="text-xs text-muted-foreground mt-1">{t("brand")}</p>
@@ -47,9 +47,12 @@ function AdminHome() {
 
       <section className="px-5 mt-6 space-y-3">
         <NavCard to="/admin-add" icon={PlusCircle} title={t("addShipment")} />
-        <NavCard to="/admin-customers" icon={Users} title={t("manageShipments")} />
-        <NavCard to="/admin-shipments" icon={Package} title={t("allShipments")} />
-        <NavCard to="/admin-notify" icon={Send} title={t("sendNotification")} />
+        <NavCard to="/admin-shipments" icon={Boxes} title={t("allShipments")} />
+        <NavCard to="/admin-customers" icon={Package} title={t("manageShipments")} />
+        <NavCard to="/accounts" icon={UserCog} title={t("accounts")} />
+        <NavCard to="/news-manage" icon={Newspaper} title={t("newsManagement")} disabled={!isManager} />
+        <NavCard to="/offices-manage" icon={MapPin} title={t("officesManagement")} />
+        <NavCard to="/admin-notify" icon={Send} title={t("sendNotification")} disabled={!isManager} />
       </section>
     </Layout>
   );
@@ -67,12 +70,18 @@ function Stat({ icon: Icon, label, value, tint }: { icon: typeof Package; label:
   );
 }
 
-function NavCard({ to, icon: Icon, title }: { to: string; icon: typeof Package; title: string }) {
+function NavCard({ to, icon: Icon, title, disabled }: { to: string; icon: typeof Package; title: string; disabled?: boolean }) {
+  if (disabled) {
+    return (
+      <div className="flex items-center gap-3 rounded-2xl border bg-card/50 p-4 opacity-60">
+        <span className="grid place-items-center w-10 h-10 rounded-xl bg-muted text-muted-foreground"><Icon className="w-5 h-5" /></span>
+        <span className="font-semibold text-sm">{title}</span>
+      </div>
+    );
+  }
   return (
     <Link to={to} className="flex items-center gap-3 rounded-2xl border bg-card p-4">
-      <span className="grid place-items-center w-10 h-10 rounded-xl bg-primary/10 text-primary">
-        <Icon className="w-5 h-5" />
-      </span>
+      <span className="grid place-items-center w-10 h-10 rounded-xl bg-primary/10 text-primary"><Icon className="w-5 h-5" /></span>
       <span className="font-semibold text-sm">{title}</span>
     </Link>
   );

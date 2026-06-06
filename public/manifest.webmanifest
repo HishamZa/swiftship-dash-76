@@ -1,5 +1,5 @@
 {
-  "name": "Almwanaa — Shipment Tracking",
+  "name": "Almwanaa Company — شركة الموانئ",
   "short_name": "Almwanaa",
   "description": "Track shipments, manage logistics, and stay informed.",
   "start_url": "/",
@@ -7,7 +7,7 @@
   "display": "standalone",
   "orientation": "portrait",
   "theme_color": "#0b2545",
-  "background_color": "#0b2545",
+  "background_color": "#ffffff",
   "icons": [
     { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
     { "src": "/icon-512.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },

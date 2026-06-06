@@ -26,6 +26,14 @@ function NotificationsPage() {
   };
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [user]);
 
+  // Mark as read on view.
+  useEffect(() => {
+    if (user && items.some((n) => !n.read)) {
+      markAllRead(user.id).catch(() => {});
+    }
+    // eslint-disable-next-line
+  }, [items.length, user]);
+
   const onMarkAll = async () => {
     if (!user) return;
     await markAllRead(user.id);
@@ -48,9 +56,9 @@ function NotificationsPage() {
           <div key={n.id} className={`rounded-2xl border p-4 ${n.read ? "bg-card" : "bg-primary/5 border-primary/20"}`}>
             <div className="flex justify-between items-start gap-2">
               <p className="font-semibold text-sm">{n.title}</p>
-              <span className="text-[10px] text-muted-foreground">{new Date(n.created_at).toLocaleDateString()}</span>
+              <span className="text-[10px] text-muted-foreground">{new Date(n.created_at).toLocaleString()}</span>
             </div>
-            {n.body && <p className="text-sm text-muted-foreground mt-1">{n.body}</p>}
+            {n.body && <p className="text-sm text-muted-foreground mt-1 whitespace-pre-wrap">{n.body}</p>}
           </div>
         ))}
       </section>
