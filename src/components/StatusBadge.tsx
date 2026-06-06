@@ -22,7 +22,7 @@ const colors: Record<ShipmentStatus, string> = {
 export function StatusBadge({ status }: { status: ShipmentStatus }) {
   const { t } = useI18n();
   return (
-    <span className={cn("inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium", colors[status])}>
+    <span className={cn("inline-flex items-center justify-center whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-medium leading-5 min-h-[20px]", colors[status])}>
       {t(statusKey(status))}
     </span>
   );

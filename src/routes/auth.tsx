@@ -60,7 +60,10 @@ function AuthPage() {
 
   const signUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!phone.trim()) { toast.error(t("phone")); return; }
+    if (!/^\d{11}$/.test(phone)) {
+      toast.error(lang === "ar" ? "يجب أن يحتوي رقم الهاتف على 11 رقماً بالضبط." : "Phone number must contain exactly 11 digits.");
+      return;
+    }
     setLoading(true);
     const { error } = await supabase.auth.signUp({
       email: identityToEmail(phone),
@@ -122,7 +125,7 @@ function AuthPage() {
               <Input required placeholder={t("fullName")} value={fullName} onChange={(e) => setFullName(e.target.value)} />
               <Input required placeholder={t("governorate")} value={governorate} onChange={(e) => setGovernorate(e.target.value)} />
               <Input required placeholder={t("area")} value={area} onChange={(e) => setArea(e.target.value)} />
-              <Input required placeholder={t("phone")} value={phone} onChange={(e) => setPhone(e.target.value)} />
+              <Input required inputMode="numeric" pattern="\d{11}" maxLength={11} minLength={11} title={lang === "ar" ? "11 رقماً" : "Exactly 11 digits"} placeholder={t("phone")} value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 11))} />
               <Input type="password" required minLength={6} placeholder={t("password")} value={passwordUp} onChange={(e) => setPasswordUp(e.target.value)} />
               <Button type="submit" className="w-full" disabled={loading}>{t("signUp")}</Button>
             </form>

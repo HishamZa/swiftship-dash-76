@@ -13,9 +13,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { fetchCustomers, fetchAllUserRoles, type Profile, type AppRole } from "@/lib/db";
 import { useServerFn } from "@tanstack/react-start";
-import { createStaffAccount, deleteUserAccount } from "@/lib/staff.functions";
+import { createStaffAccount, deleteUserAccount, resetUserPassword } from "@/lib/staff.functions";
 import { toast } from "sonner";
-import { Plus, Search, UserCircle2, ShieldCheck, Trash2 } from "lucide-react";
+import { Plus, Search, UserCircle2, ShieldCheck, Trash2, Settings } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/accounts")({
   head: () => ({ meta: [{ title: "Accounts — Almwanaa" }] }),
@@ -133,6 +133,7 @@ function AccountsPage() {
 
 function AccountRow({ p, canDelete, onDelete }: { p: Profile & { role: AppRole }; canDelete: boolean; onDelete: () => void }) {
   const { t } = useI18n();
+  const { isStaff } = useAuth();
   const tint =
     p.role === "admin" ? "bg-destructive/10 text-destructive"
     : p.role === "manager" ? "bg-warning/20 text-warning-foreground"
@@ -147,6 +148,7 @@ function AccountRow({ p, canDelete, onDelete }: { p: Profile & { role: AppRole }
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <span className={`text-[10px] font-semibold rounded-full px-2 py-0.5 ${tint}`}>{t(p.role)}</span>
+          {isStaff && <ResetPasswordButton userId={p.id} />}
           {canDelete && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
@@ -167,6 +169,51 @@ function AccountRow({ p, canDelete, onDelete }: { p: Profile & { role: AppRole }
         </div>
       </div>
     </div>
+  );
+}
+
+function ResetPasswordButton({ userId }: { userId: string }) {
+  const { t, lang } = useI18n();
+  const reset = useServerFn(resetUserPassword);
+  const [open, setOpen] = useState(false);
+  const [pw, setPw] = useState("");
+  const [pw2, setPw2] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (pw.length < 6) { toast.error(lang === "ar" ? "كلمة المرور قصيرة جداً (6 أحرف على الأقل)" : "Password must be at least 6 characters"); return; }
+    if (pw !== pw2) { toast.error(lang === "ar" ? "كلمتا المرور غير متطابقتين" : "Passwords do not match"); return; }
+    setBusy(true);
+    try {
+      await reset({ data: { userId, newPassword: pw } });
+      toast.success(lang === "ar" ? "تم تحديث كلمة المرور" : "Password updated");
+      setOpen(false); setPw(""); setPw2("");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Error");
+    } finally { setBusy(false); }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="ghost" size="icon" className="h-8 w-8"><Settings className="w-4 h-4" /></Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-sm">
+        <DialogHeader><DialogTitle>{t("resetPassword")}</DialogTitle></DialogHeader>
+        <form onSubmit={submit} className="space-y-3">
+          <div>
+            <label className="text-xs text-muted-foreground">{t("newPassword")}</label>
+            <Input type="password" required minLength={6} value={pw} onChange={(e) => setPw(e.target.value)} />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground">{lang === "ar" ? "تأكيد كلمة المرور الجديدة" : "Confirm New Password"}</label>
+            <Input type="password" required minLength={6} value={pw2} onChange={(e) => setPw2(e.target.value)} />
+          </div>
+          <Button type="submit" className="w-full" disabled={busy}>{t("confirm")}</Button>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }
 
