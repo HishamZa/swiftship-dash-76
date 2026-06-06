@@ -211,6 +211,7 @@ function EditShipment({ shipment, onClose }: { shipment: Shipment; onClose: () =
           <div>
             <label className="text-xs text-muted-foreground">{t("eta")}</label>
             <Input type="date" value={eta} onChange={(e) => setEta(e.target.value)} />
+            {cd && <p className="text-[11px] font-semibold text-primary mt-1">{cd}</p>}
           </div>
           <div>
             <label className="text-xs text-muted-foreground">{t("customerNotes")}</label>
@@ -218,7 +219,30 @@ function EditShipment({ shipment, onClose }: { shipment: Shipment; onClose: () =
           </div>
           <Button className="w-full" onClick={save} disabled={busy}>{t("save")}</Button>
         </div>
+
+        <div className="rounded-2xl border bg-card p-4">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" className="w-full" disabled={busy}>
+                <Trash2 className="w-4 h-4 me-1" /> {t("deleteShipment")}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>{t("deleteShipment")}</AlertDialogTitle>
+                <AlertDialogDescription>{t("confirmDelete")}</AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+                <AlertDialogAction onClick={onDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{t("confirm")}</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
       </section>
+    </Layout>
+  );
+}
     </Layout>
   );
 }
