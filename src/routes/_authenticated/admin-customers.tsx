@@ -81,18 +81,22 @@ function AdminCustomersPage() {
         </section>
         <section className="px-5 mt-2 space-y-2">
           {shipments.length === 0 && <p className="text-sm text-muted-foreground">{t("empty")}</p>}
-          {shipments.map((s) => (
-            <button key={s.id} onClick={() => setEditing(s)} className="block w-full text-start rounded-2xl border bg-card p-4 hover:bg-muted/40 transition">
-              <div className="flex justify-between items-start gap-2">
-                <div className="min-w-0">
-                  <p className="font-semibold text-sm">{s.tracking_number}</p>
-                  {s.description && <p className="text-xs text-muted-foreground truncate">{s.description}</p>}
-                  <p className="text-xs text-muted-foreground mt-1">{formatUSD(s.estimated_cost)} · {formatCBM(s.cbm_volume)}</p>
+          {shipments.map((s) => {
+            const cd = deliveryCountdown(s.estimated_delivery, lang);
+            return (
+              <button key={s.id} onClick={() => setEditing(s)} className="block w-full text-start rounded-2xl border bg-card p-4 hover:bg-muted/40 transition">
+                <div className="flex justify-between items-start gap-2">
+                  <div className="min-w-0">
+                    <p className="font-semibold text-sm">{s.tracking_number}</p>
+                    {s.description && <p className="text-xs text-muted-foreground truncate">{s.description}</p>}
+                    <p className="text-xs text-muted-foreground mt-1">{formatUSD(s.estimated_cost)} · {formatCBM(s.cbm_volume)}</p>
+                    {cd && <p className="text-[11px] font-semibold text-primary mt-1">{cd}</p>}
+                  </div>
+                  <StatusBadge status={s.status} />
                 </div>
-                <StatusBadge status={s.status} />
-              </div>
-            </button>
-          ))}
+              </button>
+            );
+          })}
         </section>
       </Layout>
     );
