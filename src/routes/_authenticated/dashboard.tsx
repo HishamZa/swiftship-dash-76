@@ -88,11 +88,16 @@ function Dashboard() {
   );
 }
 
-function NavTile({ to, icon: Icon, label }: { to: string; icon: typeof Package; label: string }) {
+function NavTile({ to, icon: Icon, label, badge }: { to: string; icon: typeof Package; label: string; badge?: number }) {
   return (
-    <Link to={to} className="rounded-2xl border bg-card p-4 flex flex-col items-start gap-2">
+    <Link to={to} className="relative rounded-2xl border bg-card p-4 flex flex-col items-start gap-2">
       <span className="grid place-items-center w-9 h-9 rounded-xl bg-primary/10 text-primary"><Icon className="w-4 h-4" /></span>
       <span className="text-sm font-semibold">{label}</span>
+      {badge && badge > 0 ? (
+        <span className="absolute top-2 end-2 min-w-[20px] h-5 px-1.5 grid place-items-center rounded-full bg-destructive text-destructive-foreground text-[11px] font-bold">
+          {badge > 99 ? "99+" : badge}
+        </span>
+      ) : null}
     </Link>
   );
 }
