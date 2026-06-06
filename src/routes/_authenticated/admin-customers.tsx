@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Layout } from "@/components/Layout";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/hooks/useAuth";
@@ -8,13 +8,14 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
-  fetchCustomers, fetchShipments, fetchAllUserRoles, updateShipment,
+  fetchCustomers, fetchShipments, fetchAllUserRoles, updateShipment, deleteShipment,
   ALL_STATUSES, statusKey, type Profile, type Shipment, type ShipmentStatus,
 } from "@/lib/db";
 import { StatusProgress } from "@/components/StatusProgress";
 import { StatusBadge } from "@/components/StatusBadge";
-import { formatUSD, formatCBM } from "@/lib/format";
-import { ArrowLeft, Search, Package } from "lucide-react";
+import { formatUSD, formatCBM, deliveryCountdown } from "@/lib/format";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { ArrowLeft, Search, Package, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/admin-customers")({
@@ -23,7 +24,7 @@ export const Route = createFileRoute("/_authenticated/admin-customers")({
 });
 
 function AdminCustomersPage() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { isStaff, loading } = useAuth();
   const navigate = useNavigate();
   const [customers, setCustomers] = useState<Profile[]>([]);
@@ -80,18 +81,22 @@ function AdminCustomersPage() {
         </section>
         <section className="px-5 mt-2 space-y-2">
           {shipments.length === 0 && <p className="text-sm text-muted-foreground">{t("empty")}</p>}
-          {shipments.map((s) => (
-            <button key={s.id} onClick={() => setEditing(s)} className="block w-full text-start rounded-2xl border bg-card p-4 hover:bg-muted/40 transition">
-              <div className="flex justify-between items-start gap-2">
-                <div className="min-w-0">
-                  <p className="font-semibold text-sm">{s.tracking_number}</p>
-                  {s.description && <p className="text-xs text-muted-foreground truncate">{s.description}</p>}
-                  <p className="text-xs text-muted-foreground mt-1">{formatUSD(s.estimated_cost)} · {formatCBM(s.cbm_volume)}</p>
+          {shipments.map((s) => {
+            const cd = deliveryCountdown(s.estimated_delivery, lang);
+            return (
+              <button key={s.id} onClick={() => setEditing(s)} className="block w-full text-start rounded-2xl border bg-card p-4 hover:bg-muted/40 transition">
+                <div className="flex justify-between items-start gap-2">
+                  <div className="min-w-0">
+                    <p className="font-semibold text-sm">{s.tracking_number}</p>
+                    {s.description && <p className="text-xs text-muted-foreground truncate">{s.description}</p>}
+                    <p className="text-xs text-muted-foreground mt-1">{formatUSD(s.estimated_cost)} · {formatCBM(s.cbm_volume)}</p>
+                    {cd && <p className="text-[11px] font-semibold text-primary mt-1">{cd}</p>}
+                  </div>
+                  <StatusBadge status={s.status} />
                 </div>
-                <StatusBadge status={s.status} />
-              </div>
-            </button>
-          ))}
+              </button>
+            );
+          })}
         </section>
       </Layout>
     );
@@ -129,7 +134,7 @@ function AdminCustomersPage() {
 }
 
 function EditShipment({ shipment, onClose }: { shipment: Shipment; onClose: () => void }) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const [status, setStatus] = useState<ShipmentStatus>(shipment.status);
   const [description, setDescription] = useState(shipment.description ?? "");
   const [cost, setCost] = useState(shipment.estimated_cost?.toString() ?? "");
@@ -137,6 +142,18 @@ function EditShipment({ shipment, onClose }: { shipment: Shipment; onClose: () =
   const [eta, setEta] = useState(shipment.estimated_delivery ?? "");
   const [customerNotes, setCustomerNotes] = useState(shipment.customer_notes ?? "");
   const [busy, setBusy] = useState(false);
+  const cd = deliveryCountdown(eta, lang);
+
+  const onDelete = async () => {
+    setBusy(true);
+    try {
+      await deleteShipment(shipment.id);
+      toast.success(t("delete"));
+      onClose();
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "Error");
+    } finally { setBusy(false); }
+  };
 
   const save = async () => {
     setBusy(true);
@@ -194,12 +211,33 @@ function EditShipment({ shipment, onClose }: { shipment: Shipment; onClose: () =
           <div>
             <label className="text-xs text-muted-foreground">{t("eta")}</label>
             <Input type="date" value={eta} onChange={(e) => setEta(e.target.value)} />
+            {cd && <p className="text-[11px] font-semibold text-primary mt-1">{cd}</p>}
           </div>
           <div>
             <label className="text-xs text-muted-foreground">{t("customerNotes")}</label>
             <Textarea rows={3} value={customerNotes} onChange={(e) => setCustomerNotes(e.target.value)} />
           </div>
           <Button className="w-full" onClick={save} disabled={busy}>{t("save")}</Button>
+        </div>
+
+        <div className="rounded-2xl border bg-card p-4">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" className="w-full" disabled={busy}>
+                <Trash2 className="w-4 h-4 me-1" /> {t("deleteShipment")}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>{t("deleteShipment")}</AlertDialogTitle>
+                <AlertDialogDescription>{t("confirmDelete")}</AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+                <AlertDialogAction onClick={onDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{t("confirm")}</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </section>
     </Layout>
