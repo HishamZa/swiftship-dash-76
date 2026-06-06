@@ -24,7 +24,7 @@ export const Route = createFileRoute("/_authenticated/admin-customers")({
 });
 
 function AdminCustomersPage() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { isStaff, loading } = useAuth();
   const navigate = useNavigate();
   const [customers, setCustomers] = useState<Profile[]>([]);
