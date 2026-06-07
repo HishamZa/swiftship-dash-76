@@ -111,7 +111,7 @@ function ShipmentDetailPage() {
           {shipment.description && <Row label={t("description")} value={shipment.description} />}
           <Row label={t("estimatedCost")} value={formatUSD(shipment.estimated_cost)} />
           <Row label={t("cbm")} value={formatCBM(shipment.cbm_volume)} />
-          {shipment.estimated_delivery && <Row label={t("eta")} value={shipment.estimated_delivery} />}
+          {shipment.estimated_delivery && <Row label={t("eta")} value={formatDate(shipment.estimated_delivery)} />}
           {cd && <Row label={t("remaining")} value={cd} highlight />}
           {shipment.customer_notes && (
             <div className="mt-3 rounded-xl bg-muted/40 p-3">
