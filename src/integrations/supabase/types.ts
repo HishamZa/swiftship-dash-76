@@ -20,6 +20,7 @@ export type Database = {
           city: string | null
           country: string | null
           created_at: string
+          entry_type: string
           id: string
           name: string
           notes: string | null
@@ -32,6 +33,7 @@ export type Database = {
           city?: string | null
           country?: string | null
           created_at?: string
+          entry_type?: string
           id?: string
           name: string
           notes?: string | null
@@ -44,6 +46,7 @@ export type Database = {
           city?: string | null
           country?: string | null
           created_at?: string
+          entry_type?: string
           id?: string
           name?: string
           notes?: string | null
