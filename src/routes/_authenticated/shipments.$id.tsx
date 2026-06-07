@@ -48,7 +48,7 @@ function ShipmentDetailPage() {
         );
         markTestShipmentOpened(user.id);
       }
-      setHistory([]);
+      setHistory(buildTestHistory());
       setLoading(false);
       return;
     }
