@@ -166,20 +166,20 @@ function AdminAddPage() {
                             setSearch("");
                           }}
                           className={cn(
-                            "relative flex w-full select-none items-center rounded-sm px-2 py-2 text-sm text-left outline-none",
+                            "relative flex w-full select-none items-center gap-2 rounded-sm px-2 py-2 text-sm text-left outline-none",
                             isSelected && "bg-accent text-accent-foreground"
                           )}
                         >
-                          <Check
-                            className={cn(
-                              "mr-2 h-4 w-4 shrink-0",
-                              isSelected ? "opacity-100" : "opacity-0"
-                            )}
-                          />
-                          <span className="truncate">
+                          <span className="flex-1 truncate text-start">
                             {(c.full_name ?? "—")}{c.phone ? ` · ${c.phone}` : ""}
                             {isDup ? ` · #${c.id.slice(0, 4)}` : ""}
                           </span>
+                          <Check
+                            className={cn(
+                              "ms-auto h-4 w-4 shrink-0",
+                              isSelected ? "opacity-100" : "opacity-0"
+                            )}
+                          />
                         </button>
                       );
                     })
