@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { Shipment } from "./db";
+import type { Shipment, StatusHistory } from "./db";
 
 export const TEST_SHIPMENT_ID = "test-onboarding";
 
