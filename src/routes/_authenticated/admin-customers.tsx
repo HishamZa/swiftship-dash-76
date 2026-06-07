@@ -50,8 +50,24 @@ function AdminCustomersPage() {
         return !roles.some((r) => r === "admin" || r === "manager" || r === "employee");
       });
       const cnt: Record<string, number> = {};
-      for (const s of allShipments) if (s.customer_id) cnt[s.customer_id] = (cnt[s.customer_id] ?? 0) + 1;
-      setCustomers(onlyCustomers);
+      const latest: Record<string, string> = {};
+      for (const s of allShipments) {
+        if (s.customer_id) {
+          cnt[s.customer_id] = (cnt[s.customer_id] ?? 0) + 1;
+          if (!latest[s.customer_id] || s.created_at > latest[s.customer_id]) {
+            latest[s.customer_id] = s.created_at;
+          }
+        }
+      }
+      const sorted = [...onlyCustomers].sort((a, b) => {
+        const da = latest[a.id];
+        const db = latest[b.id];
+        if (da && db) return db.localeCompare(da);
+        if (da) return -1;
+        if (db) return 1;
+        return 0;
+      });
+      setCustomers(sorted);
       setCounts(cnt);
     })();
   }, [isStaff, loading, navigate, search]);
