@@ -165,7 +165,7 @@ function AdminAddPage() {
                             setOpen(false);
                             setSearch("");
                           }}
-                          className="relative flex w-full select-none items-center rounded-sm px-2 py-2 text-sm text-left outline-none hover:bg-accent hover:text-accent-foreground"
+                          className="relative flex w-full select-none items-center rounded-sm px-2 py-2 text-sm text-left outline-none"
                         >
                           <Check
                             className={cn(
