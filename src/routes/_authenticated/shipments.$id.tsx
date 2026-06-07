@@ -70,7 +70,9 @@ function ShipmentDetailPage() {
   if (loading) return <Layout><p className="p-6 text-sm text-muted-foreground">{t("loading")}</p></Layout>;
   if (!shipment) return <Layout><p className="p-6 text-sm text-muted-foreground">{t("notFound")}</p></Layout>;
 
-  const cd = deliveryCountdown(shipment.estimated_delivery, lang);
+  const cd = isTest
+    ? TEST_REMAINING_TEXT[lang]
+    : deliveryCountdown(shipment.estimated_delivery, lang);
 
   return (
     <Layout>
@@ -79,7 +81,8 @@ function ShipmentDetailPage() {
       </section>
 
       <section className="px-5 space-y-4">
-        <div className="rounded-2xl border bg-card p-5">
+        <div className="relative rounded-2xl border bg-card p-5 overflow-hidden">
+          {isTest && <TestShipmentRibbon />}
           <div className="flex items-start justify-between gap-2 mb-3">
             <div className="min-w-0">
               <p className="text-xs text-muted-foreground">{t("trackingNo")}</p>
@@ -127,7 +130,7 @@ function ShipmentDetailPage() {
           <StatusTimeline history={history} />
         </div>
 
-        {isStaff && (
+        {isStaff && !isTest && (
           <div className="rounded-2xl border bg-card p-4">
             <AlertDialog>
               <AlertDialogTrigger asChild>
