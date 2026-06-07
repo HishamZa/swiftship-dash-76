@@ -3,7 +3,9 @@ import { useEffect, useState } from "react";
 import { Layout } from "@/components/Layout";
 import { useI18n } from "@/lib/i18n";
 import { fetchAllAddresses, type AddressEntry } from "@/lib/db";
-import { MapPin, Phone } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { MapPin, Phone, Copy } from "lucide-react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/offices")({
   head: () => ({ meta: [{ title: "Offices — Almwanaa" }] }),
@@ -16,8 +18,20 @@ function OfficesPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchAllAddresses().then(setItems).catch(() => setItems([])).finally(() => setLoading(false));
+    fetchAllAddresses()
+      .then((all) => setItems(all.filter((a) => a.entry_type === "office")))
+      .catch(() => setItems([]))
+      .finally(() => setLoading(false));
   }, []);
+
+  const copyPhone = async (phone: string) => {
+    try {
+      await navigator.clipboard.writeText(phone);
+      toast.success(t("phoneCopied"));
+    } catch {
+      toast.error("Error");
+    }
+  };
 
   return (
     <Layout>
@@ -33,9 +47,20 @@ function OfficesPage() {
                 <MapPin className="w-4 h-4 mt-0.5 shrink-0" /> {[o.address, o.city, o.country].filter(Boolean).join(", ") || "—"}
               </p>
               {o.phone && (
-                <p className="mt-1 text-sm text-muted-foreground flex items-center gap-2">
-                  <Phone className="w-4 h-4" /> {o.phone}
-                </p>
+                <div className="mt-1 text-sm text-muted-foreground flex items-center gap-2">
+                  <Phone className="w-4 h-4" />
+                  <span>{o.phone}</span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6"
+                    onClick={() => copyPhone(o.phone!)}
+                    aria-label={t("copy")}
+                  >
+                    <Copy className="w-3 h-3" />
+                  </Button>
+                </div>
               )}
             </div>
           ))}

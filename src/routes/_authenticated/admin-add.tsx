@@ -27,6 +27,7 @@ function AdminAddPage() {
   const [cost, setCost] = useState("");
   const [cbm, setCbm] = useState("");
   const [eta, setEta] = useState("");
+  const [remainingDays, setRemainingDays] = useState("");
   const [customerNotes, setCustomerNotes] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -82,7 +83,7 @@ function AdminAddPage() {
       });
       toast.success(t("sent"));
       setTracking(generateTrackingNumber());
-      setDescription(""); setCost(""); setCbm(""); setEta(""); setCustomerNotes("");
+      setDescription(""); setCost(""); setCbm(""); setEta(""); setRemainingDays(""); setCustomerNotes("");
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Error");
     } finally {
@@ -142,9 +143,44 @@ function AdminAddPage() {
             </div>
           </div>
 
-          <div>
-            <label className="text-xs text-muted-foreground">{t("eta")}</label>
-            <Input type="date" value={eta} onChange={(e) => setEta(e.target.value)} />
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label className="text-xs text-muted-foreground">{t("eta")}</label>
+              <Input
+                type="date"
+                value={eta}
+                onChange={(e) => {
+                  setEta(e.target.value);
+                  if (e.target.value) {
+                    const today = new Date(); today.setHours(0, 0, 0, 0);
+                    const d = new Date(e.target.value);
+                    const diff = Math.round((d.getTime() - today.getTime()) / 86400000);
+                    setRemainingDays(diff >= 0 ? String(diff) : "");
+                  } else {
+                    setRemainingDays("");
+                  }
+                }}
+              />
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground">{t("remainingDays")}</label>
+              <Input
+                type="number"
+                min="0"
+                value={remainingDays}
+                onChange={(e) => {
+                  setRemainingDays(e.target.value);
+                  const n = Number(e.target.value);
+                  if (e.target.value !== "" && Number.isFinite(n) && n >= 0) {
+                    const d = new Date(); d.setHours(0, 0, 0, 0);
+                    d.setDate(d.getDate() + n);
+                    setEta(d.toISOString().slice(0, 10));
+                  } else {
+                    setEta("");
+                  }
+                }}
+              />
+            </div>
           </div>
 
           <div>
