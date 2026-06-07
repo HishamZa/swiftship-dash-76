@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchAnnouncements, fetchShipments, fetchUnreadCount } from "./db";
+import { wasTestShipmentOpened } from "./testShipment";
 
 const EVT = "unread-counts-changed";
 
@@ -58,6 +59,11 @@ export function useUnreadShipmentsCount(uid: string | undefined) {
   return useUnreadCount(uid, async () => {
     if (!uid) return 0;
     const items = await fetchShipments({ customerId: uid });
+    // Onboarding test shipment counts as 1 unread until first opened,
+    // but only while the customer has zero real shipments.
+    if (items.length === 0) {
+      return wasTestShipmentOpened(uid) ? 0 : 1;
+    }
     const seen = getLastSeen("shipments", uid);
     return items.filter((s) => new Date(s.created_at).getTime() > seen).length;
   });
