@@ -151,7 +151,10 @@ const dict = {
   shipmentDetails: { en: "Shipment Details", ar: "تفاصيل الشحنة" },
   // misc
   loading: { en: "Loading...", ar: "جارٍ التحميل..." },
-  empty: { en: "Nothing to show yet.", ar: "لا يوجد شيء حاليًا." },
+  empty: {
+    en: "Welcome to Almawanaa Shipping & International Marketing\n\nYou do not have any shipments yet..\n\nNeed help starting your first shipment?\n\nGet started in 3 steps:\n\n1- Go to \"Our Offices\"\n2- Contact us via WhatsApp or visit our office\n3- Send us the details of the product you would like to purchase\n\nWe have a specialized team dedicated to providing you with the best prices directly from factories",
+    ar: "مرحباً بك في شركة الموانئ للشحن والتسويق الدولي\n\nليس لديك اي شحنات بعد..\n\nتحتاج مساعدة لبدء أول شحنة؟\n\nابدأ خلال 3 خطوات :\n\n1- اذهب الى \"مكاتبنا\"\n2- تواصل معنا عبر الواتس اب أو زور مكتبنا\n3- ارسل لنا تفاصيل المنتج الذي تريد شراءه\n\nلدينا كادر متخصص يعملون لتزويدكم بأفضل الاسعار من المصانع مباشرتاً",
+  },
   welcome: { en: "Welcome", ar: "مرحبًا" },
   role: { en: "Role", ar: "الدور" },
   admin: { en: "Server Admin", ar: "إدارة السيرفر" },
