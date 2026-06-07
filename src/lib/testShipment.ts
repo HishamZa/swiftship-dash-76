@@ -18,6 +18,9 @@ export function markTestShipmentOpened(uid: string) {
   if (localStorage.getItem(openedKey(uid)) === "1") return;
   localStorage.setItem(openedKey(uid), "1");
   window.dispatchEvent(new Event(OPENED_EVT));
+  // Also nudge the global unread-counts listeners so the My Shipments badge
+  // refreshes immediately after the customer opens the test shipment.
+  window.dispatchEvent(new Event("unread-counts-changed"));
 }
 
 export function useTestShipmentOpened(uid: string | undefined): boolean {
