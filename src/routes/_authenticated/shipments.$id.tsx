@@ -14,6 +14,7 @@ import { Trash2, Copy } from "lucide-react";
 import { toast } from "sonner";
 import {
   buildTestShipment,
+  buildTestHistory,
   isTestShipmentId,
   markTestShipmentOpened,
   TEST_REMAINING_TEXT,
@@ -47,7 +48,7 @@ function ShipmentDetailPage() {
         );
         markTestShipmentOpened(user.id);
       }
-      setHistory([]);
+      setHistory(buildTestHistory());
       setLoading(false);
       return;
     }
