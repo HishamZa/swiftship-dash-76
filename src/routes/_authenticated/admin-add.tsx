@@ -6,10 +6,19 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import { fetchCustomers, fetchAllUserRoles, createShipment, generateTrackingNumber, type Profile } from "@/lib/db";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, ChevronsUpDown, Check } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin-add")({
   head: () => ({ meta: [{ title: "Add Shipment — Almwanaa" }] }),
