@@ -1,3 +1,4 @@
+import { formatDateTime } from "@/lib/format";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Layout } from "@/components/Layout";
@@ -76,7 +77,7 @@ function NotificationsPage() {
             <div key={n.id} className={`rounded-2xl border p-4 ${n.read ? "bg-card" : "bg-primary/5 border-primary/20"}`}>
               <div className="flex justify-between items-start gap-2">
                 <p className="font-semibold text-sm">{title}</p>
-                <span className="text-[10px] text-muted-foreground">{new Date(n.created_at).toLocaleString()}</span>
+                <span className="text-[10px] text-muted-foreground">{formatDateTime(n.created_at)}</span>
               </div>
               {body && <p className="text-sm text-muted-foreground mt-1 whitespace-pre-wrap">{body}</p>}
             </div>

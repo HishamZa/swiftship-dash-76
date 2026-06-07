@@ -8,7 +8,7 @@ import { fetchShipmentByTracking, fetchHistory, type Shipment, type StatusHistor
 import { StatusBadge } from "@/components/StatusBadge";
 import { StatusTimeline } from "@/components/StatusTimeline";
 import { StatusProgress } from "@/components/StatusProgress";
-import { formatUSD, formatCBM, deliveryCountdown } from "@/lib/format";
+import { formatUSD, formatCBM, deliveryCountdown, formatDate } from "@/lib/format";
 import { Search, AlertCircle, Copy } from "lucide-react";
 import { toast } from "sonner";
 
@@ -97,7 +97,7 @@ function TrackPage() {
               {shipment.description && <Grid label={t("description")} value={shipment.description} />}
               <Grid label={t("estimatedCost")} value={formatUSD(shipment.estimated_cost)} />
               <Grid label={t("cbm")} value={formatCBM(shipment.cbm_volume)} />
-              {shipment.estimated_delivery && <Grid label={t("eta")} value={shipment.estimated_delivery} />}
+              {shipment.estimated_delivery && <Grid label={t("eta")} value={formatDate(shipment.estimated_delivery)} />}
               {cd && <Grid label={t("remaining")} value={cd} highlight />}
               {shipment.customer_notes && (
                 <div className="mt-3 rounded-xl bg-muted/40 p-3">

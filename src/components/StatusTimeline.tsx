@@ -1,5 +1,6 @@
 import { useI18n } from "@/lib/i18n";
 import { statusKey, type StatusHistory } from "@/lib/db";
+import { formatDateTime } from "@/lib/format";
 import { Check } from "lucide-react";
 
 export function StatusTimeline({ history }: { history: StatusHistory[] }) {
@@ -13,7 +14,7 @@ export function StatusTimeline({ history }: { history: StatusHistory[] }) {
             <Check className="h-3.5 w-3.5" />
           </span>
           <h4 className="font-medium">{t(statusKey(h.status))}</h4>
-          <time className="block text-xs text-muted-foreground">{new Date(h.created_at).toLocaleString()}</time>
+          <time className="block text-xs text-muted-foreground">{formatDateTime(h.created_at)}</time>
           {h.note && <p className="mt-1 text-sm text-muted-foreground">{h.note}</p>}
           {i === history.length - 1 && <span className="sr-only">current</span>}
         </li>

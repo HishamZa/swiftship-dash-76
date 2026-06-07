@@ -1,3 +1,4 @@
+import { formatDate } from "@/lib/format";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Layout } from "@/components/Layout";
@@ -39,7 +40,7 @@ function NewsPage() {
         <div className="space-y-3">
           {items.map((a) => (
             <article key={a.id} className="rounded-2xl border bg-card p-4">
-              <p className="text-xs text-muted-foreground">{new Date(a.created_at).toLocaleDateString()}</p>
+              <p className="text-xs text-muted-foreground">{formatDate(a.created_at)}</p>
               <h2 className="font-semibold mt-1">{lang === "ar" && a.title_ar ? a.title_ar : a.title_en}</h2>
               <p className="text-sm text-muted-foreground mt-2 whitespace-pre-line">{lang === "ar" && a.body_ar ? a.body_ar : a.body_en}</p>
             </article>
