@@ -54,14 +54,34 @@ export function buildTestShipment(userId: string, customerName: string): Shipmen
     weight: null,
     status: "in_sea_transit",
     notes: null,
-    customer_notes: null,
-    description: null,
+    customer_notes: "هذه شحنة تجريبية للاطلاع فقط ستختفي بمجرد اضافة أول شحنة لك",
+    description: "جنط وحقائب",
     estimated_cost: 25,
     cbm_volume: 0.1,
     estimated_delivery: today,
     created_at: nowIso,
     updated_at: nowIso,
   };
+}
+
+export function buildTestHistory(): StatusHistory[] {
+  const nowIso = new Date().toISOString();
+  return [
+    {
+      id: "test-hist-1",
+      shipment_id: TEST_SHIPMENT_ID,
+      status: "received_warehouse",
+      note: null,
+      created_at: nowIso,
+    },
+    {
+      id: "test-hist-2",
+      shipment_id: TEST_SHIPMENT_ID,
+      status: "in_sea_transit",
+      note: null,
+      created_at: nowIso,
+    },
+  ];
 }
 
 export const TEST_REMAINING_TEXT = { en: "45 days remaining", ar: "متبقي 45 يوم" } as const;
