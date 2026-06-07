@@ -139,12 +139,17 @@ function AdminAddPage() {
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+              <PopoverContent
+                className="w-[--radix-popover-trigger-width] p-0"
+                align="start"
+                onOpenAutoFocus={(e) => e.preventDefault()}
+              >
                 <Command filter={() => 1}>
                   <CommandInput
                     placeholder={t("searchCustomer")}
                     value={search}
                     onValueChange={setSearch}
+                    autoFocus={false}
                   />
                   <CommandList>
                     {filteredCustomers.length === 0 ? (
