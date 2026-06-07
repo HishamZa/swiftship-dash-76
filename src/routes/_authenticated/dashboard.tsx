@@ -63,7 +63,7 @@ function Dashboard() {
       <section className="px-5 mt-6">
         <h2 className="font-semibold mb-3 text-sm">{t("recent")}</h2>
         {loading && <p className="text-sm text-muted-foreground">{t("loading")}</p>}
-        {!loading && shipments.length === 0 && <p className="text-xs text-muted-foreground whitespace-pre-line">{t("empty")}</p>}
+        {!loading && shipments.length === 0 && <p className="text-xs text-muted-foreground whitespace-pre-line">{t("emptyShipmentsWelcome")}</p>}
         <div className="space-y-2">
           {shipments.slice(0, 8).map((s) => {
             const cd = deliveryCountdown(s.estimated_delivery, lang);
