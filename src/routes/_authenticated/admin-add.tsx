@@ -71,6 +71,19 @@ function AdminAddPage() {
 
   const selected = useMemo(() => customers.find((c) => c.id === customerId), [customers, customerId]);
 
+  const filteredCustomers = useMemo(() => {
+    if (!search.trim()) return customers;
+    const q = search.trim().toLowerCase();
+    return customers.filter((c) => {
+      const name = (c.full_name ?? "").toLowerCase();
+      const phone = (c.phone ?? "").toLowerCase();
+      const gov = (c.governorate ?? "").toLowerCase();
+      const area = (c.area ?? "").toLowerCase();
+      const id = c.id.toLowerCase();
+      return name.includes(q) || phone.includes(q) || gov.includes(q) || area.includes(q) || id.includes(q);
+    });
+  }, [customers, search]);
+
   if (!isStaff) return null;
 
   const submit = async (e: React.FormEvent) => {
