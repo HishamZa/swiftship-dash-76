@@ -14,6 +14,7 @@ import { Trash2, Copy } from "lucide-react";
 import { toast } from "sonner";
 import {
   buildTestShipment,
+  buildTestHistory,
   isTestShipmentId,
   markTestShipmentOpened,
   TEST_REMAINING_TEXT,
