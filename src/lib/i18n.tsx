@@ -71,6 +71,8 @@ const dict = {
   delete: { en: "Delete", ar: "حذف" },
   cancel: { en: "Cancel", ar: "إلغاء" },
   search: { en: "Search...", ar: "بحث..." },
+  searchCustomer: { en: "Search customer...", ar: "ابحث عن عميل..." },
+  noResults: { en: "No results.", ar: "لا توجد نتائج." },
   filter: { en: "Filter", ar: "تصفية" },
   all: { en: "All", ar: "الكل" },
   send: { en: "Send", ar: "إرسال" },
