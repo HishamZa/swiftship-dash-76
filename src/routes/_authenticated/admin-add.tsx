@@ -144,45 +144,50 @@ function AdminAddPage() {
                 align="start"
                 onOpenAutoFocus={(e) => e.preventDefault()}
               >
-                <Command filter={() => 1}>
-                  <CommandInput
+                <div className="flex items-center border-b px-3">
+                  <Input
                     placeholder={t("searchCustomer")}
                     value={search}
-                    onValueChange={setSearch}
+                    onChange={(e) => setSearch(e.target.value)}
                     autoFocus={false}
+                    className="h-10 border-0 shadow-none focus-visible:ring-0 px-0"
                   />
-                  <CommandList>
-                    {filteredCustomers.length === 0 ? (
-                      <CommandEmpty>{t("noResults")}</CommandEmpty>
-                    ) : (
-                      <CommandGroup>
-                        {filteredCustomers.map((c) => {
-                          const isDup = dupKeys.has(`${c.full_name ?? ""}|${c.phone ?? ""}`);
-                          return (
-                            <CommandItem
-                              key={c.id}
-                              value={c.id}
-                              onSelect={() => {
-                                setCustomerId(c.id);
-                                setOpen(false);
-                                setSearch("");
-                              }}
-                            >
-                              <Check
-                                className={cn(
-                                  "mr-2 h-4 w-4",
-                                  customerId === c.id ? "opacity-100" : "opacity-0"
-                                )}
-                              />
-                              {(c.full_name ?? "—")}{c.phone ? ` · ${c.phone}` : ""}
-                              {isDup ? ` · #${c.id.slice(0, 4)}` : ""}
-                            </CommandItem>
-                          );
-                        })}
-                      </CommandGroup>
-                    )}
-                  </CommandList>
-                </Command>
+                </div>
+                <div className="max-h-[300px] overflow-y-auto p-1">
+                  {filteredCustomers.length === 0 ? (
+                    <div className="py-6 text-center text-sm text-muted-foreground">
+                      {t("noResults")}
+                    </div>
+                  ) : (
+                    filteredCustomers.map((c) => {
+                      const isDup = dupKeys.has(`${c.full_name ?? ""}|${c.phone ?? ""}`);
+                      const isSelected = customerId === c.id;
+                      return (
+                        <button
+                          type="button"
+                          key={c.id}
+                          onClick={() => {
+                            setCustomerId(c.id);
+                            setOpen(false);
+                            setSearch("");
+                          }}
+                          className="relative flex w-full select-none items-center rounded-sm px-2 py-2 text-sm text-left outline-none hover:bg-accent hover:text-accent-foreground"
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4 shrink-0",
+                              isSelected ? "opacity-100" : "opacity-0"
+                            )}
+                          />
+                          <span className="truncate">
+                            {(c.full_name ?? "—")}{c.phone ? ` · ${c.phone}` : ""}
+                            {isDup ? ` · #${c.id.slice(0, 4)}` : ""}
+                          </span>
+                        </button>
+                      );
+                    })
+                  )}
+                </div>
               </PopoverContent>
             </Popover>
           </div>
