@@ -12,6 +12,13 @@ import { StatusTimeline } from "@/components/StatusTimeline";
 import { formatUSD, formatCBM, deliveryCountdown } from "@/lib/format";
 import { Trash2, Copy } from "lucide-react";
 import { toast } from "sonner";
+import {
+  buildTestShipment,
+  isTestShipmentId,
+  markTestShipmentOpened,
+  TEST_REMAINING_TEXT,
+} from "@/lib/testShipment";
+import { TestShipmentRibbon } from "@/components/TestShipmentRibbon";
 
 export const Route = createFileRoute("/_authenticated/shipments/$id")({
   head: () => ({ meta: [{ title: "Shipment — Almwanaa" }] }),
@@ -21,18 +28,33 @@ export const Route = createFileRoute("/_authenticated/shipments/$id")({
 function ShipmentDetailPage() {
   const { id } = Route.useParams();
   const { t, lang } = useI18n();
-  const { isStaff } = useAuth();
+  const { user, isStaff } = useAuth();
   const navigate = useNavigate();
   const [shipment, setShipment] = useState<Shipment | null>(null);
   const [history, setHistory] = useState<StatusHistory[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
+  const isTest = isTestShipmentId(id);
 
   useEffect(() => {
+    if (isTest) {
+      if (user) {
+        setShipment(
+          buildTestShipment(
+            user.id,
+            (user.user_metadata?.full_name as string | undefined) ?? user.email ?? "",
+          ),
+        );
+        markTestShipmentOpened(user.id);
+      }
+      setHistory([]);
+      setLoading(false);
+      return;
+    }
     Promise.all([fetchShipment(id), fetchHistory(id)])
       .then(([s, h]) => { setShipment(s); setHistory(h); })
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [id, isTest, user]);
 
   const onDelete = async () => {
     setBusy(true);
