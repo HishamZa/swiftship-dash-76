@@ -1,5 +1,6 @@
 import { useI18n } from "@/lib/i18n";
 import { statusKey, type StatusHistory } from "@/lib/db";
+import { formatDateTime } from "@/lib/format";
 import { Check } from "lucide-react";
 
 export function StatusTimeline({ history }: { history: StatusHistory[] }) {
