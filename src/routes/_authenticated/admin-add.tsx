@@ -125,20 +125,61 @@ function AdminAddPage() {
         <form onSubmit={submit} className="rounded-2xl border bg-card p-4 space-y-3">
           <div>
             <label className="text-xs text-muted-foreground">{t("customer")}</label>
-            <Select value={customerId} onValueChange={setCustomerId}>
-              <SelectTrigger><SelectValue placeholder={t("selectCustomer")} /></SelectTrigger>
-              <SelectContent>
-                {customers.map((c) => {
-                  const isDup = dupKeys.has(`${c.full_name ?? ""}|${c.phone ?? ""}`);
-                  return (
-                    <SelectItem key={c.id} value={c.id}>
-                      {(c.full_name ?? "—")}{c.phone ? ` · ${c.phone}` : ""}
-                      {isDup ? ` · #${c.id.slice(0, 4)}` : ""}
-                    </SelectItem>
-                  );
-                })}
-              </SelectContent>
-            </Select>
+            <Popover open={open} onOpenChange={setOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={open}
+                  className="flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background cursor-pointer data-[placeholder]:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 font-normal"
+                >
+                  {selected
+                    ? `${selected.full_name ?? "—"}${selected.phone ? ` · ${selected.phone}` : ""}${dupKeys.has(`${selected.full_name ?? ""}|${selected.phone ?? ""}`) ? ` · #${selected.id.slice(0, 4)}` : ""}`
+                    : t("selectCustomer")}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                <Command filter={() => 1}>
+                  <CommandInput
+                    placeholder={t("searchCustomer")}
+                    value={search}
+                    onValueChange={setSearch}
+                  />
+                  <CommandList>
+                    {filteredCustomers.length === 0 ? (
+                      <CommandEmpty>{t("noResults")}</CommandEmpty>
+                    ) : (
+                      <CommandGroup>
+                        {filteredCustomers.map((c) => {
+                          const isDup = dupKeys.has(`${c.full_name ?? ""}|${c.phone ?? ""}`);
+                          return (
+                            <CommandItem
+                              key={c.id}
+                              value={c.id}
+                              onSelect={() => {
+                                setCustomerId(c.id);
+                                setOpen(false);
+                                setSearch("");
+                              }}
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  customerId === c.id ? "opacity-100" : "opacity-0"
+                                )}
+                              />
+                              {(c.full_name ?? "—")}{c.phone ? ` · ${c.phone}` : ""}
+                              {isDup ? ` · #${c.id.slice(0, 4)}` : ""}
+                            </CommandItem>
+                          );
+                        })}
+                      </CommandGroup>
+                    )}
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
           </div>
 
           <div>
