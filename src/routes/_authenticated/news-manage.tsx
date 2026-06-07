@@ -1,3 +1,4 @@
+import { formatDate } from "@/lib/format";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Layout } from "@/components/Layout";
@@ -105,7 +106,7 @@ function NewsManagePage() {
                 <p className="font-semibold text-sm">{a.title_en}</p>
                 {a.title_ar && <p className="text-xs text-muted-foreground" dir="rtl">{a.title_ar}</p>}
                 <p className="text-[10px] text-muted-foreground mt-1">
-                  {new Date(a.created_at).toLocaleDateString()} · {a.published ? t("published") : t("cancel")}
+                  {formatDate(a.created_at)} · {a.published ? t("published") : t("cancel")}
                 </p>
               </div>
               <div className="flex items-center gap-1">

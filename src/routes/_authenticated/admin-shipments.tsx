@@ -1,3 +1,4 @@
+import { formatDate } from "@/lib/format";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Layout } from "@/components/Layout";
@@ -68,7 +69,7 @@ function AdminShipmentsPage() {
                       {s.estimated_delivery && <span>{t("eta")}: {s.estimated_delivery}</span>}
                       {cd && <span className="font-semibold text-primary">{cd}</span>}
                     </div>
-                    <p className="text-[10px] text-muted-foreground mt-1">{new Date(s.created_at).toLocaleDateString()}</p>
+                    <p className="text-[10px] text-muted-foreground mt-1">{formatDate(s.created_at)}</p>
                   </div>
                   <StatusBadge status={s.status} />
                 </div>
