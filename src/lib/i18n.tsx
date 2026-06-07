@@ -173,7 +173,9 @@ const dict = {
   updatePassword: { en: "Update Password", ar: "تحديث كلمة المرور" },
   passwordUpdated: { en: "Password updated successfully", ar: "تم تحديث كلمة المرور بنجاح" },
   saved: { en: "Saved", ar: "تم الحفظ" },
+  testShipment: { en: "Test Shipment", ar: "شحنة تجريبية" },
   footer: { en: "© 2026 Almwanaa Company. All rights reserved.", ar: "© 2026 شركة الموانئ. جميع الحقوق محفوظة." },
+
 } as const;
 
 type DictKey = keyof typeof dict;
