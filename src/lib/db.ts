@@ -84,8 +84,10 @@ export type AddressEntry = {
   city: string | null;
   address: string | null;
   notes: string | null;
+  entry_type: "office" | "address";
   created_at: string;
 };
+
 
 export type Notification = {
   id: string;
@@ -114,10 +116,10 @@ export const roleRank = (r: AppRole) => RANK[r] ?? 0;
 
 // ---- Helpers
 export function generateTrackingNumber() {
-  const yr = new Date().getFullYear();
   const rnd = Math.random().toString(36).slice(2, 8).toUpperCase();
-  return `MWA-${yr}-${rnd}`;
+  return `MWA-SEA-${rnd}`;
 }
+
 
 // ---- Shipments
 export async function fetchShipments(opts?: { customerId?: string; search?: string; status?: ShipmentStatus | "all" }) {
