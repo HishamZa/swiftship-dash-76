@@ -39,6 +39,8 @@ function AdminAddPage() {
   const [remainingDays, setRemainingDays] = useState("");
   const [customerNotes, setCustomerNotes] = useState("");
   const [busy, setBusy] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     if (loading) return;
