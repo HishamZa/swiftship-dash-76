@@ -165,7 +165,10 @@ function AdminAddPage() {
                             setOpen(false);
                             setSearch("");
                           }}
-                          className="relative flex w-full select-none items-center rounded-sm px-2 py-2 text-sm text-left outline-none"
+                          className={cn(
+                            "relative flex w-full select-none items-center rounded-sm px-2 py-2 text-sm text-left outline-none",
+                            isSelected && "bg-accent text-accent-foreground"
+                          )}
                         >
                           <Check
                             className={cn(
