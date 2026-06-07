@@ -12,6 +12,13 @@ import { StatusTimeline } from "@/components/StatusTimeline";
 import { formatUSD, formatCBM, deliveryCountdown } from "@/lib/format";
 import { Trash2, Copy } from "lucide-react";
 import { toast } from "sonner";
+import {
+  buildTestShipment,
+  isTestShipmentId,
+  markTestShipmentOpened,
+  TEST_REMAINING_TEXT,
+} from "@/lib/testShipment";
+import { TestShipmentRibbon } from "@/components/TestShipmentRibbon";
 
 export const Route = createFileRoute("/_authenticated/shipments/$id")({
   head: () => ({ meta: [{ title: "Shipment — Almwanaa" }] }),
@@ -21,18 +28,33 @@ export const Route = createFileRoute("/_authenticated/shipments/$id")({
 function ShipmentDetailPage() {
   const { id } = Route.useParams();
   const { t, lang } = useI18n();
-  const { isStaff } = useAuth();
+  const { user, isStaff } = useAuth();
   const navigate = useNavigate();
   const [shipment, setShipment] = useState<Shipment | null>(null);
   const [history, setHistory] = useState<StatusHistory[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
+  const isTest = isTestShipmentId(id);
 
   useEffect(() => {
+    if (isTest) {
+      if (user) {
+        setShipment(
+          buildTestShipment(
+            user.id,
+            (user.user_metadata?.full_name as string | undefined) ?? user.email ?? "",
+          ),
+        );
+        markTestShipmentOpened(user.id);
+      }
+      setHistory([]);
+      setLoading(false);
+      return;
+    }
     Promise.all([fetchShipment(id), fetchHistory(id)])
       .then(([s, h]) => { setShipment(s); setHistory(h); })
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [id, isTest, user]);
 
   const onDelete = async () => {
     setBusy(true);
@@ -48,7 +70,9 @@ function ShipmentDetailPage() {
   if (loading) return <Layout><p className="p-6 text-sm text-muted-foreground">{t("loading")}</p></Layout>;
   if (!shipment) return <Layout><p className="p-6 text-sm text-muted-foreground">{t("notFound")}</p></Layout>;
 
-  const cd = deliveryCountdown(shipment.estimated_delivery, lang);
+  const cd = isTest
+    ? TEST_REMAINING_TEXT[lang]
+    : deliveryCountdown(shipment.estimated_delivery, lang);
 
   return (
     <Layout>
@@ -57,7 +81,8 @@ function ShipmentDetailPage() {
       </section>
 
       <section className="px-5 space-y-4">
-        <div className="rounded-2xl border bg-card p-5">
+        <div className="relative rounded-2xl border bg-card p-5 overflow-hidden">
+          {isTest && <TestShipmentRibbon />}
           <div className="flex items-start justify-between gap-2 mb-3">
             <div className="min-w-0">
               <p className="text-xs text-muted-foreground">{t("trackingNo")}</p>
@@ -105,7 +130,7 @@ function ShipmentDetailPage() {
           <StatusTimeline history={history} />
         </div>
 
-        {isStaff && (
+        {isStaff && !isTest && (
           <div className="rounded-2xl border bg-card p-4">
             <AlertDialog>
               <AlertDialogTrigger asChild>

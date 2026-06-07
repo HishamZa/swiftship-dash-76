@@ -9,6 +9,12 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { formatUSD, formatCBM, deliveryCountdown } from "@/lib/format";
 import { markShipmentsSeen } from "@/lib/unreadNews";
 import { Search } from "lucide-react";
+import {
+  buildTestShipment,
+  isTestShipmentId,
+  TEST_REMAINING_TEXT,
+} from "@/lib/testShipment";
+import { TestShipmentRibbon } from "@/components/TestShipmentRibbon";
 
 export const Route = createFileRoute("/_authenticated/shipments/")({
   head: () => ({ meta: [{ title: "My Shipments — Almwanaa" }] }),
@@ -30,6 +36,20 @@ function ShipmentsPage() {
     if (!isStaff && user) markShipmentsSeen(user.id);
   }, [user, isStaff, search]);
 
+  // Inject the onboarding test shipment ONLY when the customer has no real
+  // shipments and is not searching. It is purely client-side and never hits
+  // any counters, admin lists, search results, or stats.
+  const showTest =
+    !isStaff && !!user && !search.trim() && !loading && list.length === 0;
+  const displayList: Shipment[] = showTest
+    ? [
+        buildTestShipment(
+          user.id,
+          (user.user_metadata?.full_name as string | undefined) ?? user.email ?? "",
+        ),
+      ]
+    : list;
+
   return (
     <Layout>
       <section className="px-5 pt-6 pb-4">
@@ -43,13 +63,22 @@ function ShipmentsPage() {
         </div>
 
         {loading && <p className="text-sm text-muted-foreground">{t("loading")}</p>}
-        {!loading && list.length === 0 && <p className="text-sm text-muted-foreground">{t("empty")}</p>}
+        {!loading && displayList.length === 0 && <p className="text-sm text-muted-foreground">{t("empty")}</p>}
 
         <div className="space-y-2">
-          {list.map((s) => {
-            const cd = deliveryCountdown(s.estimated_delivery, lang);
+          {displayList.map((s) => {
+            const isTest = isTestShipmentId(s.id);
+            const cd = isTest
+              ? TEST_REMAINING_TEXT[lang]
+              : deliveryCountdown(s.estimated_delivery, lang);
             return (
-              <Link key={s.id} to="/shipments/$id" params={{ id: s.id }} className="block rounded-2xl border bg-card p-4">
+              <Link
+                key={s.id}
+                to="/shipments/$id"
+                params={{ id: s.id }}
+                className="relative block rounded-2xl border bg-card p-4 overflow-hidden"
+              >
+                {isTest && <TestShipmentRibbon />}
                 <div className="flex justify-between items-start gap-2">
                   <div className="min-w-0">
                     <p className="font-semibold text-sm">{s.tracking_number}</p>
