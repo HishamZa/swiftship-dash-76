@@ -117,6 +117,9 @@ function AuthPage() {
                 onChange={(e) => setPasswordIn(e.target.value)}
               />
               <Button type="submit" className="w-full" disabled={loading}>{t("signIn")}</Button>
+              <p className="text-center text-xs text-muted-foreground/70">
+                {lang === "ar" ? "نسيت كلمة السر ؟ تواصل مع الشركة لمساعدتك" : "Forgot your password? Contact us for assistance."}
+              </p>
             </form>
           </TabsContent>
 
