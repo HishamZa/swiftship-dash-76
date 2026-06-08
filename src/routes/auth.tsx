@@ -87,7 +87,7 @@ function AuthPage() {
         </Button>
       </div>
 
-      <section className="flex-1 px-5 py-10 max-w-md w-full mx-auto flex flex-col justify-center">
+      <section className="flex-1 px-5 pt-10 pb-6 max-w-md w-full mx-auto flex flex-col">
         <div className="flex flex-col items-center mb-6">
           <Logo className="w-24 h-24 mb-3" />
           <h1 className="text-xl font-bold text-center">{t("brand")}</h1>
