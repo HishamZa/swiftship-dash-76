@@ -122,11 +122,11 @@ function SettingsPage() {
 
         <div className="flex items-center justify-center gap-4 pt-6 pb-2 text-xs text-muted-foreground/70">
           <Link to="/privacy" className="underline hover:text-foreground">
-            {t("accountSettings") && (typeof window !== "undefined" && document.documentElement.lang === "ar" ? "سياسة الخصوصية" : "Privacy Policy")}
+            {lang === "ar" ? "سياسة الخصوصية" : "Privacy Policy"}
           </Link>
           <span>·</span>
           <Link to="/terms" className="underline hover:text-foreground">
-            {typeof window !== "undefined" && document.documentElement.lang === "ar" ? "الشروط والأحكام" : "Terms & Conditions"}
+            {lang === "ar" ? "الشروط والأحكام" : "Terms & Conditions"}
           </Link>
         </div>
       </section>
