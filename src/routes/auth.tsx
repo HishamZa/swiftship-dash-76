@@ -134,6 +134,24 @@ function AuthPage() {
             </form>
           </TabsContent>
         </Tabs>
+
+        <p className="mt-6 text-center text-xs text-muted-foreground/70 leading-relaxed">
+          {lang === "ar" ? (
+            <>
+              عند استخدامك لهذا التطبيق فأنت توافق على{" "}
+              <Link to="/terms" className="underline hover:text-foreground">الشروط والأحكام</Link>
+              {" "}و{" "}
+              <Link to="/privacy" className="underline hover:text-foreground">سياسة الخصوصية</Link>
+            </>
+          ) : (
+            <>
+              By using this application, you agree to the{" "}
+              <Link to="/terms" className="underline hover:text-foreground">Terms &amp; Conditions</Link>
+              {" "}and{" "}
+              <Link to="/privacy" className="underline hover:text-foreground">Privacy Policy</Link>.
+            </>
+          )}
+        </p>
       </section>
     </div>
   );
