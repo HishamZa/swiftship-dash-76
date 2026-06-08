@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TrackRouteImport } from './routes/track'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as OfficesRouteImport } from './routes/offices'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -35,6 +36,11 @@ import { Route as AuthenticatedAccountsIdRouteImport } from './routes/_authentic
 const TrackRoute = TrackRouteImport.update({
   id: '/track',
   path: '/track',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -155,6 +161,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/offices': typeof OfficesRoute
   '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
   '/track': typeof TrackRoute
   '/accounts': typeof AuthenticatedAccountsRouteWithChildren
   '/addresses': typeof AuthenticatedAddressesRoute
@@ -178,6 +185,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/offices': typeof OfficesRoute
   '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
   '/track': typeof TrackRoute
   '/accounts': typeof AuthenticatedAccountsRouteWithChildren
   '/addresses': typeof AuthenticatedAddressesRoute
@@ -203,6 +211,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/offices': typeof OfficesRoute
   '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
   '/track': typeof TrackRoute
   '/_authenticated/accounts': typeof AuthenticatedAccountsRouteWithChildren
   '/_authenticated/addresses': typeof AuthenticatedAddressesRoute
@@ -228,6 +237,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/offices'
     | '/privacy'
+    | '/terms'
     | '/track'
     | '/accounts'
     | '/addresses'
@@ -251,6 +261,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/offices'
     | '/privacy'
+    | '/terms'
     | '/track'
     | '/accounts'
     | '/addresses'
@@ -275,6 +286,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/offices'
     | '/privacy'
+    | '/terms'
     | '/track'
     | '/_authenticated/accounts'
     | '/_authenticated/addresses'
@@ -300,6 +312,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   OfficesRoute: typeof OfficesRoute
   PrivacyRoute: typeof PrivacyRoute
+  TermsRoute: typeof TermsRoute
   TrackRoute: typeof TrackRoute
 }
 
@@ -310,6 +323,13 @@ declare module '@tanstack/react-router' {
       path: '/track'
       fullPath: '/track'
       preLoaderRoute: typeof TrackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -519,6 +539,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   OfficesRoute: OfficesRoute,
   PrivacyRoute: PrivacyRoute,
+  TermsRoute: TermsRoute,
   TrackRoute: TrackRoute,
 }
 export const routeTree = rootRouteImport
