@@ -10,6 +10,8 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TrackRouteImport } from './routes/track'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as OfficesRouteImport } from './routes/offices'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AnnouncementsRouteImport } from './routes/announcements'
@@ -34,6 +36,16 @@ import { Route as AuthenticatedAccountsIdRouteImport } from './routes/_authentic
 const TrackRoute = TrackRouteImport.update({
   id: '/track',
   path: '/track',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OfficesRoute = OfficesRouteImport.update({
@@ -148,6 +160,8 @@ export interface FileRoutesByFullPath {
   '/announcements': typeof AnnouncementsRoute
   '/auth': typeof AuthRoute
   '/offices': typeof OfficesRoute
+  '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
   '/track': typeof TrackRoute
   '/accounts': typeof AuthenticatedAccountsRouteWithChildren
   '/addresses': typeof AuthenticatedAddressesRoute
@@ -170,6 +184,8 @@ export interface FileRoutesByTo {
   '/announcements': typeof AnnouncementsRoute
   '/auth': typeof AuthRoute
   '/offices': typeof OfficesRoute
+  '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
   '/track': typeof TrackRoute
   '/accounts': typeof AuthenticatedAccountsRouteWithChildren
   '/addresses': typeof AuthenticatedAddressesRoute
@@ -194,6 +210,8 @@ export interface FileRoutesById {
   '/announcements': typeof AnnouncementsRoute
   '/auth': typeof AuthRoute
   '/offices': typeof OfficesRoute
+  '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
   '/track': typeof TrackRoute
   '/_authenticated/accounts': typeof AuthenticatedAccountsRouteWithChildren
   '/_authenticated/addresses': typeof AuthenticatedAddressesRoute
@@ -218,6 +236,8 @@ export interface FileRouteTypes {
     | '/announcements'
     | '/auth'
     | '/offices'
+    | '/privacy'
+    | '/terms'
     | '/track'
     | '/accounts'
     | '/addresses'
@@ -240,6 +260,8 @@ export interface FileRouteTypes {
     | '/announcements'
     | '/auth'
     | '/offices'
+    | '/privacy'
+    | '/terms'
     | '/track'
     | '/accounts'
     | '/addresses'
@@ -263,6 +285,8 @@ export interface FileRouteTypes {
     | '/announcements'
     | '/auth'
     | '/offices'
+    | '/privacy'
+    | '/terms'
     | '/track'
     | '/_authenticated/accounts'
     | '/_authenticated/addresses'
@@ -287,6 +311,8 @@ export interface RootRouteChildren {
   AnnouncementsRoute: typeof AnnouncementsRoute
   AuthRoute: typeof AuthRoute
   OfficesRoute: typeof OfficesRoute
+  PrivacyRoute: typeof PrivacyRoute
+  TermsRoute: typeof TermsRoute
   TrackRoute: typeof TrackRoute
 }
 
@@ -297,6 +323,20 @@ declare module '@tanstack/react-router' {
       path: '/track'
       fullPath: '/track'
       preLoaderRoute: typeof TrackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/offices': {
@@ -498,18 +538,10 @@ const rootRouteChildren: RootRouteChildren = {
   AnnouncementsRoute: AnnouncementsRoute,
   AuthRoute: AuthRoute,
   OfficesRoute: OfficesRoute,
+  PrivacyRoute: PrivacyRoute,
+  TermsRoute: TermsRoute,
   TrackRoute: TrackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

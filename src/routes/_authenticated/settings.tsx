@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Layout } from "@/components/Layout";
 import { useI18n } from "@/lib/i18n";
@@ -17,7 +17,7 @@ export const Route = createFileRoute("/_authenticated/settings")({
 });
 
 function SettingsPage() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { user, isStaff } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [fullName, setFullName] = useState("");
@@ -119,6 +119,16 @@ function SettingsPage() {
           <Input type="password" minLength={6} placeholder={t("newPassword")} value={newPass} onChange={(e) => setNewPass(e.target.value)} required />
           <Button type="submit" variant="outline" className="w-full" disabled={busy}>{t("updatePassword")}</Button>
         </form>
+
+        <div className="flex items-center justify-center gap-4 pt-6 pb-2 text-xs text-muted-foreground/70">
+          <Link to="/privacy" className="underline hover:text-foreground">
+            {lang === "ar" ? "سياسة الخصوصية" : "Privacy Policy"}
+          </Link>
+          <span>·</span>
+          <Link to="/terms" className="underline hover:text-foreground">
+            {lang === "ar" ? "الشروط والأحكام" : "Terms & Conditions"}
+          </Link>
+        </div>
       </section>
     </Layout>
   );
