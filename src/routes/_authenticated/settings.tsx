@@ -17,7 +17,7 @@ export const Route = createFileRoute("/_authenticated/settings")({
 });
 
 function SettingsPage() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { user, isStaff } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [fullName, setFullName] = useState("");
