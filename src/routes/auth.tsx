@@ -135,7 +135,7 @@ function AuthPage() {
           </TabsContent>
         </Tabs>
 
-        <p className="mt-6 text-center text-xs text-muted-foreground/70 leading-relaxed">
+        <p className="mt-auto pt-24 text-center text-xs text-muted-foreground/70 leading-relaxed">
           {lang === "ar" ? (
             <>
               عند استخدامك لهذا التطبيق فأنت توافق على{" "}
