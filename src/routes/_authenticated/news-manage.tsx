@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { fetchAnnouncements, createAnnouncement, updateAnnouncement, deleteAnnouncement, type Announcement } from "@/lib/db";
-import { Plus, Trash2, Lock } from "lucide-react";
+import { Plus, Trash2, Lock, Eye } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 
@@ -105,8 +105,9 @@ function NewsManagePage() {
               <div className="min-w-0">
                 <p className="font-semibold text-sm">{a.title_en}</p>
                 {a.title_ar && <p className="text-xs text-muted-foreground" dir="rtl">{a.title_ar}</p>}
-                <p className="text-[10px] text-muted-foreground mt-1">
-                  {formatDate(a.created_at)} · {a.published ? t("published") : t("cancel")}
+                <p className="text-[10px] text-muted-foreground mt-1 flex items-center gap-2 flex-wrap">
+                  <span>{formatDate(a.created_at)} · {a.published ? t("published") : t("cancel")}</span>
+                  <span className="inline-flex items-center gap-1 text-primary font-semibold"><Eye className="w-3 h-3" /> {a.view_count ?? 0}</span>
                 </p>
               </div>
               <div className="flex items-center gap-1">

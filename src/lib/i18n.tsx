@@ -121,6 +121,7 @@ const dict = {
   noNotifications: { en: "No notifications yet.", ar: "لا توجد تنبيهات بعد." },
   shipmentUpdateTitle: { en: "Shipment update", ar: "تحديث الشحنة" },
   shipmentStatusUpdatedTo: { en: "Shipment status updated to", ar: "تم تحديث حالة الشحنة إلى" },
+  newShipmentTitle: { en: "You have a new shipment", ar: "لديك شحنة جديدة" },
   copyTracking: { en: "Copy tracking number", ar: "نسخ رقم التتبع" },
   trackingCopied: { en: "Tracking number copied", ar: "تم نسخ رقم التتبع" },
   // accounts

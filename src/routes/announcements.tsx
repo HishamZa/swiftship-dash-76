@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Layout } from "@/components/Layout";
 import { useI18n } from "@/lib/i18n";
 import { fetchAnnouncements, type Announcement } from "@/lib/db";
+import { supabase } from "@/integrations/supabase/client";
 import { Megaphone } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { markNewsSeen } from "@/lib/unreadNews";
@@ -24,6 +25,10 @@ function NewsPage() {
       .then((list) => {
         setItems(list);
         if (user) markNewsSeen(user.id);
+        // Increment view counter for each visible announcement (once per page load).
+        for (const a of list) {
+          supabase.rpc("increment_announcement_views", { p_id: a.id }).then(() => {}, () => {});
+        }
       })
       .catch(() => setItems([]))
       .finally(() => setLoading(false));
