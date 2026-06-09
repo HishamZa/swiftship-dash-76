@@ -199,7 +199,7 @@ export async function fetchAnnouncements(publishedOnly = false) {
   if (error) throw error;
   return (data ?? []) as Announcement[];
 }
-export async function createAnnouncement(p: Omit<Announcement, "id" | "created_at">) {
+export async function createAnnouncement(p: Omit<Announcement, "id" | "created_at" | "view_count">) {
   const { error } = await supabase.from("announcements").insert(p);
   if (error) throw error;
 }
