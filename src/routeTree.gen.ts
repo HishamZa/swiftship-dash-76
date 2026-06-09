@@ -31,6 +31,7 @@ import { Route as AuthenticatedAddressesRouteImport } from './routes/_authentica
 import { Route as AuthenticatedAccountsRouteImport } from './routes/_authenticated/accounts'
 import { Route as AuthenticatedShipmentsIndexRouteImport } from './routes/_authenticated/shipments.index'
 import { Route as AuthenticatedShipmentsIdRouteImport } from './routes/_authenticated/shipments.$id'
+import { Route as AuthenticatedAdminShipmentEditIdRouteImport } from './routes/_authenticated/admin-shipment-edit.$id'
 import { Route as AuthenticatedAccountsIdRouteImport } from './routes/_authenticated/accounts.$id'
 
 const TrackRoute = TrackRouteImport.update({
@@ -149,6 +150,12 @@ const AuthenticatedShipmentsIdRoute =
     path: '/shipments/$id',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminShipmentEditIdRoute =
+  AuthenticatedAdminShipmentEditIdRouteImport.update({
+    id: '/admin-shipment-edit/$id',
+    path: '/admin-shipment-edit/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAccountsIdRoute = AuthenticatedAccountsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -176,6 +183,7 @@ export interface FileRoutesByFullPath {
   '/offices-manage': typeof AuthenticatedOfficesManageRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/accounts/$id': typeof AuthenticatedAccountsIdRoute
+  '/admin-shipment-edit/$id': typeof AuthenticatedAdminShipmentEditIdRoute
   '/shipments/$id': typeof AuthenticatedShipmentsIdRoute
   '/shipments/': typeof AuthenticatedShipmentsIndexRoute
 }
@@ -200,6 +208,7 @@ export interface FileRoutesByTo {
   '/offices-manage': typeof AuthenticatedOfficesManageRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/accounts/$id': typeof AuthenticatedAccountsIdRoute
+  '/admin-shipment-edit/$id': typeof AuthenticatedAdminShipmentEditIdRoute
   '/shipments/$id': typeof AuthenticatedShipmentsIdRoute
   '/shipments': typeof AuthenticatedShipmentsIndexRoute
 }
@@ -226,6 +235,7 @@ export interface FileRoutesById {
   '/_authenticated/offices-manage': typeof AuthenticatedOfficesManageRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/accounts/$id': typeof AuthenticatedAccountsIdRoute
+  '/_authenticated/admin-shipment-edit/$id': typeof AuthenticatedAdminShipmentEditIdRoute
   '/_authenticated/shipments/$id': typeof AuthenticatedShipmentsIdRoute
   '/_authenticated/shipments/': typeof AuthenticatedShipmentsIndexRoute
 }
@@ -252,6 +262,7 @@ export interface FileRouteTypes {
     | '/offices-manage'
     | '/settings'
     | '/accounts/$id'
+    | '/admin-shipment-edit/$id'
     | '/shipments/$id'
     | '/shipments/'
   fileRoutesByTo: FileRoutesByTo
@@ -276,6 +287,7 @@ export interface FileRouteTypes {
     | '/offices-manage'
     | '/settings'
     | '/accounts/$id'
+    | '/admin-shipment-edit/$id'
     | '/shipments/$id'
     | '/shipments'
   id:
@@ -301,6 +313,7 @@ export interface FileRouteTypes {
     | '/_authenticated/offices-manage'
     | '/_authenticated/settings'
     | '/_authenticated/accounts/$id'
+    | '/_authenticated/admin-shipment-edit/$id'
     | '/_authenticated/shipments/$id'
     | '/_authenticated/shipments/'
   fileRoutesById: FileRoutesById
@@ -472,6 +485,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedShipmentsIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin-shipment-edit/$id': {
+      id: '/_authenticated/admin-shipment-edit/$id'
+      path: '/admin-shipment-edit/$id'
+      fullPath: '/admin-shipment-edit/$id'
+      preLoaderRoute: typeof AuthenticatedAdminShipmentEditIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/accounts/$id': {
       id: '/_authenticated/accounts/$id'
       path: '/$id'
@@ -508,6 +528,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedOfficesManageRoute: typeof AuthenticatedOfficesManageRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedAdminShipmentEditIdRoute: typeof AuthenticatedAdminShipmentEditIdRoute
   AuthenticatedShipmentsIdRoute: typeof AuthenticatedShipmentsIdRoute
   AuthenticatedShipmentsIndexRoute: typeof AuthenticatedShipmentsIndexRoute
 }
@@ -525,6 +546,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedOfficesManageRoute: AuthenticatedOfficesManageRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedAdminShipmentEditIdRoute: AuthenticatedAdminShipmentEditIdRoute,
   AuthenticatedShipmentsIdRoute: AuthenticatedShipmentsIdRoute,
   AuthenticatedShipmentsIndexRoute: AuthenticatedShipmentsIndexRoute,
 }

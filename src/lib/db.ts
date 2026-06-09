@@ -72,6 +72,7 @@ export type Announcement = {
   body_en: string | null;
   body_ar: string | null;
   published: boolean;
+  view_count: number;
   created_at: string;
 };
 
