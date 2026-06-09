@@ -1,5 +1,5 @@
 import { formatDate } from "@/lib/format";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Layout } from "@/components/Layout";
 import { useI18n } from "@/lib/i18n";
@@ -57,7 +57,12 @@ function AdminShipmentsPage() {
           {list.map((s) => {
             const cd = deliveryCountdown(s.estimated_delivery, lang);
             return (
-              <div key={s.id} className="block rounded-2xl border bg-card p-4">
+              <Link
+                key={s.id}
+                to="/admin-shipment-edit/$id"
+                params={{ id: s.id }}
+                className="block rounded-2xl border bg-card p-4 hover:bg-muted/40 transition"
+              >
                 <div className="flex justify-between items-start gap-2">
                   <div className="min-w-0 flex-1">
                     <p className="font-semibold text-sm">{s.tracking_number}</p>
@@ -73,7 +78,7 @@ function AdminShipmentsPage() {
                   </div>
                   <StatusBadge status={s.status} />
                 </div>
-              </div>
+              </Link>
             );
           })}
         </div>
