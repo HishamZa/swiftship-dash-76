@@ -14,13 +14,20 @@ function renderShipmentNotification(
   t: (k: never) => string,
 ): { title: string; body: string } {
   const tt = t as unknown as (k: string) => string;
-  const isShipment = !!n.title?.startsWith("shipment_update:");
-  if (!isShipment) return { title: n.title ?? "", body: n.body ?? "" };
-  const tracking = n.title!.slice("shipment_update:".length);
+  const rawTitle = n.title ?? "";
+  const isNew = rawTitle.startsWith("new_shipment:");
+  const isUpdate = rawTitle.startsWith("shipment_update:");
+  if (!isNew && !isUpdate) return { title: rawTitle, body: n.body ?? "" };
+  const tracking = rawTitle.slice(rawTitle.indexOf(":") + 1);
   const [firstLine, ...rest] = (n.body ?? "").split("\n");
   const isStatus = (ALL_STATUSES as readonly string[]).includes(firstLine);
   const statusText = isStatus ? tt(statusKey(firstLine as ShipmentStatus)) : firstLine;
   const note = rest.join("\n").trim();
+  if (isNew) {
+    const title = `${tt("newShipmentTitle")} — ${tracking}`;
+    const body = `${statusText}${note ? `\n${note}` : ""}`;
+    return { title, body };
+  }
   const title = `${tt("shipmentUpdateTitle")} — ${tracking}`;
   const body = `${tt("shipmentStatusUpdatedTo")}: ${statusText}${note ? `\n${note}` : ""}`;
   return { title, body };

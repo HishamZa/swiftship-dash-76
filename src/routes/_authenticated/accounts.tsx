@@ -33,7 +33,9 @@ function AccountsPage() {
   const removeFn = useServerFn(deleteUserAccount);
 
   const load = async () => {
-    const [p, r] = await Promise.all([fetchCustomers(search), fetchAllUserRoles()]);
+    // Search only filters the customer list. Always fetch the full set so
+    // admin/manager/employee sections stay complete regardless of the query.
+    const [p, r] = await Promise.all([fetchCustomers(), fetchAllUserRoles()]);
     setProfiles(p); setRolesMap(r);
   };
 
@@ -42,7 +44,7 @@ function AccountsPage() {
     if (!isStaff) { navigate({ to: "/dashboard", replace: true }); return; }
     load().catch(() => {});
     // eslint-disable-next-line
-  }, [isStaff, loading, navigate, search]);
+  }, [isStaff, loading, navigate]);
 
   const enriched = useMemo(() => profiles.map((p) => {
     const rs = rolesMap[p.id] ?? [];
@@ -55,7 +57,18 @@ function AccountsPage() {
   const admins = enriched.filter((p) => p.role === "admin" && callerRole === "admin");
   const managers = enriched.filter((p) => p.role === "manager");
   const employees = enriched.filter((p) => p.role === "employee");
-  const customers = enriched.filter((p) => p.role === "customer");
+  const customers = useMemo(() => {
+    const all = enriched.filter((p) => p.role === "customer");
+    const q = search.trim().toLowerCase();
+    if (!q) return all;
+    return all.filter((p) => {
+      const name = (p.full_name ?? "").toLowerCase();
+      const phone = (p.phone ?? "").toLowerCase();
+      const gov = (p.governorate ?? "").toLowerCase();
+      const area = (p.area ?? "").toLowerCase();
+      return name.includes(q) || phone.includes(q) || gov.includes(q) || area.includes(q);
+    });
+  }, [enriched, search]);
 
   const canDelete = (target: AppRole, targetId: string) => {
     if (targetId === user?.id) return false;
