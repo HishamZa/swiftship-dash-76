@@ -67,6 +67,7 @@ export type Database = {
           title_ar: string | null
           title_en: string
           updated_at: string
+          view_count: number
         }
         Insert: {
           body_ar?: string | null
@@ -78,6 +79,7 @@ export type Database = {
           title_ar?: string | null
           title_en: string
           updated_at?: string
+          view_count?: number
         }
         Update: {
           body_ar?: string | null
@@ -89,6 +91,7 @@ export type Database = {
           title_ar?: string | null
           title_en?: string
           updated_at?: string
+          view_count?: number
         }
         Relationships: []
       }
@@ -300,6 +303,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      increment_announcement_views: {
+        Args: { p_id: string }
+        Returns: undefined
       }
       max_role: {
         Args: { _user_id: string }
