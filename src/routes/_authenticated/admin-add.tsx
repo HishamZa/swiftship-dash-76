@@ -143,7 +143,6 @@ function AdminAddPage() {
                     </div>
                   ) : (
                     filteredCustomers.map((c) => {
-                      const isDup = dupKeys.has(`${c.full_name ?? ""}|${c.phone ?? ""}`);
                       const isSelected = customerId === c.id;
                       return (
                         <button
@@ -160,8 +159,9 @@ function AdminAddPage() {
                           )}
                         >
                           <span className="flex-1 truncate text-start">
-                            {(c.full_name ?? "—")}{c.phone ? ` · ${c.phone}` : ""}
-                            {isDup ? ` · #${c.id.slice(0, 4)}` : ""}
+                            {(c.full_name ?? "—")}
+                            {c.customer_code ? <span className="ms-1 text-muted-foreground/70">#{c.customer_code}</span> : null}
+                            {c.phone ? ` · ${c.phone}` : ""}
                           </span>
                           <Check
                             className={cn(
