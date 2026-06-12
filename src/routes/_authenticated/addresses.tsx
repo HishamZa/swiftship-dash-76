@@ -199,12 +199,15 @@ function AddressesPage() {
           <Button type="button" className="w-full" onClick={generateMark}>
             {t("showShippingMark")}
           </Button>
+          <p className="text-xs text-muted-foreground text-center">
+            {t("shippingMarkDesc")}
+          </p>
           {markUrl && (
             <div className="space-y-3">
               <img
                 src={markUrl}
                 alt="Shipping mark"
-                className="w-full rounded-lg border bg-white"
+                className="max-w-full mx-auto rounded-lg border bg-white"
               />
               <Button type="button" variant="secondary" className="w-full" onClick={downloadMark}>
                 <Download className="w-4 h-4 me-1" /> {t("saveImage")}
