@@ -163,6 +163,7 @@ export type Database = {
         Row: {
           area: string | null
           created_at: string
+          customer_code: string | null
           full_name: string | null
           governorate: string | null
           id: string
@@ -173,6 +174,7 @@ export type Database = {
         Insert: {
           area?: string | null
           created_at?: string
+          customer_code?: string | null
           full_name?: string | null
           governorate?: string | null
           id: string
@@ -183,6 +185,7 @@ export type Database = {
         Update: {
           area?: string | null
           created_at?: string
+          customer_code?: string | null
           full_name?: string | null
           governorate?: string | null
           id?: string
@@ -316,6 +319,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_customer_code: { Args: never; Returns: string }
       has_min_role: {
         Args: {
           _min: Database["public"]["Enums"]["app_role"]
