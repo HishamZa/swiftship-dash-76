@@ -179,9 +179,13 @@ const dict = {
   testShipment: { en: "Test Shipment", ar: "شحنة تجريبية" },
   footer: { en: "© 2026 Almwanaa Company. All rights reserved.", ar: "© 2026 شركة الموانئ. جميع الحقوق محفوظة." },
   customerCode: { en: "Customer Code", ar: "كود الزبون" },
-  shippingMarkGenerator: { en: "Shipping Mark Generator", ar: "مولّد الشحنك مارك" },
-  showShippingMark: { en: "Show Shipping mark", ar: "إظهار الشحنك مارك" },
+  shippingMarkGenerator: { en: "Shipping Mark Generator", ar: "مولد الشبنك مارك" },
+  showShippingMark: { en: "Show Shipping Mark", ar: "إضهار الشبنك مارك" },
   saveImage: { en: "Save Image", ar: "حفظ الصورة" },
+  shippingMarkDesc: {
+    en: "Please attach your shipping mark to your shipments before sending them to us",
+    ar: "قم بلصق الشبنك مارك الخاص بك على شحناتك قبل ارسالها إلينا",
+  },
 
 } as const;
 

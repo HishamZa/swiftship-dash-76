@@ -55,7 +55,71 @@ function AddressesPage() {
 
   const generateMark = () => {
     if (!profile) { toast.error(t("loading")); return; }
-    const W = 800, H = 600;
+
+    const isArabic = (s: string) => /[\u0600-\u06FF]/.test(s);
+    const name = profile.full_name ?? "—";
+    const addr = userAddress || [profile.governorate, profile.area].filter(Boolean).join(" / ") || "—";
+    const code = `Customer Code : #${profile.customer_code ?? "----"}`;
+    const brand = "Almwanaa co";
+
+    const fontFor = (text: string, size: number, forceBold = false) => {
+      const bold = forceBold || isArabic(text) ? "bold " : "bold ";
+      return `${bold}${size}px Arial, sans-serif`;
+    };
+
+    // sizes
+    const sizes = { brand: 44, name: 36, addr: 28, code: 30 };
+    const lineGap = 14;
+    const padX = 40;
+    const padY = 30;
+    const maxW = 760;
+
+    // measure addr wrap
+    const measureCanvas = document.createElement("canvas");
+    const mctx = measureCanvas.getContext("2d")!;
+    const wrap = (text: string, size: number): string[] => {
+      mctx.font = fontFor(text, size);
+      const words = text.split(/\s+/);
+      const lines: string[] = [];
+      let line = "";
+      for (const w of words) {
+        const test = line ? `${line} ${w}` : w;
+        if (mctx.measureText(test).width > maxW && line) {
+          lines.push(line);
+          line = w;
+        } else {
+          line = test;
+        }
+      }
+      if (line) lines.push(line);
+      return lines;
+    };
+
+    const addrLines = wrap(addr, sizes.addr);
+
+    // compute width
+    mctx.font = fontFor(brand, sizes.brand);
+    const wBrand = mctx.measureText(brand).width;
+    mctx.font = fontFor(name, sizes.name);
+    const wName = mctx.measureText(name).width;
+    mctx.font = fontFor(code, sizes.code);
+    const wCode = mctx.measureText(code).width;
+    let wAddr = 0;
+    mctx.font = fontFor(addr, sizes.addr);
+    for (const l of addrLines) wAddr = Math.max(wAddr, mctx.measureText(l).width);
+
+    const contentW = Math.ceil(Math.max(wBrand, wName, wAddr, wCode));
+    const W = contentW + padX * 2;
+
+    const lineHeights = [
+      sizes.brand,
+      sizes.name,
+      ...addrLines.map(() => sizes.addr),
+      sizes.code,
+    ];
+    const contentH = lineHeights.reduce((a, b) => a + b, 0) + lineGap * (lineHeights.length - 1);
+    const H = contentH + padY * 2;
+
     const canvas = document.createElement("canvas");
     canvas.width = W; canvas.height = H;
     const ctx = canvas.getContext("2d");
@@ -64,26 +128,20 @@ function AddressesPage() {
     ctx.fillRect(0, 0, W, H);
     ctx.fillStyle = "#000000";
     ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-
+    ctx.textBaseline = "top";
     const cx = W / 2;
-    let y = 110;
+    let y = padY;
 
-    ctx.font = "bold 48px Arial, sans-serif";
-    ctx.fillText("Almwanaa co", cx, y);
-    y += 100;
+    const drawLine = (text: string, size: number) => {
+      ctx.font = fontFor(text, size);
+      ctx.fillText(text, cx, y);
+      y += size + lineGap;
+    };
 
-    ctx.font = "bold 40px Arial, sans-serif";
-    ctx.fillText(profile.full_name ?? "—", cx, y);
-    y += 90;
-
-    ctx.font = "32px Arial, sans-serif";
-    const addr = userAddress || [profile.governorate, profile.area].filter(Boolean).join(" / ") || "—";
-    wrapText(ctx, addr, cx, y, W - 80, 40);
-    y += 120;
-
-    ctx.font = "bold 36px Arial, sans-serif";
-    ctx.fillText(`Customer Code : #${profile.customer_code ?? "----"}`, cx, H - 80);
+    drawLine(brand, sizes.brand);
+    drawLine(name, sizes.name);
+    for (const l of addrLines) drawLine(l, sizes.addr);
+    drawLine(code, sizes.code);
 
     setMarkUrl(canvas.toDataURL("image/png"));
   };
@@ -141,12 +199,15 @@ function AddressesPage() {
           <Button type="button" className="w-full" onClick={generateMark}>
             {t("showShippingMark")}
           </Button>
+          <p className="text-xs text-muted-foreground text-center">
+            {t("shippingMarkDesc")}
+          </p>
           {markUrl && (
             <div className="space-y-3">
               <img
                 src={markUrl}
                 alt="Shipping mark"
-                className="w-full rounded-lg border bg-white"
+                className="max-w-full mx-auto rounded-lg border bg-white"
               />
               <Button type="button" variant="secondary" className="w-full" onClick={downloadMark}>
                 <Download className="w-4 h-4 me-1" /> {t("saveImage")}
@@ -159,20 +220,3 @@ function AddressesPage() {
   );
 }
 
-function wrapText(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, maxWidth: number, lineHeight: number) {
-  const words = text.split(/\s+/);
-  let line = "";
-  let cy = y;
-  for (let i = 0; i < words.length; i++) {
-    const test = line ? `${line} ${words[i]}` : words[i];
-    const w = ctx.measureText(test).width;
-    if (w > maxWidth && line) {
-      ctx.fillText(line, x, cy);
-      line = words[i];
-      cy += lineHeight;
-    } else {
-      line = test;
-    }
-  }
-  if (line) ctx.fillText(line, x, cy);
-}
