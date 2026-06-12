@@ -6,7 +6,7 @@ import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/hooks/useAuth";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { fetchShipments, ALL_STATUSES, statusKey, type Shipment, type ShipmentStatus } from "@/lib/db";
+import { fetchShipments, fetchCustomers, ALL_STATUSES, statusKey, type Shipment, type ShipmentStatus } from "@/lib/db";
 import { StatusBadge } from "@/components/StatusBadge";
 import { formatUSD, formatCBM, deliveryCountdown } from "@/lib/format";
 import { Search } from "lucide-react";
@@ -21,14 +21,32 @@ function AdminShipmentsPage() {
   const { isStaff, loading } = useAuth();
   const navigate = useNavigate();
   const [list, setList] = useState<Shipment[]>([]);
+  const [codeMap, setCodeMap] = useState<Record<string, string>>({});
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<ShipmentStatus | "all">("all");
 
   useEffect(() => {
     if (loading) return;
     if (!isStaff) { navigate({ to: "/dashboard", replace: true }); return; }
-    fetchShipments({ search, status: statusFilter }).then(setList).catch(() => setList([]));
-  }, [isStaff, loading, navigate, search, statusFilter]);
+    fetchShipments({ status: statusFilter }).then(setList).catch(() => setList([]));
+    fetchCustomers().then((profs) => {
+      const map: Record<string, string> = {};
+      for (const p of profs) if (p.customer_code) map[p.id] = p.customer_code;
+      setCodeMap(map);
+    }).catch(() => setCodeMap({}));
+  }, [isStaff, loading, navigate, statusFilter]);
+
+  const filtered = (() => {
+    const q = search.trim().replace(/#/g, "").toLowerCase();
+    if (!q) return list;
+    return list.filter((s) => {
+      const code = (s.customer_id && codeMap[s.customer_id]) || "";
+      return s.tracking_number.toLowerCase().includes(q)
+        || s.customer_name.toLowerCase().includes(q)
+        || (s.phone ?? "").toLowerCase().includes(q)
+        || code.toLowerCase().includes(q);
+    });
+  })();
 
   if (!isStaff) return null;
 
@@ -52,10 +70,11 @@ function AdminShipmentsPage() {
           </Select>
         </div>
 
-        {list.length === 0 && <p className="text-sm text-muted-foreground">{t("empty")}</p>}
+        {filtered.length === 0 && <p className="text-sm text-muted-foreground">{t("empty")}</p>}
         <div className="space-y-2">
-          {list.map((s) => {
+          {filtered.map((s) => {
             const cd = deliveryCountdown(s.estimated_delivery, lang);
+            const code = s.customer_id ? codeMap[s.customer_id] : null;
             return (
               <Link
                 key={s.id}
@@ -66,7 +85,10 @@ function AdminShipmentsPage() {
                 <div className="flex justify-between items-start gap-2">
                   <div className="min-w-0 flex-1">
                     <p className="font-semibold text-sm">{s.tracking_number}</p>
-                    <p className="text-xs text-muted-foreground truncate">{s.customer_name}</p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {s.customer_name}
+                      {code && <span className="ms-1 text-muted-foreground/70">#{code}</span>}
+                    </p>
                     {s.description && <p className="text-[11px] text-muted-foreground truncate">{s.description}</p>}
                     <div className="text-[11px] text-muted-foreground mt-1 flex flex-wrap gap-x-3">
                       <span>{formatUSD(s.estimated_cost)}</span>

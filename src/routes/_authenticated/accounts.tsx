@@ -59,14 +59,15 @@ function AccountsPage() {
   const employees = enriched.filter((p) => p.role === "employee");
   const customers = useMemo(() => {
     const all = enriched.filter((p) => p.role === "customer");
-    const q = search.trim().toLowerCase();
+    const q = search.trim().replace(/#/g, "").toLowerCase();
     if (!q) return all;
     return all.filter((p) => {
       const name = (p.full_name ?? "").toLowerCase();
       const phone = (p.phone ?? "").toLowerCase();
       const gov = (p.governorate ?? "").toLowerCase();
       const area = (p.area ?? "").toLowerCase();
-      return name.includes(q) || phone.includes(q) || gov.includes(q) || area.includes(q);
+      const code = (p.customer_code ?? "").toLowerCase();
+      return name.includes(q) || phone.includes(q) || gov.includes(q) || area.includes(q) || code.includes(q);
     });
   }, [enriched, search]);
 
@@ -166,7 +167,10 @@ function AccountRow({ p, canDelete, canReset, onDelete }: { p: Profile & { role:
     <div className="block rounded-2xl border bg-card p-4">
       <div className="flex justify-between items-start gap-2">
         <div className="min-w-0 flex-1">
-          <p className="font-semibold text-sm truncate">{p.full_name ?? "—"}</p>
+          <p className="font-semibold text-sm truncate">
+            {p.full_name ?? "—"}
+            {p.role === "customer" && p.customer_code && <span className="ms-1 text-[11px] font-normal text-muted-foreground/70">#{p.customer_code}</span>}
+          </p>
           <p className="text-xs text-muted-foreground truncate">{p.phone ?? "—"}{p.governorate ? ` · ${p.governorate}` : ""}{p.area ? ` / ${p.area}` : ""}</p>
         </div>
         <div className="flex items-center gap-2 shrink-0">

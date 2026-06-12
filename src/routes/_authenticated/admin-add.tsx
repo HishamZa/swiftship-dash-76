@@ -52,29 +52,18 @@ function AdminAddPage() {
     })();
   }, [isStaff, loading, navigate]);
 
-  // Tag duplicates (same name+phone, different IDs) with a short ID suffix so
-  // managers can distinguish them in the dropdown.
-  const dupKeys = useMemo(() => {
-    const counts = new Map<string, number>();
-    for (const c of customers) {
-      const k = `${c.full_name ?? ""}|${c.phone ?? ""}`;
-      counts.set(k, (counts.get(k) ?? 0) + 1);
-    }
-    return new Set(Array.from(counts.entries()).filter(([, n]) => n > 1).map(([k]) => k));
-  }, [customers]);
-
   const selected = useMemo(() => customers.find((c) => c.id === customerId), [customers, customerId]);
 
   const filteredCustomers = useMemo(() => {
-    if (!search.trim()) return customers;
-    const q = search.trim().toLowerCase();
+    const q = search.trim().replace(/#/g, "").toLowerCase();
+    if (!q) return customers;
     return customers.filter((c) => {
       const name = (c.full_name ?? "").toLowerCase();
       const phone = (c.phone ?? "").toLowerCase();
       const gov = (c.governorate ?? "").toLowerCase();
       const area = (c.area ?? "").toLowerCase();
-      const id = c.id.toLowerCase();
-      return name.includes(q) || phone.includes(q) || gov.includes(q) || area.includes(q) || id.includes(q);
+      const code = (c.customer_code ?? "").toLowerCase();
+      return name.includes(q) || phone.includes(q) || gov.includes(q) || area.includes(q) || code.includes(q);
     });
   }, [customers, search]);
 
@@ -128,7 +117,7 @@ function AdminAddPage() {
                   className="flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background cursor-pointer data-[placeholder]:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 font-normal"
                 >
                   {selected
-                    ? `${selected.full_name ?? "—"}${selected.phone ? ` · ${selected.phone}` : ""}${dupKeys.has(`${selected.full_name ?? ""}|${selected.phone ?? ""}`) ? ` · #${selected.id.slice(0, 4)}` : ""}`
+                    ? `${selected.full_name ?? "—"}${selected.customer_code ? ` #${selected.customer_code}` : ""}${selected.phone ? ` · ${selected.phone}` : ""}`
                     : t("selectCustomer")}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
@@ -154,7 +143,6 @@ function AdminAddPage() {
                     </div>
                   ) : (
                     filteredCustomers.map((c) => {
-                      const isDup = dupKeys.has(`${c.full_name ?? ""}|${c.phone ?? ""}`);
                       const isSelected = customerId === c.id;
                       return (
                         <button
@@ -171,8 +159,9 @@ function AdminAddPage() {
                           )}
                         >
                           <span className="flex-1 truncate text-start">
-                            {(c.full_name ?? "—")}{c.phone ? ` · ${c.phone}` : ""}
-                            {isDup ? ` · #${c.id.slice(0, 4)}` : ""}
+                            {(c.full_name ?? "—")}
+                            {c.customer_code ? <span className="ms-1 text-muted-foreground/70">#{c.customer_code}</span> : null}
+                            {c.phone ? ` · ${c.phone}` : ""}
                           </span>
                           <Check
                             className={cn(
