@@ -92,7 +92,10 @@ function AdminCustomersPage() {
         <section className="px-5 pt-6 pb-2 flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={() => setSelected(null)}><ArrowLeft className="w-4 h-4" /></Button>
           <div>
-            <h1 className="text-lg font-bold">{selected.full_name ?? "—"}</h1>
+            <h1 className="text-lg font-bold">
+              {selected.full_name ?? "—"}
+              {selected.customer_code && <span className="ms-1 text-xs font-normal text-muted-foreground/70">#{selected.customer_code}</span>}
+            </h1>
             <p className="text-xs text-muted-foreground">{selected.phone}{selected.governorate ? ` · ${selected.governorate}` : ""}{selected.area ? ` / ${selected.area}` : ""}</p>
           </div>
         </section>
