@@ -59,14 +59,15 @@ function AccountsPage() {
   const employees = enriched.filter((p) => p.role === "employee");
   const customers = useMemo(() => {
     const all = enriched.filter((p) => p.role === "customer");
-    const q = search.trim().toLowerCase();
+    const q = search.trim().replace(/#/g, "").toLowerCase();
     if (!q) return all;
     return all.filter((p) => {
       const name = (p.full_name ?? "").toLowerCase();
       const phone = (p.phone ?? "").toLowerCase();
       const gov = (p.governorate ?? "").toLowerCase();
       const area = (p.area ?? "").toLowerCase();
-      return name.includes(q) || phone.includes(q) || gov.includes(q) || area.includes(q);
+      const code = (p.customer_code ?? "").toLowerCase();
+      return name.includes(q) || phone.includes(q) || gov.includes(q) || area.includes(q) || code.includes(q);
     });
   }, [enriched, search]);
 
