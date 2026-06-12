@@ -220,20 +220,3 @@ function AddressesPage() {
   );
 }
 
-function wrapText(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, maxWidth: number, lineHeight: number) {
-  const words = text.split(/\s+/);
-  let line = "";
-  let cy = y;
-  for (let i = 0; i < words.length; i++) {
-    const test = line ? `${line} ${words[i]}` : words[i];
-    const w = ctx.measureText(test).width;
-    if (w > maxWidth && line) {
-      ctx.fillText(line, x, cy);
-      line = words[i];
-      cy += lineHeight;
-    } else {
-      line = test;
-    }
-  }
-  if (line) ctx.fillText(line, x, cy);
-}
