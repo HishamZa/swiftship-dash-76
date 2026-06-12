@@ -107,6 +107,7 @@ export type Profile = {
   governorate: string | null;
   area: string | null;
   language: string;
+  customer_code: string | null;
   created_at: string;
 };
 
@@ -270,8 +271,9 @@ export async function broadcastNotification(title: string, body: string) {
 export async function fetchCustomers(search?: string) {
   let q = supabase.from("profiles").select("*").order("created_at", { ascending: false });
   if (search) {
-    const s = `%${search}%`;
-    q = q.or(`full_name.ilike.${s},phone.ilike.${s},governorate.ilike.${s},area.ilike.${s}`);
+    const cleaned = search.replace(/#/g, "").trim();
+    const s = `%${cleaned}%`;
+    q = q.or(`full_name.ilike.${s},phone.ilike.${s},governorate.ilike.${s},area.ilike.${s},customer_code.ilike.${s}`);
   }
   const { data, error } = await q;
   if (error) throw error;
