@@ -146,14 +146,44 @@ function AddressesPage() {
     setMarkUrl(canvas.toDataURL("image/png"));
   };
 
-  const downloadMark = () => {
+  const downloadMark = async () => {
     if (!markUrl) return;
-    const a = document.createElement("a");
-    a.href = markUrl;
-    a.download = `shipping-mark-${profile?.customer_code ?? "code"}.png`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+    const filename = `shipping-mark-${profile?.customer_code ?? "code"}.png`;
+    try {
+      const res = await fetch(markUrl);
+      const blob = await res.blob();
+      const file = new File([blob], filename, { type: "image/png" });
+
+      // Try Web Share API (works best on Android PWAs/WebViews for saving to gallery)
+      const nav = navigator as Navigator & {
+        canShare?: (data: { files: File[] }) => boolean;
+        share?: (data: { files: File[]; title?: string }) => Promise<void>;
+      };
+      if (nav.canShare && nav.share && nav.canShare({ files: [file] })) {
+        try {
+          await nav.share({ files: [file], title: filename });
+          return;
+        } catch {
+          // user canceled or share failed — fall through to blob download
+        }
+      }
+
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = filename;
+      a.rel = "noopener";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+    } catch {
+      try {
+        window.open(markUrl, "_blank");
+      } catch {
+        toast.error("Error");
+      }
+    }
   };
 
   return (
