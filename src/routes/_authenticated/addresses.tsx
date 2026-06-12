@@ -199,7 +199,7 @@ function AddressesPage() {
           <Button type="button" className="w-full" onClick={generateMark}>
             {t("showShippingMark")}
           </Button>
-          <p className="text-xs text-muted-foreground text-center">
+          <p className="text-xs text-red-600 text-center font-medium">
             {t("shippingMarkDesc")}
           </p>
           {markUrl && (
