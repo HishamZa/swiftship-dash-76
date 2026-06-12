@@ -70,10 +70,11 @@ function AdminShipmentsPage() {
           </Select>
         </div>
 
-        {list.length === 0 && <p className="text-sm text-muted-foreground">{t("empty")}</p>}
+        {filtered.length === 0 && <p className="text-sm text-muted-foreground">{t("empty")}</p>}
         <div className="space-y-2">
-          {list.map((s) => {
+          {filtered.map((s) => {
             const cd = deliveryCountdown(s.estimated_delivery, lang);
+            const code = s.customer_id ? codeMap[s.customer_id] : null;
             return (
               <Link
                 key={s.id}
@@ -84,7 +85,10 @@ function AdminShipmentsPage() {
                 <div className="flex justify-between items-start gap-2">
                   <div className="min-w-0 flex-1">
                     <p className="font-semibold text-sm">{s.tracking_number}</p>
-                    <p className="text-xs text-muted-foreground truncate">{s.customer_name}</p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {s.customer_name}
+                      {code && <span className="ms-1 text-muted-foreground/70">#{code}</span>}
+                    </p>
                     {s.description && <p className="text-[11px] text-muted-foreground truncate">{s.description}</p>}
                     <div className="text-[11px] text-muted-foreground mt-1 flex flex-wrap gap-x-3">
                       <span>{formatUSD(s.estimated_cost)}</span>
