@@ -21,7 +21,8 @@ export const Route = createFileRoute("/_authenticated/admin-add")({
 
 function AdminAddPage() {
   const { t } = useI18n();
-  const { isStaff, loading } = useAuth();
+  const { isStaff, role, loading } = useAuth();
+  const hidePhone = role === "employee";
   const navigate = useNavigate();
   const [customers, setCustomers] = useState<Profile[]>([]);
   const [customerId, setCustomerId] = useState<string>("");
