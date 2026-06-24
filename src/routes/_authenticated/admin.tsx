@@ -22,7 +22,16 @@ function AdminHome() {
     if (loading) return;
     if (!isStaff) { navigate({ to: "/dashboard", replace: true }); return; }
     fetchShipments().then(setShipments).catch(() => setShipments([]));
-    fetchCustomers().then((c) => setCustomerCount(c.length)).catch(() => setCustomerCount(0));
+    Promise.all([fetchCustomers(), fetchAllUserRoles()])
+      .then(([profiles, rolesMap]) => {
+        const count = profiles.filter((p) => {
+          const rs = rolesMap[p.id] ?? [];
+          // Exclude staff (admin/manager/employee); count only pure customers.
+          return !rs.includes("admin") && !rs.includes("manager") && !rs.includes("employee");
+        }).length;
+        setCustomerCount(count);
+      })
+      .catch(() => setCustomerCount(0));
   }, [isStaff, loading, navigate]);
 
   if (!isStaff) return null;
