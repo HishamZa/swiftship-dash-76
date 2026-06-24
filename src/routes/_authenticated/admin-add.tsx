@@ -162,7 +162,7 @@ function AdminAddPage() {
                           <span className="flex-1 truncate text-start">
                             {(c.full_name ?? "—")}
                             {c.customer_code ? <span className="ms-1 text-muted-foreground/70">#{c.customer_code}</span> : null}
-                            {c.phone ? ` · ${c.phone}` : ""}
+                            {!hidePhone && c.phone ? ` · ${c.phone}` : ""}
                           </span>
                           <Check
                             className={cn(
