@@ -97,7 +97,7 @@ function AdminCustomersPage() {
               {selected.full_name ?? "—"}
               {selected.customer_code && <span className="ms-1 text-xs font-normal text-muted-foreground/70">#{selected.customer_code}</span>}
             </h1>
-            <p className="text-xs text-muted-foreground">{selected.phone}{selected.governorate ? ` · ${selected.governorate}` : ""}{selected.area ? ` / ${selected.area}` : ""}</p>
+            <p className="text-xs text-muted-foreground">{hidePhone ? "—" : selected.phone}{selected.governorate ? ` · ${selected.governorate}` : ""}{selected.area ? ` / ${selected.area}` : ""}</p>
           </div>
         </section>
         <section className="px-5 mt-2 space-y-2">
