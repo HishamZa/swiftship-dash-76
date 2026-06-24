@@ -156,13 +156,14 @@ function AccountsPage() {
   );
 }
 
-function AccountRow({ p, canDelete, canReset, onDelete }: { p: Profile & { role: AppRole }; canDelete: boolean; canReset: boolean; onDelete: () => void }) {
+function AccountRow({ p, canDelete, canReset, onDelete, hidePhone }: { p: Profile & { role: AppRole }; canDelete: boolean; canReset: boolean; onDelete: () => void; hidePhone?: boolean }) {
   const { t } = useI18n();
   const tint =
     p.role === "admin" ? "bg-destructive/10 text-destructive"
     : p.role === "manager" ? "bg-warning/20 text-warning-foreground"
     : p.role === "employee" ? "bg-primary/10 text-primary"
     : "bg-muted text-muted-foreground";
+  const phoneDisplay = hidePhone && p.role === "customer" ? "—" : (p.phone ?? "—");
   return (
     <div className="block rounded-2xl border bg-card p-4">
       <div className="flex justify-between items-start gap-2">
@@ -171,7 +172,7 @@ function AccountRow({ p, canDelete, canReset, onDelete }: { p: Profile & { role:
             {p.full_name ?? "—"}
             {p.role === "customer" && p.customer_code && <span className="ms-1 text-[11px] font-normal text-muted-foreground/70">#{p.customer_code}</span>}
           </p>
-          <p className="text-xs text-muted-foreground truncate">{p.phone ?? "—"}{p.governorate ? ` · ${p.governorate}` : ""}{p.area ? ` / ${p.area}` : ""}</p>
+          <p className="text-xs text-muted-foreground truncate">{phoneDisplay}{p.governorate ? ` · ${p.governorate}` : ""}{p.area ? ` / ${p.area}` : ""}</p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <span className={`text-[10px] font-semibold rounded-full px-2 py-0.5 ${tint}`}>{t(p.role)}</span>
