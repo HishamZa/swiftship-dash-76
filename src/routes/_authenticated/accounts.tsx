@@ -148,7 +148,7 @@ function AccountsPage() {
         <div className="space-y-2">
           {customers.length === 0 && <p className="text-xs text-muted-foreground">{t("empty")}</p>}
           {customers.map((p) => (
-            <AccountRow key={p.id} p={p} canDelete={canDelete(p.role, p.id)} canReset={canReset(p.role, p.id)} onDelete={() => onDelete(p.id)} />
+            <AccountRow key={p.id} p={p} hidePhone={callerRole === "employee"} canDelete={canDelete(p.role, p.id)} canReset={canReset(p.role, p.id)} onDelete={() => onDelete(p.id)} />
           ))}
         </div>
       </section>
