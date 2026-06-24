@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Layout } from "@/components/Layout";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/hooks/useAuth";
-import { fetchShipments, fetchCustomers, type Shipment, ACTIVE_STATUSES } from "@/lib/db";
+import { fetchShipments, fetchCustomers, fetchAllUserRoles, type Shipment, ACTIVE_STATUSES } from "@/lib/db";
 import { Package, Users, Truck, CheckCircle, PlusCircle, Send, UserCog, Newspaper, MapPin, Boxes } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
