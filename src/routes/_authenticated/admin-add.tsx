@@ -118,7 +118,7 @@ function AdminAddPage() {
                   className="flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background cursor-pointer data-[placeholder]:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 font-normal"
                 >
                   {selected
-                    ? `${selected.full_name ?? "—"}${selected.customer_code ? ` #${selected.customer_code}` : ""}${selected.phone ? ` · ${selected.phone}` : ""}`
+                    ? `${selected.full_name ?? "—"}${selected.customer_code ? ` #${selected.customer_code}` : ""}${!hidePhone && selected.phone ? ` · ${selected.phone}` : ""}`
                     : t("selectCustomer")}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
