@@ -143,7 +143,7 @@ function AdminCustomersPage() {
                     {c.full_name ?? "—"}
                     {c.customer_code && <span className="ms-1 text-[11px] font-normal text-muted-foreground/70">#{c.customer_code}</span>}
                   </p>
-                  <p className="text-xs text-muted-foreground truncate">{c.phone ?? "—"}{c.governorate ? ` · ${c.governorate}` : ""}{c.area ? ` / ${c.area}` : ""}</p>
+                  <p className="text-xs text-muted-foreground truncate">{hidePhone ? "—" : (c.phone ?? "—")}{c.governorate ? ` · ${c.governorate}` : ""}{c.area ? ` / ${c.area}` : ""}</p>
                 </div>
                 <span className="flex items-center gap-1 text-xs font-semibold bg-primary/10 text-primary rounded-full px-2 py-1 shrink-0">
                   <Package className="w-3 h-3" /> {counts[c.id] ?? 0}
