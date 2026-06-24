@@ -64,9 +64,9 @@ function AdminAddPage() {
       const gov = (c.governorate ?? "").toLowerCase();
       const area = (c.area ?? "").toLowerCase();
       const code = (c.customer_code ?? "").toLowerCase();
-      return name.includes(q) || phone.includes(q) || gov.includes(q) || area.includes(q) || code.includes(q);
+      return name.includes(q) || (!hidePhone && phone.includes(q)) || gov.includes(q) || area.includes(q) || code.includes(q);
     });
-  }, [customers, search]);
+  }, [customers, search, hidePhone]);
 
   if (!isStaff) return null;
 
