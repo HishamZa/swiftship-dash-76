@@ -21,7 +21,8 @@ export const Route = createFileRoute("/_authenticated/admin-add")({
 
 function AdminAddPage() {
   const { t } = useI18n();
-  const { isStaff, loading } = useAuth();
+  const { isStaff, role, loading } = useAuth();
+  const hidePhone = role === "employee";
   const navigate = useNavigate();
   const [customers, setCustomers] = useState<Profile[]>([]);
   const [customerId, setCustomerId] = useState<string>("");
@@ -63,9 +64,9 @@ function AdminAddPage() {
       const gov = (c.governorate ?? "").toLowerCase();
       const area = (c.area ?? "").toLowerCase();
       const code = (c.customer_code ?? "").toLowerCase();
-      return name.includes(q) || phone.includes(q) || gov.includes(q) || area.includes(q) || code.includes(q);
+      return name.includes(q) || (!hidePhone && phone.includes(q)) || gov.includes(q) || area.includes(q) || code.includes(q);
     });
-  }, [customers, search]);
+  }, [customers, search, hidePhone]);
 
   if (!isStaff) return null;
 
@@ -117,7 +118,7 @@ function AdminAddPage() {
                   className="flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background cursor-pointer data-[placeholder]:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 font-normal"
                 >
                   {selected
-                    ? `${selected.full_name ?? "—"}${selected.customer_code ? ` #${selected.customer_code}` : ""}${selected.phone ? ` · ${selected.phone}` : ""}`
+                    ? `${selected.full_name ?? "—"}${selected.customer_code ? ` #${selected.customer_code}` : ""}${!hidePhone && selected.phone ? ` · ${selected.phone}` : ""}`
                     : t("selectCustomer")}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
@@ -161,7 +162,7 @@ function AdminAddPage() {
                           <span className="flex-1 truncate text-start">
                             {(c.full_name ?? "—")}
                             {c.customer_code ? <span className="ms-1 text-muted-foreground/70">#{c.customer_code}</span> : null}
-                            {c.phone ? ` · ${c.phone}` : ""}
+                            {!hidePhone && c.phone ? ` · ${c.phone}` : ""}
                           </span>
                           <Check
                             className={cn(

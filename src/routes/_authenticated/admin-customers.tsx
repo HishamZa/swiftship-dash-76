@@ -26,7 +26,8 @@ export const Route = createFileRoute("/_authenticated/admin-customers")({
 
 function AdminCustomersPage() {
   const { t, lang } = useI18n();
-  const { isStaff, loading } = useAuth();
+  const { isStaff, role, loading } = useAuth();
+  const hidePhone = role === "employee";
   const navigate = useNavigate();
   const [customers, setCustomers] = useState<Profile[]>([]);
   const [counts, setCounts] = useState<Record<string, number>>({});
@@ -96,7 +97,7 @@ function AdminCustomersPage() {
               {selected.full_name ?? "—"}
               {selected.customer_code && <span className="ms-1 text-xs font-normal text-muted-foreground/70">#{selected.customer_code}</span>}
             </h1>
-            <p className="text-xs text-muted-foreground">{selected.phone}{selected.governorate ? ` · ${selected.governorate}` : ""}{selected.area ? ` / ${selected.area}` : ""}</p>
+            <p className="text-xs text-muted-foreground">{hidePhone ? "—" : selected.phone}{selected.governorate ? ` · ${selected.governorate}` : ""}{selected.area ? ` / ${selected.area}` : ""}</p>
           </div>
         </section>
         <section className="px-5 mt-2 space-y-2">
@@ -142,7 +143,7 @@ function AdminCustomersPage() {
                     {c.full_name ?? "—"}
                     {c.customer_code && <span className="ms-1 text-[11px] font-normal text-muted-foreground/70">#{c.customer_code}</span>}
                   </p>
-                  <p className="text-xs text-muted-foreground truncate">{c.phone ?? "—"}{c.governorate ? ` · ${c.governorate}` : ""}{c.area ? ` / ${c.area}` : ""}</p>
+                  <p className="text-xs text-muted-foreground truncate">{hidePhone ? "—" : (c.phone ?? "—")}{c.governorate ? ` · ${c.governorate}` : ""}{c.area ? ` / ${c.area}` : ""}</p>
                 </div>
                 <span className="flex items-center gap-1 text-xs font-semibold bg-primary/10 text-primary rounded-full px-2 py-1 shrink-0">
                   <Package className="w-3 h-3" /> {counts[c.id] ?? 0}
