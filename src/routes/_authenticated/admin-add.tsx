@@ -91,6 +91,7 @@ function AdminAddPage() {
         estimated_cost: cost ? Number(cost) : null,
         cbm_volume: cbm ? Number(cbm) : null,
         estimated_delivery: eta || null,
+        warehouse_received_at: warehouseDate ? new Date(`${warehouseDate}T00:00:00`).toISOString() : null,
         customer_notes: customerNotes || null,
       });
       toast.success(t("sent"));
