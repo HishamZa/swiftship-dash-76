@@ -39,6 +39,8 @@ function AdminNotifyPage() {
     });
   }, [customers, search]);
 
+  const selectedCustomer = useMemo(() => customers.find((c) => c.id === userId), [customers, userId]);
+
   useEffect(() => {
     if (loading) return;
     if (!isStaff) { navigate({ to: "/dashboard", replace: true }); return; }
