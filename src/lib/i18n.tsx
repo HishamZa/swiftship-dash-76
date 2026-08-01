@@ -144,6 +144,7 @@ const dict = {
   addressName: { en: "Address Name", ar: "اسم العنوان" },
   addressDetails: { en: "Address Details", ar: "تفاصيل العنوان" },
   remainingDays: { en: "Remaining Days", ar: "عدد الأيام" },
+  warehouseReceivingDate: { en: "Warehouse Receiving Date", ar: "تاريخ استلام الشحنة في المستودع" },
   copy: { en: "Copy", ar: "نسخ" },
   copied: { en: "Copied", ar: "تم النسخ" },
   phoneCopied: { en: "Phone number copied", ar: "تم نسخ رقم الهاتف" },
