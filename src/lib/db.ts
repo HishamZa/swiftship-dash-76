@@ -174,6 +174,7 @@ export type NewShipment = {
   estimated_cost?: number | null;
   cbm_volume?: number | null;
   estimated_delivery?: string | null;
+  warehouse_received_at?: string | null;
 };
 
 export async function createShipment(p: NewShipment) {
