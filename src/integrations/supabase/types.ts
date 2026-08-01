@@ -249,6 +249,7 @@ export type Database = {
           status: Database["public"]["Enums"]["shipment_status"]
           tracking_number: string
           updated_at: string
+          warehouse_received_at: string | null
           weight: number | null
         }
         Insert: {
@@ -269,6 +270,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["shipment_status"]
           tracking_number: string
           updated_at?: string
+          warehouse_received_at?: string | null
           weight?: number | null
         }
         Update: {
@@ -289,6 +291,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["shipment_status"]
           tracking_number?: string
           updated_at?: string
+          warehouse_received_at?: string | null
           weight?: number | null
         }
         Relationships: []

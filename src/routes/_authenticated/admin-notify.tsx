@@ -1,17 +1,16 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Layout } from "@/components/Layout";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { fetchCustomers, fetchAllUserRoles, broadcastNotification, sendNotificationToUser, type Profile } from "@/lib/db";
 import { toast } from "sonner";
-import { Send, Lock } from "lucide-react";
+import { Send, Lock, Check } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin-notify")({
   head: () => ({ meta: [{ title: "Send Notification — Almwanaa" }] }),
@@ -28,6 +27,17 @@ function AdminNotifyPage() {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [busy, setBusy] = useState(false);
+  const [search, setSearch] = useState("");
+
+  const filteredCustomers = useMemo(() => {
+    const q = search.trim().replace(/#/g, "").toLowerCase();
+    if (!q) return customers;
+    return customers.filter((c) => {
+      const name = (c.full_name ?? "").toLowerCase();
+      const code = (c.customer_code ?? "").toLowerCase();
+      return name.includes(q) || code.includes(q);
+    });
+  }, [customers, search]);
 
   useEffect(() => {
     if (loading) return;
@@ -98,16 +108,33 @@ function AdminNotifyPage() {
           </RadioGroup>
 
           {mode === "one" && (
-            <Select value={userId} onValueChange={setUserId}>
-              <SelectTrigger><SelectValue placeholder={t("selectCustomer")} /></SelectTrigger>
-              <SelectContent>
-                {customers.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>
-                    {(c.full_name ?? "—")}{c.phone ? ` · ${c.phone}` : ""}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="space-y-2">
+              <Input
+                placeholder={t("searchCustomer")}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+              <div className="max-h-[280px] overflow-y-auto rounded-md border divide-y">
+                {filteredCustomers.length === 0 ? (
+                  <p className="py-6 text-center text-sm text-muted-foreground">{t("noResults")}</p>
+                ) : (
+                  filteredCustomers.map((c) => (
+                    <button
+                      type="button"
+                      key={c.id}
+                      onClick={() => setUserId(c.id)}
+                      className={`flex w-full items-center gap-2 px-3 py-2 text-sm text-start ${userId === c.id ? "bg-accent text-accent-foreground" : ""}`}
+                    >
+                      <span className="flex-1 truncate">
+                        {c.full_name ?? "—"}
+                        {c.customer_code ? <span className="ms-1 text-muted-foreground/70">#{c.customer_code}</span> : null}
+                      </span>
+                      {userId === c.id && <Check className="h-4 w-4 shrink-0" />}
+                    </button>
+                  ))
+                )}
+              </div>
+            </div>
           )}
 
           <div>
