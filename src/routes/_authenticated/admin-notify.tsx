@@ -8,9 +8,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { fetchCustomers, fetchAllUserRoles, broadcastNotification, sendNotificationToUser, type Profile } from "@/lib/db";
 import { toast } from "sonner";
-import { Send, Lock, Check } from "lucide-react";
+import { Send, Lock, Check, ChevronsUpDown } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin-notify")({
   head: () => ({ meta: [{ title: "Send Notification — Almwanaa" }] }),
@@ -28,6 +29,7 @@ function AdminNotifyPage() {
   const [body, setBody] = useState("");
   const [busy, setBusy] = useState(false);
   const [search, setSearch] = useState("");
+  const [open, setOpen] = useState(false);
 
   const filteredCustomers = useMemo(() => {
     const q = search.trim().replace(/#/g, "").toLowerCase();
@@ -110,52 +112,70 @@ function AdminNotifyPage() {
           </RadioGroup>
 
           {mode === "one" && (
-            <div className="space-y-2">
-              <Input
-                placeholder={t("searchCustomer")}
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-              {selectedCustomer && (
-                <p className="text-xs text-muted-foreground">
-                  {t("customer")}: <span className="font-medium text-foreground">{selectedCustomer.full_name ?? "—"}</span>
-                  {selectedCustomer.customer_code ? ` #${selectedCustomer.customer_code}` : ""}
-                </p>
-              )}
-              <div className="max-h-[280px] overflow-y-auto rounded-md border divide-y">
-                {filteredCustomers.length === 0 ? (
-                  <p className="py-6 text-center text-sm text-muted-foreground">{t("noResults")}</p>
-                ) : (
-                  filteredCustomers.map((c) => {
-                    const isSelected = userId === c.id;
-                    return (
-                      <div
-                        key={c.id}
-                        role="option"
-                        aria-selected={isSelected}
-                        tabIndex={0}
-                        onPointerUp={() => setUserId(c.id)}
-                        onClick={() => setUserId(c.id)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ") {
-                            e.preventDefault();
-                            setUserId(c.id);
-                          }
-                        }}
-                        className={`flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-sm text-start ${isSelected ? "bg-accent text-accent-foreground" : ""}`}
-                      >
-                        <span className="flex-1 truncate">
-                          {c.full_name ?? "—"}
-                          {c.customer_code ? <span className="ms-1 text-muted-foreground/70">#{c.customer_code}</span> : null}
-                        </span>
-                        {isSelected && <Check className="h-4 w-4 shrink-0" />}
-                      </div>
-                    );
-                  })
-                )}
-              </div>
+            <div>
+              <label className="text-xs text-muted-foreground">{t("customer")}</label>
+              <Popover open={open} onOpenChange={setOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={open}
+                    className="flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm font-normal shadow-sm cursor-pointer"
+                  >
+                    <span className="truncate">
+                      {selectedCustomer
+                        ? `${selectedCustomer.full_name ?? "—"}${selectedCustomer.customer_code ? ` #${selectedCustomer.customer_code}` : ""}`
+                        : t("selectCustomer")}
+                    </span>
+                    <ChevronsUpDown className="ms-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent
+                  className="w-[--radix-popover-trigger-width] p-0"
+                  align="start"
+                  onOpenAutoFocus={(e) => e.preventDefault()}
+                >
+                  <div className="flex items-center border-b px-3">
+                    <Input
+                      placeholder={t("searchCustomer")}
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      autoFocus={false}
+                      className="h-10 border-0 px-0 shadow-none focus-visible:ring-0"
+                    />
+                  </div>
+                  <div className="max-h-[300px] overflow-y-auto p-1">
+                    {filteredCustomers.length === 0 ? (
+                      <div className="py-6 text-center text-sm text-muted-foreground">{t("noResults")}</div>
+                    ) : (
+                      filteredCustomers.map((c) => {
+                        const isSelected = userId === c.id;
+                        return (
+                          <button
+                            type="button"
+                            key={c.id}
+                            onClick={() => {
+                              setUserId(c.id);
+                              setOpen(false);
+                              setSearch("");
+                            }}
+                            className={`relative flex w-full select-none items-center gap-2 rounded-sm px-2 py-2 text-start text-sm outline-none ${isSelected ? "bg-accent text-accent-foreground" : ""}`}
+                          >
+                            <span className="flex-1 truncate text-start">
+                              {c.full_name ?? "—"}
+                              {c.customer_code ? <span className="ms-1 text-muted-foreground/70">#{c.customer_code}</span> : null}
+                            </span>
+                            <Check className={`ms-auto h-4 w-4 shrink-0 ${isSelected ? "opacity-100" : "opacity-0"}`} />
+                          </button>
+                        );
+                      })
+                    )}
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
           )}
+
 
           <div>
             <label className="text-xs text-muted-foreground">{t("title")}</label>
