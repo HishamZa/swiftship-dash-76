@@ -27,6 +27,17 @@ function AdminNotifyPage() {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [busy, setBusy] = useState(false);
+  const [search, setSearch] = useState("");
+
+  const filteredCustomers = useMemo(() => {
+    const q = search.trim().replace(/#/g, "").toLowerCase();
+    if (!q) return customers;
+    return customers.filter((c) => {
+      const name = (c.full_name ?? "").toLowerCase();
+      const code = (c.customer_code ?? "").toLowerCase();
+      return name.includes(q) || code.includes(q);
+    });
+  }, [customers, search]);
 
   useEffect(() => {
     if (loading) return;
