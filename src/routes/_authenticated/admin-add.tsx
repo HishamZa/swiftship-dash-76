@@ -205,8 +205,16 @@ function AdminAddPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-2">
-            <div>
+          <div className="flex gap-2">
+            <div className="flex-1 min-w-0">
+              <label className="text-xs text-muted-foreground">{t("warehouseReceivingDate")}</label>
+              <Input
+                type="date"
+                value={warehouseDate}
+                onChange={(e) => setWarehouseDate(e.target.value)}
+              />
+            </div>
+            <div className="flex-1 min-w-0">
               <label className="text-xs text-muted-foreground">{t("eta")}</label>
               <Input
                 type="date"
@@ -224,16 +232,19 @@ function AdminAddPage() {
                 }}
               />
             </div>
-            <div>
+            <div className="w-16 shrink-0">
               <label className="text-xs text-muted-foreground">{t("remainingDays")}</label>
               <Input
-                type="number"
-                min="0"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                className="text-center px-1"
                 value={remainingDays}
                 onChange={(e) => {
-                  setRemainingDays(e.target.value);
-                  const n = Number(e.target.value);
-                  if (e.target.value !== "" && Number.isFinite(n) && n >= 0) {
+                  const v = e.target.value.replace(/[^0-9]/g, "");
+                  setRemainingDays(v);
+                  const n = Number(v);
+                  if (v !== "" && Number.isFinite(n) && n >= 0) {
                     const d = new Date(); d.setHours(0, 0, 0, 0);
                     d.setDate(d.getDate() + n);
                     setEta(d.toISOString().slice(0, 10));
