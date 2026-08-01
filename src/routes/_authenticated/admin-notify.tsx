@@ -39,6 +39,8 @@ function AdminNotifyPage() {
     });
   }, [customers, search]);
 
+  const selectedCustomer = useMemo(() => customers.find((c) => c.id === userId), [customers, userId]);
+
   useEffect(() => {
     if (loading) return;
     if (!isStaff) { navigate({ to: "/dashboard", replace: true }); return; }
@@ -114,24 +116,42 @@ function AdminNotifyPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
+              {selectedCustomer && (
+                <p className="text-xs text-muted-foreground">
+                  {t("customer")}: <span className="font-medium text-foreground">{selectedCustomer.full_name ?? "—"}</span>
+                  {selectedCustomer.customer_code ? ` #${selectedCustomer.customer_code}` : ""}
+                </p>
+              )}
               <div className="max-h-[280px] overflow-y-auto rounded-md border divide-y">
                 {filteredCustomers.length === 0 ? (
                   <p className="py-6 text-center text-sm text-muted-foreground">{t("noResults")}</p>
                 ) : (
-                  filteredCustomers.map((c) => (
-                    <button
-                      type="button"
-                      key={c.id}
-                      onClick={() => setUserId(c.id)}
-                      className={`flex w-full items-center gap-2 px-3 py-2 text-sm text-start ${userId === c.id ? "bg-accent text-accent-foreground" : ""}`}
-                    >
-                      <span className="flex-1 truncate">
-                        {c.full_name ?? "—"}
-                        {c.customer_code ? <span className="ms-1 text-muted-foreground/70">#{c.customer_code}</span> : null}
-                      </span>
-                      {userId === c.id && <Check className="h-4 w-4 shrink-0" />}
-                    </button>
-                  ))
+                  filteredCustomers.map((c) => {
+                    const isSelected = userId === c.id;
+                    return (
+                      <div
+                        key={c.id}
+                        role="option"
+                        aria-selected={isSelected}
+                        tabIndex={0}
+                        onPointerUp={() => setUserId(c.id)}
+                        onClick={() => setUserId(c.id)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            setUserId(c.id);
+                          }
+                        }}
+                        className={`flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-sm text-start ${isSelected ? "bg-accent text-accent-foreground" : ""}`}
+                      >
+                        <span className="flex-1 truncate">
+                          {c.full_name ?? "—"}
+                          {c.customer_code ? <span className="ms-1 text-muted-foreground/70">#{c.customer_code}</span> : null}
+                        </span>
+                        {isSelected && <Check className="h-4 w-4 shrink-0" />}
+                      </div>
+                    );
+                  })
                 )}
               </div>
             </div>
