@@ -215,7 +215,7 @@ function AdminAddPage() {
               <label className="text-xs text-muted-foreground">{t("warehouseReceivingDate")}</label>
               <Input
                 type="date"
-                className="text-sm"
+                className="text-xs"
                 value={warehouseDate}
                 onChange={(e) => setWarehouseDate(e.target.value)}
               />
@@ -224,7 +224,7 @@ function AdminAddPage() {
               <label className="text-xs text-muted-foreground">{t("eta")}</label>
               <Input
                 type="date"
-                className="text-sm"
+                className="text-xs"
                 value={eta}
                 onChange={(e) => {
                   setEta(e.target.value);
