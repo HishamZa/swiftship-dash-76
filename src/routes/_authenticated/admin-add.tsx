@@ -12,7 +12,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { fetchCustomers, fetchAllUserRoles, createShipment, generateTrackingNumber, type Profile } from "@/lib/db";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { RefreshCw, ChevronsUpDown, Check } from "lucide-react";
+import { RefreshCw, ChevronsUpDown, Check, Link2 } from "lucide-react";
+import { copyTrackingLink } from "@/lib/trackingLink";
 
 export const Route = createFileRoute("/_authenticated/admin-add")({
   head: () => ({ meta: [{ title: "Add Shipment — Almwanaa" }] }),
@@ -94,7 +95,26 @@ function AdminAddPage() {
         warehouse_received_at: warehouseDate ? new Date(`${warehouseDate}T00:00:00`).toISOString() : null,
         customer_notes: customerNotes || null,
       });
-      toast.success(t("sent"));
+      const created = tracking.trim();
+      toast.custom(
+        () => (
+          <div className="w-full rounded-xl border bg-card p-4 shadow-lg text-center space-y-2">
+            <p className="font-semibold text-sm">{t("shipmentCreated")}</p>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={async () => {
+                await copyTrackingLink(created);
+                toast.success(t("trackingLinkCopied"));
+              }}
+            >
+              <Link2 className="w-3.5 h-3.5 me-1" /> {t("copyTrackingLink")}
+            </Button>
+          </div>
+        ),
+        { duration: 4000, position: "bottom-center" },
+      );
       setTracking(generateTrackingNumber());
       setDescription(""); setCost(""); setCbm(""); setEta(""); setRemainingDays(""); setCustomerNotes("");
     } catch (err: unknown) {
