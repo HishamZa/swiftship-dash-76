@@ -12,7 +12,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { fetchCustomers, fetchAllUserRoles, createShipment, generateTrackingNumber, type Profile } from "@/lib/db";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { RefreshCw, ChevronsUpDown, Check } from "lucide-react";
+import { RefreshCw, ChevronsUpDown, Check, Link2 } from "lucide-react";
+import { copyTrackingLink } from "@/lib/trackingLink";
 
 export const Route = createFileRoute("/_authenticated/admin-add")({
   head: () => ({ meta: [{ title: "Add Shipment — Almwanaa" }] }),
