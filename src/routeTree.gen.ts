@@ -17,6 +17,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AnnouncementsRouteImport } from './routes/announcements'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TTrackingRouteImport } from './routes/t.$tracking'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedOfficesManageRouteImport } from './routes/_authenticated/offices-manage'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
@@ -71,6 +72,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TTrackingRoute = TTrackingRouteImport.update({
+  id: '/t/$tracking',
+  path: '/t/$tracking',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
@@ -182,6 +188,7 @@ export interface FileRoutesByFullPath {
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/offices-manage': typeof AuthenticatedOfficesManageRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/t/$tracking': typeof TTrackingRoute
   '/accounts/$id': typeof AuthenticatedAccountsIdRoute
   '/admin-shipment-edit/$id': typeof AuthenticatedAdminShipmentEditIdRoute
   '/shipments/$id': typeof AuthenticatedShipmentsIdRoute
@@ -207,6 +214,7 @@ export interface FileRoutesByTo {
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/offices-manage': typeof AuthenticatedOfficesManageRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/t/$tracking': typeof TTrackingRoute
   '/accounts/$id': typeof AuthenticatedAccountsIdRoute
   '/admin-shipment-edit/$id': typeof AuthenticatedAdminShipmentEditIdRoute
   '/shipments/$id': typeof AuthenticatedShipmentsIdRoute
@@ -234,6 +242,7 @@ export interface FileRoutesById {
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/offices-manage': typeof AuthenticatedOfficesManageRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/t/$tracking': typeof TTrackingRoute
   '/_authenticated/accounts/$id': typeof AuthenticatedAccountsIdRoute
   '/_authenticated/admin-shipment-edit/$id': typeof AuthenticatedAdminShipmentEditIdRoute
   '/_authenticated/shipments/$id': typeof AuthenticatedShipmentsIdRoute
@@ -261,6 +270,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/offices-manage'
     | '/settings'
+    | '/t/$tracking'
     | '/accounts/$id'
     | '/admin-shipment-edit/$id'
     | '/shipments/$id'
@@ -286,6 +296,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/offices-manage'
     | '/settings'
+    | '/t/$tracking'
     | '/accounts/$id'
     | '/admin-shipment-edit/$id'
     | '/shipments/$id'
@@ -312,6 +323,7 @@ export interface FileRouteTypes {
     | '/_authenticated/notifications'
     | '/_authenticated/offices-manage'
     | '/_authenticated/settings'
+    | '/t/$tracking'
     | '/_authenticated/accounts/$id'
     | '/_authenticated/admin-shipment-edit/$id'
     | '/_authenticated/shipments/$id'
@@ -327,6 +339,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   TermsRoute: typeof TermsRoute
   TrackRoute: typeof TrackRoute
+  TTrackingRoute: typeof TTrackingRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -385,6 +398,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/t/$tracking': {
+      id: '/t/$tracking'
+      path: '/t/$tracking'
+      fullPath: '/t/$tracking'
+      preLoaderRoute: typeof TTrackingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/settings': {
@@ -563,6 +583,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   TermsRoute: TermsRoute,
   TrackRoute: TrackRoute,
+  TTrackingRoute: TTrackingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

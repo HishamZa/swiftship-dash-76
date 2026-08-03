@@ -9,7 +9,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { fetchShipments, fetchCustomers, ALL_STATUSES, statusKey, type Shipment, type ShipmentStatus } from "@/lib/db";
 import { StatusBadge } from "@/components/StatusBadge";
 import { formatUSD, formatCBM, deliveryCountdown } from "@/lib/format";
-import { Search } from "lucide-react";
+import { Search, Link2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { copyTrackingLink } from "@/lib/trackingLink";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/admin-shipments")({
   head: () => ({ meta: [{ title: "All Shipments — Almwanaa" }] }),
