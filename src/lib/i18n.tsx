@@ -124,6 +124,9 @@ const dict = {
   newShipmentTitle: { en: "You have a new shipment", ar: "لديك شحنة جديدة" },
   copyTracking: { en: "Copy tracking number", ar: "نسخ رقم التتبع" },
   trackingCopied: { en: "Tracking number copied", ar: "تم نسخ رقم التتبع" },
+  copyTrackingLink: { en: "Copy Tracking Link", ar: "نسخ رابط التتبع" },
+  trackingLinkCopied: { en: "Tracking link copied", ar: "تم نسخ رابط التتبع" },
+  shipmentCreated: { en: "✅ Shipment Created", ar: "✅ تم إنشاء الشحنة" },
   // accounts
   accounts: { en: "Accounts Management", ar: "إدارة الحسابات" },
   registeredMembers: { en: "Registered Members", ar: "الأعضاء المسجلون" },
