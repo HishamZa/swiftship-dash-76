@@ -10,7 +10,7 @@ import { Logo } from "@/components/Logo";
 import { fetchUnreadCount } from "@/lib/db";
 import { supabase } from "@/integrations/supabase/client";
 
-export function Layout({ children, showBack = true }: { children: ReactNode; showBack?: boolean }) {
+export function Layout({ children, showBack = true, logoLink = true }: { children: ReactNode; showBack?: boolean; logoLink?: boolean }) {
   const { t, lang, setLang, dir } = useI18n();
   const { mode, toggle } = useTheme();
   const { user, isStaff } = useAuth();
