@@ -47,7 +47,7 @@ function PublicTrackPage() {
   const cd = shipment ? deliveryCountdown(shipment.estimated_delivery, lang) : null;
 
   return (
-    <Layout showBack={false}>
+    <Layout showBack={false} logoLink={false}>
       <section className="px-5 pt-6 pb-6 bg-primary text-primary-foreground rounded-b-3xl">
         <h1 className="text-xl font-bold">{t("trackTitle")}</h1>
         <p className="text-sm opacity-90 break-all mt-1">{tracking}</p>
