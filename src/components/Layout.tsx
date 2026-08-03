@@ -51,10 +51,17 @@ export function Layout({ children, showBack = true, logoLink = true }: { childre
                 <BackIcon className="w-4 h-4" />
               </Button>
             )}
-            <Link to={homeTo} className="flex items-center gap-2 font-bold min-w-0">
-              <Logo className="w-9 h-9" />
-              <span className="text-sm sm:text-base truncate">{t("brand")}</span>
-            </Link>
+            {logoLink ? (
+              <Link to={homeTo} className="flex items-center gap-2 font-bold min-w-0">
+                <Logo className="w-9 h-9" />
+                <span className="text-sm sm:text-base truncate">{t("brand")}</span>
+              </Link>
+            ) : (
+              <div className="flex items-center gap-2 font-bold min-w-0 cursor-default">
+                <Logo className="w-9 h-9" />
+                <span className="text-sm sm:text-base truncate">{t("brand")}</span>
+              </div>
+            )}
           </div>
           <div className="flex items-center gap-1">
             {user && (
