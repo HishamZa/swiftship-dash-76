@@ -28,7 +28,8 @@ function AdminAddPage() {
   const navigate = useNavigate();
   const [customers, setCustomers] = useState<Profile[]>([]);
   const [customerId, setCustomerId] = useState<string>("");
-  const [tracking, setTracking] = useState(generateTrackingNumber());
+  const [mode, setMode] = useState<ShipMode>("sea");
+  const [tracking, setTracking] = useState(generateTrackingNumber("sea"));
   const [description, setDescription] = useState("");
   const [cost, setCost] = useState("");
   const [cbm, setCbm] = useState("");
@@ -89,6 +90,7 @@ function AdminAddPage() {
         origin_country: "China",
         destination_country: "Iraq",
         status: "received_warehouse",
+        shipment_type: mode,
         description: description || null,
         estimated_cost: cost ? Number(cost) : null,
         cbm_volume: cbm ? Number(cbm) : null,
