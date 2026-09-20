@@ -9,7 +9,8 @@ import { fetchShipment, fetchHistory, deleteShipment, type Shipment, type Status
 import { StatusBadge } from "@/components/StatusBadge";
 import { StatusProgress } from "@/components/StatusProgress";
 import { StatusTimeline } from "@/components/StatusTimeline";
-import { formatUSD, formatCBM, deliveryCountdown, formatDate } from "@/lib/format";
+import { formatUSD, formatMeasure, deliveryCountdown, formatDate } from "@/lib/format";
+import { shipmentMode, measureKey } from "@/lib/shipmentType";
 import { Trash2, Copy } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -71,6 +72,7 @@ function ShipmentDetailPage() {
   if (loading) return <Layout><p className="p-6 text-sm text-muted-foreground">{t("loading")}</p></Layout>;
   if (!shipment) return <Layout><p className="p-6 text-sm text-muted-foreground">{t("notFound")}</p></Layout>;
 
+  const mode = shipmentMode(shipment);
   const cd = isTest
     ? TEST_REMAINING_TEXT[lang]
     : deliveryCountdown(shipment.estimated_delivery, lang);
@@ -103,14 +105,15 @@ function ShipmentDetailPage() {
                 </Button>
               </div>
             </div>
-            <StatusBadge status={shipment.status} />
+            <StatusBadge status={shipment.status} mode={mode} />
           </div>
           <Row label={t("customer")} value={shipment.customer_name} />
+          <Row label={t("shipmentTypeLabel")} value={t(mode === "air" ? "modeAir" : "modeSea")} />
           <Row label={t("origin")} value={shipment.origin_country} />
           <Row label={t("destination")} value={shipment.destination_country} />
           {shipment.description && <Row label={t("description")} value={shipment.description} />}
           <Row label={t("estimatedCost")} value={formatUSD(shipment.estimated_cost)} />
-          <Row label={t("cbm")} value={formatCBM(shipment.cbm_volume)} />
+          <Row label={t(measureKey(mode))} value={formatMeasure(shipment.cbm_volume, mode)} />
           {shipment.estimated_delivery && <Row label={t("eta")} value={formatDate(shipment.estimated_delivery)} />}
           {cd && <Row label={t("remaining")} value={cd} highlight />}
           {shipment.customer_notes && (
@@ -123,12 +126,12 @@ function ShipmentDetailPage() {
 
         <div className="rounded-2xl border bg-card p-5">
           <h2 className="font-semibold mb-4">{t("status")}</h2>
-          <StatusProgress current={shipment.status} />
+          <StatusProgress current={shipment.status} mode={mode} />
         </div>
 
         <div className="rounded-2xl border bg-card p-5">
           <h2 className="font-semibold mb-4">{t("timeline")}</h2>
-          <StatusTimeline history={history} />
+          <StatusTimeline history={history} mode={mode} />
         </div>
 
         {isStaff && !isTest && (

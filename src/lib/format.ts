@@ -32,6 +32,18 @@ export function formatCBM(v: number | string | null | undefined): string {
   return `${n.toLocaleString(undefined, { maximumFractionDigits: 3 })} CBM`;
 }
 
+export function formatKG(v: number | string | null | undefined): string {
+  if (v == null || v === "") return "—";
+  const n = typeof v === "number" ? v : Number(v);
+  if (!Number.isFinite(n)) return "—";
+  return `${n.toLocaleString(undefined, { maximumFractionDigits: 3 })} KG`;
+}
+
+/** Sea shipments measure volume (CBM); air shipments measure weight (KG). */
+export function formatMeasure(v: number | string | null | undefined, mode: "sea" | "air"): string {
+  return mode === "air" ? formatKG(v) : formatCBM(v);
+}
+
 export type CountdownLang = "en" | "ar";
 
 export function deliveryCountdown(date: string | null | undefined, lang: CountdownLang = "en"): string | null {

@@ -1,9 +1,10 @@
 import { useI18n } from "@/lib/i18n";
-import { TIMELINE_STATUSES, statusKey, type ShipmentStatus } from "@/lib/db";
+import { TIMELINE_STATUSES, type ShipmentStatus } from "@/lib/db";
+import { statusLabelKey, type ShipMode } from "@/lib/shipmentType";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export function StatusProgress({ current }: { current: ShipmentStatus }) {
+export function StatusProgress({ current, mode = "sea" }: { current: ShipmentStatus; mode?: ShipMode }) {
   const { t } = useI18n();
   // If current isn't part of timeline (delayed/cancelled), show 0 progress.
   const idx = TIMELINE_STATUSES.indexOf(current);
@@ -23,7 +24,7 @@ export function StatusProgress({ current }: { current: ShipmentStatus }) {
             </div>
             <div className="flex-1 pt-0.5">
               <p className={cn("text-sm", active ? "font-bold text-primary" : done ? "font-medium" : "text-muted-foreground")}>
-                {t(statusKey(s))}
+                {t(statusLabelKey(s, mode))}
               </p>
             </div>
           </li>

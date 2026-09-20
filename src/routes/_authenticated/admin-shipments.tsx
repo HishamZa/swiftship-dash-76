@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { fetchShipments, fetchCustomers, ALL_STATUSES, statusKey, type Shipment, type ShipmentStatus } from "@/lib/db";
 import { StatusBadge } from "@/components/StatusBadge";
-import { formatUSD, formatCBM, deliveryCountdown } from "@/lib/format";
+import { formatUSD, formatMeasure, deliveryCountdown } from "@/lib/format";
+import { shipmentMode } from "@/lib/shipmentType";
 import { Search, Link2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { copyTrackingLink } from "@/lib/trackingLink";
@@ -95,7 +96,7 @@ function AdminShipmentsPage() {
                     {s.description && <p className="text-[11px] text-muted-foreground truncate">{s.description}</p>}
                     <div className="text-[11px] text-muted-foreground mt-1 flex flex-wrap gap-x-3">
                       <span>{formatUSD(s.estimated_cost)}</span>
-                      <span>{formatCBM(s.cbm_volume)}</span>
+                      <span>{formatMeasure(s.cbm_volume, shipmentMode(s))}</span>
                       {s.estimated_delivery && <span>{t("eta")}: {s.estimated_delivery}</span>}
                       {cd && <span className="font-semibold text-primary">{cd}</span>}
                     </div>
@@ -115,7 +116,7 @@ function AdminShipmentsPage() {
                       <Link2 className="w-3 h-3 me-1" /> {t("copyTrackingLink")}
                     </Button>
                   </div>
-                  <StatusBadge status={s.status} />
+                  <StatusBadge status={s.status} mode={shipmentMode(s)} />
                 </div>
               </Link>
             );

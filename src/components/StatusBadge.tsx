@@ -1,5 +1,6 @@
 import { useI18n } from "@/lib/i18n";
-import { statusKey, type ShipmentStatus } from "@/lib/db";
+import { type ShipmentStatus } from "@/lib/db";
+import { statusLabelKey, type ShipMode } from "@/lib/shipmentType";
 import { cn } from "@/lib/utils";
 
 const colors: Record<ShipmentStatus, string> = {
@@ -19,11 +20,11 @@ const colors: Record<ShipmentStatus, string> = {
   arrived_baghdad: "bg-accent/40 text-accent-foreground",
 };
 
-export function StatusBadge({ status }: { status: ShipmentStatus }) {
+export function StatusBadge({ status, mode = "sea" }: { status: ShipmentStatus; mode?: ShipMode }) {
   const { t } = useI18n();
   return (
     <span className={cn("inline-flex items-center justify-center whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-medium leading-5 min-h-[20px]", colors[status])}>
-      {t(statusKey(status))}
+      {t(statusLabelKey(status, mode))}
     </span>
   );
 }
