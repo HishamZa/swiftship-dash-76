@@ -117,9 +117,17 @@ const RANK: Record<AppRole, number> = { admin: 4, manager: 3, employee: 2, custo
 export const roleRank = (r: AppRole) => RANK[r] ?? 0;
 
 // ---- Helpers
-export function generateTrackingNumber() {
+export function generateTrackingNumber(mode: "sea" | "air" = "sea") {
   const rnd = Math.random().toString(36).slice(2, 8).toUpperCase();
-  return `MWA-SEA-${rnd}`;
+  return `MWA-${mode === "air" ? "AIR" : "SEA"}-${rnd}`;
+}
+
+/** Swap only the type segment of a tracking number, keeping the unique part. */
+export function retypeTrackingNumber(tracking: string, mode: "sea" | "air") {
+  const seg = mode === "air" ? "AIR" : "SEA";
+  const m = /^MWA-(SEA|AIR)-(.*)$/i.exec(tracking.trim());
+  if (!m) return tracking;
+  return `MWA-${seg}-${m[2]}`;
 }
 
 
