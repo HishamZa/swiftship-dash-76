@@ -118,7 +118,7 @@ function AdminAddPage() {
         ),
         { duration: 4000, position: "bottom-center" },
       );
-      setTracking(generateTrackingNumber());
+      setTracking(generateTrackingNumber(mode));
       setDescription(""); setCost(""); setCbm(""); setEta(""); setRemainingDays(""); setCustomerNotes("");
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Error");
@@ -135,6 +135,25 @@ function AdminAddPage() {
 
       <section className="px-5">
         <form onSubmit={submit} className="rounded-2xl border bg-card p-4 space-y-3">
+          <div>
+            <label className="text-xs text-muted-foreground">{t("shipmentTypeLabel")}</label>
+            <div className="grid grid-cols-2 gap-2 mt-1">
+              {(["sea", "air"] as ShipMode[]).map((m) => (
+                <Button
+                  key={m}
+                  type="button"
+                  variant={mode === m ? "default" : "outline"}
+                  onClick={() => {
+                    setMode(m);
+                    setTracking((prev) => retypeTrackingNumber(prev, m));
+                  }}
+                >
+                  {t(m === "air" ? "modeAir" : "modeSea")}
+                </Button>
+              ))}
+            </div>
+          </div>
+
           <div>
             <label className="text-xs text-muted-foreground">{t("customer")}</label>
             <Popover open={open} onOpenChange={setOpen}>
