@@ -5,7 +5,8 @@ import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/hooks/useAuth";
 import { fetchShipments, type Shipment, ACTIVE_STATUSES } from "@/lib/db";
 import { StatusBadge } from "@/components/StatusBadge";
-import { formatUSD, formatCBM, deliveryCountdown } from "@/lib/format";
+import { formatUSD, formatMeasure, deliveryCountdown } from "@/lib/format";
+import { shipmentMode } from "@/lib/shipmentType";
 import { Package, CheckCircle, Truck, Bell, Search, Newspaper, MapPin } from "lucide-react";
 import { useUnreadNewsCount, useUnreadShipmentsCount, useUnreadNotificationsCount } from "@/lib/unreadNews";
 
@@ -75,11 +76,11 @@ function Dashboard() {
                     {s.description && <p className="text-xs text-muted-foreground truncate">{s.description}</p>}
                     <div className="text-[11px] text-muted-foreground mt-1 flex flex-wrap gap-x-3">
                       <span>{formatUSD(s.estimated_cost)}</span>
-                      <span>{formatCBM(s.cbm_volume)}</span>
+                      <span>{formatMeasure(s.cbm_volume, shipmentMode(s))}</span>
                       {cd && <span className="font-medium text-primary">{cd}</span>}
                     </div>
                   </div>
-                  <StatusBadge status={s.status} />
+                  <StatusBadge status={s.status} mode={shipmentMode(s)} />
                 </div>
               </Link>
             );

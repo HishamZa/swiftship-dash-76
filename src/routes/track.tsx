@@ -8,7 +8,8 @@ import { fetchShipmentByTracking, fetchHistory, type Shipment, type StatusHistor
 import { StatusBadge } from "@/components/StatusBadge";
 import { StatusTimeline } from "@/components/StatusTimeline";
 import { StatusProgress } from "@/components/StatusProgress";
-import { formatUSD, formatCBM, deliveryCountdown, formatDate } from "@/lib/format";
+import { formatUSD, formatMeasure, deliveryCountdown, formatDate } from "@/lib/format";
+import { shipmentMode, measureKey } from "@/lib/shipmentType";
 import { Search, AlertCircle, Copy } from "lucide-react";
 import { toast } from "sonner";
 
@@ -89,14 +90,14 @@ function TrackPage() {
                     </Button>
                   </div>
                 </div>
-                <StatusBadge status={shipment.status} />
+                <StatusBadge status={shipment.status} mode={shipmentMode(shipment)} />
               </div>
               <Grid label={t("customer")} value={shipment.customer_name} />
               <Grid label={t("origin")} value={shipment.origin_country} />
               <Grid label={t("destination")} value={shipment.destination_country} />
               {shipment.description && <Grid label={t("description")} value={shipment.description} />}
               <Grid label={t("estimatedCost")} value={formatUSD(shipment.estimated_cost)} />
-              <Grid label={t("cbm")} value={formatCBM(shipment.cbm_volume)} />
+              <Grid label={t(measureKey(shipmentMode(shipment)))} value={formatMeasure(shipment.cbm_volume, shipmentMode(shipment))} />
               {shipment.estimated_delivery && <Grid label={t("eta")} value={formatDate(shipment.estimated_delivery)} />}
               {cd && <Grid label={t("remaining")} value={cd} highlight />}
               {shipment.customer_notes && (
@@ -108,11 +109,11 @@ function TrackPage() {
             </div>
             <div className="rounded-2xl border bg-card p-5">
               <h2 className="font-semibold mb-4">{t("status")}</h2>
-              <StatusProgress current={shipment.status} />
+              <StatusProgress current={shipment.status} mode={shipmentMode(shipment)} />
             </div>
             <div className="rounded-2xl border bg-card p-5">
               <h2 className="font-semibold mb-4">{t("timeline")}</h2>
-              <StatusTimeline history={history} />
+              <StatusTimeline history={history} mode={shipmentMode(shipment)} />
             </div>
           </div>
         )}

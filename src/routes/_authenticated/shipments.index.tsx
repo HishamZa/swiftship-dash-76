@@ -6,7 +6,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { Input } from "@/components/ui/input";
 import { fetchShipments, type Shipment } from "@/lib/db";
 import { StatusBadge } from "@/components/StatusBadge";
-import { formatUSD, formatCBM, deliveryCountdown, formatDate } from "@/lib/format";
+import { formatUSD, formatMeasure, deliveryCountdown, formatDate } from "@/lib/format";
+import { shipmentMode } from "@/lib/shipmentType";
 import { markShipmentsSeen } from "@/lib/unreadNews";
 import { Search } from "lucide-react";
 import {
@@ -68,6 +69,7 @@ function ShipmentsPage() {
         <div className="space-y-2">
           {displayList.map((s) => {
             const isTest = isTestShipmentId(s.id);
+            const mode = shipmentMode(s);
             const cd = isTest
               ? TEST_REMAINING_TEXT[lang]
               : deliveryCountdown(s.estimated_delivery, lang);
@@ -86,12 +88,12 @@ function ShipmentsPage() {
                     <p className="text-xs text-muted-foreground mt-0.5">{s.origin_country} → {s.destination_country}</p>
                     <div className="text-[11px] text-muted-foreground mt-1 flex flex-wrap gap-x-3">
                       <span>{formatUSD(s.estimated_cost)}</span>
-                      <span>{formatCBM(s.cbm_volume)}</span>
+                      <span>{formatMeasure(s.cbm_volume, mode)}</span>
                       {s.estimated_delivery && <span>{t("eta")}: {formatDate(s.estimated_delivery)}</span>}
                       {cd && <span className="font-semibold text-primary">{cd}</span>}
                     </div>
                   </div>
-                  <StatusBadge status={s.status} />
+                  <StatusBadge status={s.status} mode={mode} />
                 </div>
               </Link>
             );
