@@ -101,7 +101,7 @@ function NewsManagePage() {
           {anns.map((a) => (
             <div key={a.id} className="rounded-2xl border bg-card p-4 flex justify-between gap-2">
               <div className="min-w-0">
-                <p className="font-semibold text-sm">{a.title_en}</p>
+                <p className="font-semibold text-sm" dir="auto">{a.title_en}</p>
                 {a.title_ar && <p className="text-xs text-muted-foreground" dir="rtl">{a.title_ar}</p>}
                 <p className="text-[10px] text-muted-foreground mt-1 flex items-center gap-2 flex-wrap">
                   <span>{formatDate(a.created_at)} · {a.published ? t("published") : t("cancel")}</span>
