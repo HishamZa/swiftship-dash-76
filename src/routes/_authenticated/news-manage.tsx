@@ -56,9 +56,9 @@ function NewsManagePage() {
     try {
       await createAnnouncement({
         title_en: form.title_en,
-        title_ar: form.title_ar || null,
+        title_ar: null,
         body_en: form.body_en || null,
-        body_ar: form.body_ar || null,
+        body_ar: null,
         published: form.published,
       });
       toast.success(t("save"));
@@ -88,10 +88,8 @@ function NewsManagePage() {
       <section className="px-5 space-y-4">
         <form onSubmit={submit} className="rounded-2xl border bg-card p-4 space-y-2">
           <h2 className="font-semibold text-sm">{t("newAnnouncement")}</h2>
-          <Input required placeholder={t("title_en")} value={form.title_en} onChange={(e) => setForm({ ...form, title_en: e.target.value })} />
-          <Input placeholder={t("title_ar")} dir="rtl" value={form.title_ar} onChange={(e) => setForm({ ...form, title_ar: e.target.value })} />
-          <Textarea placeholder={t("body_en")} value={form.body_en} onChange={(e) => setForm({ ...form, body_en: e.target.value })} />
-          <Textarea placeholder={t("body_ar")} dir="rtl" value={form.body_ar} onChange={(e) => setForm({ ...form, body_ar: e.target.value })} />
+          <Input required dir="auto" placeholder={t("newsTitle")} value={form.title_en} onChange={(e) => setForm({ ...form, title_en: e.target.value })} />
+          <Textarea dir="auto" placeholder={t("newsBody")} value={form.body_en} onChange={(e) => setForm({ ...form, body_en: e.target.value })} />
           <label className="flex items-center gap-2 text-sm">
             <Switch checked={form.published} onCheckedChange={(v) => setForm({ ...form, published: v })} />
             {t("published")}
@@ -103,7 +101,7 @@ function NewsManagePage() {
           {anns.map((a) => (
             <div key={a.id} className="rounded-2xl border bg-card p-4 flex justify-between gap-2">
               <div className="min-w-0">
-                <p className="font-semibold text-sm">{a.title_en}</p>
+                <p className="font-semibold text-sm" dir="auto">{a.title_en}</p>
                 {a.title_ar && <p className="text-xs text-muted-foreground" dir="rtl">{a.title_ar}</p>}
                 <p className="text-[10px] text-muted-foreground mt-1 flex items-center gap-2 flex-wrap">
                   <span>{formatDate(a.created_at)} · {a.published ? t("published") : t("cancel")}</span>

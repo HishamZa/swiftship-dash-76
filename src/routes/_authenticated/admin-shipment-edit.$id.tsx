@@ -14,7 +14,7 @@ import {
 import { StatusProgress } from "@/components/StatusProgress";
 import { StatusTimeline } from "@/components/StatusTimeline";
 import { deliveryCountdown } from "@/lib/format";
-import { shipmentMode, statusLabelKey, measureKey } from "@/lib/shipmentType";
+import { shipmentMode, statusLabelKey, measureKey, isStatusHiddenForMode } from "@/lib/shipmentType";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -111,7 +111,7 @@ function AdminShipmentEditPage() {
             <Select value={status} onValueChange={(v) => setStatus(v as ShipmentStatus)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                {ALL_STATUSES.map((s) => <SelectItem key={s} value={s}>{t(statusLabelKey(s, mode))}</SelectItem>)}
+                {ALL_STATUSES.filter((s) => !isStatusHiddenForMode(s, mode) || s === shipment?.status).map((s) => <SelectItem key={s} value={s}>{t(statusLabelKey(s, mode))}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>

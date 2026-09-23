@@ -46,8 +46,8 @@ function NewsPage() {
           {items.map((a) => (
             <article key={a.id} className="rounded-2xl border bg-card p-4">
               <p className="text-xs text-muted-foreground">{formatDate(a.created_at)}</p>
-              <h2 className="font-semibold mt-1">{lang === "ar" && a.title_ar ? a.title_ar : a.title_en}</h2>
-              <p className="text-sm text-muted-foreground mt-2 whitespace-pre-line">{lang === "ar" && a.body_ar ? a.body_ar : a.body_en}</p>
+              <h2 className="font-semibold mt-1" dir="auto">{lang === "ar" && a.title_ar ? a.title_ar : a.title_en}</h2>
+              <p className="text-sm text-muted-foreground mt-2 whitespace-pre-line" dir="auto">{lang === "ar" && a.body_ar ? a.body_ar : a.body_en}</p>
             </article>
           ))}
         </div>
