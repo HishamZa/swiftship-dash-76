@@ -9,11 +9,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   fetchShipment, fetchHistory, updateShipment, deleteShipment,
-  ALL_STATUSES, statusKey, type Shipment, type ShipmentStatus, type StatusHistory,
+  ALL_STATUSES, type Shipment, type ShipmentStatus, type StatusHistory,
 } from "@/lib/db";
 import { StatusProgress } from "@/components/StatusProgress";
 import { StatusTimeline } from "@/components/StatusTimeline";
 import { deliveryCountdown } from "@/lib/format";
+import { shipmentMode, statusLabelKey, measureKey } from "@/lib/shipmentType";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -61,6 +62,7 @@ function AdminShipmentEditPage() {
   if (!shipment) return <Layout><p className="p-6 text-sm text-muted-foreground">{t("notFound")}</p></Layout>;
 
   const cd = deliveryCountdown(eta, lang);
+  const mode = shipmentMode(shipment);
 
   const save = async () => {
     setBusy(true);
@@ -97,18 +99,19 @@ function AdminShipmentEditPage() {
         <Button variant="ghost" size="icon" onClick={() => navigate({ to: "/admin-shipments" })}><ArrowLeft className="w-4 h-4" /></Button>
         <div className="min-w-0">
           <h1 className="text-lg font-bold truncate">{shipment.tracking_number}</h1>
+          <p className="text-[11px] text-primary font-medium">{t("shipmentTypeLabel")}: {t(mode === "air" ? "modeAir" : "modeSea")}</p>
           <p className="text-xs text-muted-foreground truncate">{shipment.customer_name}</p>
         </div>
       </section>
       <section className="px-5 space-y-3">
         <div className="rounded-2xl border bg-card p-4">
           <h2 className="font-semibold text-sm mb-3">{t("status")}</h2>
-          <StatusProgress current={status} />
+          <StatusProgress current={status} mode={mode} />
           <div className="mt-3">
             <Select value={status} onValueChange={(v) => setStatus(v as ShipmentStatus)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                {ALL_STATUSES.map((s) => <SelectItem key={s} value={s}>{t(statusKey(s))}</SelectItem>)}
+                {ALL_STATUSES.map((s) => <SelectItem key={s} value={s}>{t(statusLabelKey(s, mode))}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
@@ -125,7 +128,7 @@ function AdminShipmentEditPage() {
               <Input type="number" step="0.01" value={cost} onChange={(e) => setCost(e.target.value)} />
             </div>
             <div>
-              <label className="text-xs text-muted-foreground">{t("cbm")} (CBM)</label>
+              <label className="text-xs text-muted-foreground">{t(measureKey(mode))}</label>
               <Input type="number" step="0.001" value={cbm} onChange={(e) => setCbm(e.target.value)} />
             </div>
           </div>
@@ -143,7 +146,7 @@ function AdminShipmentEditPage() {
 
         <div className="rounded-2xl border bg-card p-4">
           <h2 className="font-semibold text-sm mb-3">{t("timeline")}</h2>
-          <StatusTimeline history={history} />
+          <StatusTimeline history={history} mode={mode} />
         </div>
 
         <AlertDialog>

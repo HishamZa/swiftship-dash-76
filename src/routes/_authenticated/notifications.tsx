@@ -21,7 +21,12 @@ function renderShipmentNotification(
   const tracking = rawTitle.slice(rawTitle.indexOf(":") + 1);
   const [firstLine, ...rest] = (n.body ?? "").split("\n");
   const isStatus = (ALL_STATUSES as readonly string[]).includes(firstLine);
-  const statusText = isStatus ? tt(statusKey(firstLine as ShipmentStatus)) : firstLine;
+  const isAir = tracking.toUpperCase().includes("-AIR-");
+  const statusText = !isStatus
+    ? firstLine
+    : isAir && firstLine === "in_sea_transit"
+      ? tt(isUpdate ? "s_in_air_transit_notify" : "s_in_air_transit")
+      : tt(statusKey(firstLine as ShipmentStatus));
   const note = rest.join("\n").trim();
   if (isNew) {
     const title = `${tt("newShipmentTitle")} — ${tracking}`;
