@@ -111,7 +111,7 @@ function AdminShipmentEditPage() {
             <Select value={status} onValueChange={(v) => setStatus(v as ShipmentStatus)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                {ALL_STATUSES.map((s) => <SelectItem key={s} value={s}>{t(statusLabelKey(s, mode))}</SelectItem>)}
+                {ALL_STATUSES.filter((s) => !isStatusHiddenForMode(s, mode) || s === shipment?.status).map((s) => <SelectItem key={s} value={s}>{t(statusLabelKey(s, mode))}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>

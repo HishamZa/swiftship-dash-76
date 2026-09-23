@@ -1,16 +1,17 @@
 import { useI18n } from "@/lib/i18n";
 import { TIMELINE_STATUSES, type ShipmentStatus } from "@/lib/db";
-import { statusLabelKey, type ShipMode } from "@/lib/shipmentType";
+import { isStatusHiddenForMode, statusLabelKey, type ShipMode } from "@/lib/shipmentType";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function StatusProgress({ current, mode = "sea" }: { current: ShipmentStatus; mode?: ShipMode }) {
   const { t } = useI18n();
   // If current isn't part of timeline (delayed/cancelled), show 0 progress.
-  const idx = TIMELINE_STATUSES.indexOf(current);
+  const steps = TIMELINE_STATUSES.filter((s) => !isStatusHiddenForMode(s, mode));
+  const idx = steps.indexOf(current);
   return (
     <ol className="space-y-3">
-      {TIMELINE_STATUSES.map((s, i) => {
+      {steps.map((s, i) => {
         const done = idx >= 0 && i <= idx;
         const active = idx >= 0 && i === idx;
         return (

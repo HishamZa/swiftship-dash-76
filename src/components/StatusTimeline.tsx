@@ -1,11 +1,12 @@
 import { useI18n } from "@/lib/i18n";
 import { type StatusHistory } from "@/lib/db";
-import { statusLabelKey, type ShipMode } from "@/lib/shipmentType";
+import { isStatusHiddenForMode, statusLabelKey, type ShipMode } from "@/lib/shipmentType";
 import { formatDate } from "@/lib/format";
 import { Check } from "lucide-react";
 
-export function StatusTimeline({ history, mode = "sea" }: { history: StatusHistory[]; mode?: ShipMode }) {
+export function StatusTimeline({ history: all, mode = "sea" }: { history: StatusHistory[]; mode?: ShipMode }) {
   const { t } = useI18n();
+  const history = all.filter((h) => !isStatusHiddenForMode(h.status, mode));
   if (history.length === 0) return <p className="text-sm text-muted-foreground">{t("empty")}</p>;
   return (
     <ol className="relative ms-3 border-s border-border">

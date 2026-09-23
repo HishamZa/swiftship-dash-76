@@ -28,3 +28,8 @@ export function statusLabelKey(status: ShipmentStatus, mode: ShipMode) {
 export function measureKey(mode: ShipMode) {
   return mode === "air" ? ("kg" as const) : ("cbm" as const);
 }
+
+/** Statuses hidden for a given mode (Air shipments never reach Umm Qasr port). */
+export function isStatusHiddenForMode(status: ShipmentStatus, mode: ShipMode) {
+  return mode === "air" && status === "arrived_umm_qasr";
+}
